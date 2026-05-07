@@ -22,7 +22,10 @@
         --nav-hover: #f9fafb;
         --nav-active: #f9fafb;
         --column-head: #f8faff;
-        --shadow-card: 0 1px 6px 1px rgba(0, 0, 0, 0.06);
+        --shadow-card: none;
+        --shadow-popup: 0 6px 16px 0 rgba(31, 52, 114, 0.06),
+          0 3px 6px -4px rgba(31, 52, 114, 0.08),
+          0 9px 28px 8px rgba(31, 52, 114, 0.035);
         --topbar-h: 64px;
         --sidebar-w: 220px;
       }
@@ -143,7 +146,7 @@
         border: 1px solid var(--line-soft);
         border-radius: 8px;
         background: var(--white);
-        box-shadow: 0 0 5.8px 0 rgba(31, 52, 114, 0.15);
+        box-shadow: var(--shadow-popup);
         overflow: hidden;
         opacity: 0;
         transform: translateY(-4px);
@@ -255,7 +258,7 @@
         border: 1px solid var(--line-soft);
         border-radius: 8px;
         background: var(--white);
-        box-shadow: 0 0 5.8px 0 rgba(31, 52, 114, 0.15);
+        box-shadow: var(--shadow-popup);
         overflow: hidden;
         opacity: 0;
         transform: translateY(-4px);
@@ -645,13 +648,17 @@
         z-index: 1000;
         display: grid;
         gap: 0;
-        width: 180px;
+        width: 220px;
+        max-height: calc(100vh - 24px);
         padding: 0;
         border: 1px solid var(--line-soft);
         border-radius: 8px;
         background: var(--white);
-        box-shadow: 0 0 5.8px 0 rgba(31, 52, 114, 0.15);
-        overflow: hidden;
+        box-shadow: var(--shadow-popup);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(63, 68, 78, 0.28) transparent;
         opacity: 0;
         transform: translateX(-6px);
         pointer-events: none;
@@ -696,7 +703,6 @@
       .sidebar-flyout-label {
         flex: 1 1 auto;
         min-width: 0;
-        max-width: 140px;
         overflow: hidden;
         white-space: normal;
         overflow-wrap: anywhere;
@@ -908,7 +914,7 @@
         border: 1px solid var(--line-soft);
         border-radius: 8px;
         background: var(--white);
-        box-shadow: 0 0 5.8px 0 rgba(31, 52, 114, 0.15);
+        box-shadow: var(--shadow-popup);
         overflow: hidden;
         opacity: 0;
         transform: translateY(-4px);
@@ -1013,7 +1019,7 @@
         max-width: var(--action-col-w);
         background: var(--white);
         border-left: 1px solid rgba(237, 239, 244, 0.9);
-        box-shadow: -8px 0 12px -14px rgba(31, 52, 114, 0.18);
+        box-shadow: none;
       }
 
       th.table-action-cell {
@@ -1073,7 +1079,7 @@
         border: 1px solid var(--line-soft);
         border-radius: 8px;
         background: var(--white);
-        box-shadow: 0 0 5.8px rgba(31, 52, 114, 0.15);
+        box-shadow: var(--shadow-popup);
         opacity: 0;
         transform: translateY(-4px);
         pointer-events: none;
@@ -1158,7 +1164,7 @@
         border: 1px solid var(--line-soft);
         border-radius: 8px;
         background: var(--white);
-        box-shadow: 0 8px 24px rgba(31, 52, 114, 0.12);
+        box-shadow: var(--shadow-popup);
         opacity: 0;
         transform: translateY(4px);
         pointer-events: none;
@@ -1314,7 +1320,7 @@
         border-radius: 8px;
         background: var(--white);
         color: #333333;
-        box-shadow: 0 8px 24px rgba(31, 52, 114, 0.14);
+        box-shadow: var(--shadow-popup);
         opacity: 0;
         transform: translateY(10px);
         pointer-events: none;
@@ -1392,7 +1398,7 @@
           z-index: 60;
           height: auto;
           transform: translateX(-100%);
-          box-shadow: 12px 0 30px rgba(31, 52, 114, 0.12);
+          box-shadow: none;
         }
 
         .app.drawer-open .sidebar {
@@ -2860,11 +2866,20 @@
         `).join("");
 
         const rect = trigger.getBoundingClientRect();
-        const flyoutHeight = Math.min(group.children.length * 38 + 16, window.innerHeight - 24);
-        const top = Math.min(Math.max(12, rect.top - 6), window.innerHeight - flyoutHeight - 12);
+        const viewportPadding = 12;
+        const maxFlyoutHeight = window.innerHeight - viewportPadding * 2;
         sidebarFlyout.style.left = `${rect.right + 8}px`;
-        sidebarFlyout.style.top = `${top}px`;
+        sidebarFlyout.style.maxHeight = `${maxFlyoutHeight}px`;
+        sidebarFlyout.style.top = `${viewportPadding}px`;
         sidebarFlyout.classList.add("open");
+
+        const flyoutHeight = Math.min(sidebarFlyout.scrollHeight, maxFlyoutHeight);
+        const top = Math.min(
+          Math.max(viewportPadding, rect.top - 6),
+          window.innerHeight - flyoutHeight - viewportPadding
+        );
+        sidebarFlyout.style.top = `${top}px`;
+        sidebarFlyout.style.maxHeight = `${window.innerHeight - top - viewportPadding}px`;
         sidebarFlyout.setAttribute("aria-hidden", "false");
       }
 
