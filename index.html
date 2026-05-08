@@ -1769,6 +1769,26 @@
         }
       }
 
+      @media (max-width: 1399px) {
+        .app.drawer-open .topbar {
+          z-index: 40;
+        }
+
+        .app.drawer-open .overlay {
+          z-index: 125;
+        }
+
+        .app.drawer-open .sidebar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          z-index: 130;
+          height: 100vh;
+          transform: translateX(0);
+        }
+      }
+
       @media (max-width: 640px) {
         .topbar {
           padding: 0 12px;
