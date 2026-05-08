@@ -202,6 +202,66 @@
         font-weight: 400;
       }
 
+      .sidebar-role-switch {
+        display: none;
+        align-items: center;
+        gap: 14px;
+        min-height: 64px;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--line-soft);
+        background: var(--white);
+      }
+
+      .sidebar-close-button {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        flex: 0 0 auto;
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
+        color: var(--primary);
+        transition: background 0.18s ease, color 0.18s ease;
+      }
+
+      .sidebar-close-button:hover {
+        background: var(--nav-hover);
+      }
+
+      .sidebar-role-divider {
+        width: 1px;
+        height: 28px;
+        flex: 0 0 auto;
+        background: var(--line-soft);
+      }
+
+      .sidebar-mode-wrap {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+
+      .sidebar-mode-control {
+        justify-content: space-between;
+        width: 100%;
+        min-height: 44px;
+        padding: 8px 8px 8px 10px;
+        color: var(--primary);
+        font-weight: 700;
+      }
+
+      .sidebar-mode-control span {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .sidebar-mode-menu {
+        width: 100%;
+        min-width: 100%;
+      }
+
       .topbar-right {
         justify-content: flex-end;
         gap: 18px;
@@ -535,6 +595,10 @@
         transition: transform 0.18s ease;
       }
 
+      .nav-text + .nav-caret {
+        margin-left: auto;
+      }
+
       .nav-caret-placeholder {
         visibility: hidden;
         transform: none !important;
@@ -551,6 +615,7 @@
         min-width: 17px;
         height: 17px;
         margin-top: 0;
+        margin-left: auto;
         padding: 0 5px;
         border-radius: 999px;
         background: #df3731;
@@ -1406,6 +1471,32 @@
         }
       }
 
+      @media (max-width: 1399px) {
+        :root {
+          --sidebar-w: 280px;
+        }
+
+        .topbar-left > .mode-wrap {
+          display: none;
+        }
+
+        .sidebar-role-switch {
+          display: flex;
+        }
+
+        .nav-scroll {
+          height: calc(100% - 64px);
+        }
+
+        .sidebar-collapsed .sidebar-role-switch {
+          display: none;
+        }
+
+        .sidebar-collapsed .nav-scroll {
+          height: 100%;
+        }
+      }
+
       @media (max-width: 900px) {
         :root {
           --topbar-h: 56px;
@@ -1435,6 +1526,19 @@
 
         .mode-wrap {
           display: none;
+        }
+
+        .sidebar-role-switch,
+        .sidebar-mode-wrap {
+          display: flex;
+        }
+
+        .sidebar-collapsed .sidebar-role-switch {
+          display: flex;
+        }
+
+        .sidebar-mode-wrap {
+          position: relative;
         }
 
         .topbar-icons,
@@ -1471,6 +1575,7 @@
         }
 
         .sidebar-collapsed .nav-scroll {
+          height: calc(100% - 64px);
           padding: 12px 0 64px !important;
         }
 
@@ -1622,6 +1727,23 @@
 
       <div class="layout">
         <aside class="sidebar" id="sidebar" aria-label="主导航">
+          <div class="sidebar-role-switch">
+            <button class="sidebar-close-button" id="sidebarCloseButton" type="button" aria-label="关闭菜单">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 5l14 14M19 5 5 19" /></svg>
+            </button>
+            <div class="sidebar-role-divider" aria-hidden="true"></div>
+            <div class="mode-wrap sidebar-mode-wrap">
+              <button class="mode-control sidebar-mode-control" id="sidebarModeControl" type="button" aria-expanded="false" aria-haspopup="true">
+                <span id="sidebarModeLabel">Backoffice interface</span>
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m4 6 4 4 4-4" /></svg>
+              </button>
+              <div class="mode-menu sidebar-mode-menu" id="sidebarModeMenu" role="menu">
+                <button class="mode-option" type="button" data-mode="client">Client interface</button>
+                <button class="mode-option" type="button" data-mode="backoffice">Backoffice interface</button>
+                <button class="mode-option" type="button" data-mode="admin">Admin interface</button>
+              </div>
+            </div>
+          </div>
           <nav class="nav-scroll" id="navScroll"></nav>
           <div class="scroll-touch" id="scrollTouch" aria-hidden="true">
             <div class="scroll-thumb" id="scrollThumb"></div>
@@ -2496,6 +2618,9 @@
       const modeControl = document.getElementById("modeControl");
       const modeMenu = document.getElementById("modeMenu");
       const modeLabel = document.getElementById("modeLabel");
+      const sidebarModeControl = document.getElementById("sidebarModeControl");
+      const sidebarModeMenu = document.getElementById("sidebarModeMenu");
+      const sidebarModeLabel = document.getElementById("sidebarModeLabel");
       const topbarRight = document.getElementById("topbarRight");
       const headline = document.getElementById("headline");
       const pageSubtitle = document.getElementById("pageSubtitle");
@@ -2508,6 +2633,7 @@
       const menuTrigger = document.getElementById("menuTrigger");
       const overlay = document.getElementById("overlay");
       const collapseButton = document.getElementById("collapseButton");
+      const sidebarCloseButton = document.getElementById("sidebarCloseButton");
       const toast = document.getElementById("toast");
       const sidebarFlyout = document.getElementById("sidebarFlyout");
       document.body.appendChild(sidebarFlyout);
@@ -2868,6 +2994,7 @@
         app.classList.toggle("mode-backoffice", mode === "backoffice");
         app.classList.toggle("mode-admin", mode === "admin");
         modeLabel.textContent = t(data[mode].label);
+        sidebarModeLabel.textContent = t(data[mode].label);
         topbarRight.innerHTML = topbarTemplate();
         updateStaticText();
         renderModeOptions();
@@ -2886,6 +3013,7 @@
           ? `SPEC ${t(data[state.mode].label)} UI 演示`
           : state.mode === "admin" ? "SPEC Admin UI Demo" : state.mode === "backoffice" ? "SPEC Backoffice UI Demo" : "SPEC Client UI Demo";
         modeLabel.textContent = t(data[state.mode].label);
+        sidebarModeLabel.textContent = t(data[state.mode].label);
         headline.textContent = t(state.headlineKey);
         pageSubtitle.textContent = t(data[state.mode].subtitle);
         document.getElementById("resetButton").textContent = t("Reset");
@@ -2919,8 +3047,8 @@
       }
 
       function closeModeMenu() {
-        modeMenu.classList.remove("open");
-        modeControl.setAttribute("aria-expanded", "false");
+        [modeMenu, sidebarModeMenu].forEach((menu) => menu.classList.remove("open"));
+        [modeControl, sidebarModeControl].forEach((control) => control.setAttribute("aria-expanded", "false"));
       }
 
       function closeLanguageMenu() {
@@ -2959,10 +3087,11 @@
         wrap.querySelector(".page-size-control")?.setAttribute("aria-expanded", String(open));
       }
 
-      function toggleModeMenu() {
-        const open = !modeMenu.classList.contains("open");
-        modeMenu.classList.toggle("open", open);
-        modeControl.setAttribute("aria-expanded", String(open));
+      function toggleModeMenu(menu = modeMenu, control = modeControl) {
+        const open = !menu.classList.contains("open");
+        closeModeMenu();
+        menu.classList.toggle("open", open);
+        control.setAttribute("aria-expanded", String(open));
       }
 
       function toggleLanguageMenu() {
@@ -3051,14 +3180,21 @@
         closeLanguageMenu();
         closeFilterSelect();
         closePageSizeMenu();
-        toggleModeMenu();
+        toggleModeMenu(modeMenu, modeControl);
       });
 
-      modeMenu.addEventListener("click", (event) => {
+      sidebarModeControl.addEventListener("click", () => {
+        closeLanguageMenu();
+        closeFilterSelect();
+        closePageSizeMenu();
+        toggleModeMenu(sidebarModeMenu, sidebarModeControl);
+      });
+
+      [modeMenu, sidebarModeMenu].forEach((menu) => menu.addEventListener("click", (event) => {
         const button = event.target.closest(".mode-option");
         if (!button) return;
         setMode(button.dataset.mode);
-      });
+      }));
 
       document.addEventListener("click", (event) => {
         if (!event.target.closest(".mode-wrap")) closeModeMenu();
@@ -3223,6 +3359,15 @@
       document.getElementById("resetButton").addEventListener("click", () => setMode(state.mode));
       document.getElementById("primaryAction").addEventListener("click", () => showToast(t("Create action clicked")));
       menuTrigger.addEventListener("click", () => app.classList.add("drawer-open"));
+      sidebarCloseButton.addEventListener("click", () => {
+        if (window.matchMedia("(max-width: 900px)").matches) {
+          closeDrawer();
+          return;
+        }
+        app.classList.toggle("sidebar-collapsed");
+        closeSidebarFlyout();
+        syncScrollThumb();
+      });
       overlay.addEventListener("click", closeDrawer);
       collapseButton.addEventListener("click", () => {
         app.classList.toggle("sidebar-collapsed");
