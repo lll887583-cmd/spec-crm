@@ -1748,9 +1748,11 @@
               label: "Dashboard",
               icon: "backofficeDashboard",
               children: [
-                { id: "bo-dashboard-overview", label: "Overview" },
-                { id: "bo-dashboard-analysis", label: "Analysis" },
-                { id: "bo-dashboard-report", label: "Reports" }
+                { id: "bo-dashboard-visual", label: "Visual Dashboard" },
+                { id: "bo-dashboard-history", label: "History" },
+                { id: "bo-dashboard-clients", label: "Clients Dashboards" },
+                { id: "bo-dashboard-kpi", label: "KPI Report" },
+                { id: "bo-dashboard-partner", label: "Partner Report" }
               ]
             },
             {
@@ -1762,7 +1764,9 @@
                 { id: "bo-users", label: "Users", badge: 2 },
                 { id: "bo-support", label: "Support" },
                 { id: "bo-pamm", label: "PAMM", badge: 8 },
-                { id: "bo-refer", label: "Refer a Friend", badge: 10 }
+                { id: "bo-refer", label: "Refer a Friend", badge: 10 },
+                { id: "bo-referral-history", label: "Referral History" },
+                { id: "bo-referral-requests", label: "Referral Requests" }
               ]
             },
             {
@@ -1770,11 +1774,13 @@
               label: "Finance",
               icon: "backofficeFinance",
               children: [
-                { id: "bo-finance-deposit", label: "Deposit" },
-                { id: "bo-finance-withdrawal", label: "Withdrawal", badge: 6 },
-                { id: "bo-finance-transfer", label: "Internal Transfer" },
-                { id: "bo-finance-adjustment", label: "Balance Adjustment" },
-                { id: "bo-finance-transaction", label: "Transaction History" }
+                { id: "bo-finance-deposits", label: "Deposits" },
+                { id: "bo-finance-withdrawals", label: "Withdrawals", badge: 6 },
+                { id: "bo-finance-withdrawal-list", label: "Withdrawal List" },
+                { id: "bo-finance-withdrawal-approval", label: "Withdrawal Approval" },
+                { id: "bo-finance-internal-transfers", label: "Internal Transfers" },
+                { id: "bo-finance-transfer-records", label: "Transfer Records" },
+                { id: "bo-finance-whitelist", label: "Whitelist" }
               ]
             },
             {
@@ -1782,11 +1788,11 @@
               label: "Partners",
               icon: "backofficePartners",
               children: [
-                { id: "bo-partners-list", label: "Partner List" },
-                { id: "bo-partners-ib", label: "IB Management" },
-                { id: "bo-partners-commission", label: "Commission" },
-                { id: "bo-partners-rebate", label: "Rebate Rules" },
-                { id: "bo-partners-report", label: "Partner Reports" }
+                { id: "bo-partners-list", label: "Partners" },
+                { id: "bo-partners-reports", label: "Reports" },
+                { id: "bo-partners-commissions", label: "Commissions" },
+                { id: "bo-partners-cpa-commissions", label: "CPA Commissions" },
+                { id: "bo-partners-requests", label: "Requests" }
               ]
             },
             {
@@ -1794,11 +1800,9 @@
               label: "Operation",
               icon: "backofficeOperation",
               children: [
-                { id: "bo-operation-accounts", label: "Trading Accounts" },
-                { id: "bo-operation-orders", label: "Orders" },
-                { id: "bo-operation-symbols", label: "Symbols" },
-                { id: "bo-operation-server", label: "Server Settings" },
-                { id: "bo-operation-logs", label: "Operation Logs" }
+                { id: "bo-operation-tags", label: "Tags" },
+                { id: "bo-operation-comment-templates", label: "Comment Templates" },
+                { id: "bo-operation-help-center", label: "Help Center" }
               ]
             },
             {
@@ -1806,11 +1810,19 @@
               label: "Marketing",
               icon: "backofficeMarketing",
               children: [
-                { id: "bo-marketing-campaigns", label: "Campaigns" },
-                { id: "bo-marketing-banners", label: "Banners" },
-                { id: "bo-marketing-announcements", label: "Announcements" },
-                { id: "bo-marketing-bonus", label: "Bonus Center" },
-                { id: "bo-marketing-coupons", label: "Coupons" }
+                { id: "bo-marketing-news", label: "News" },
+                { id: "bo-marketing-bonus-management", label: "Bonus Management" },
+                { id: "bo-marketing-campaign", label: "Campaign" },
+                { id: "bo-marketing-language-management", label: "Language Management" },
+                { id: "bo-marketing-audience-groups", label: "Audience Groups" },
+                { id: "bo-marketing-pop-up-cards", label: "Pop-up Cards" },
+                { id: "bo-marketing-sticky-banner", label: "Sticky Banner" },
+                { id: "bo-marketing-notification-template", label: "Notification Template" },
+                { id: "bo-marketing-automations", label: "Automations" },
+                { id: "bo-marketing-events", label: "Events" },
+                { id: "bo-marketing-email-sequence", label: "Email Sequence" },
+                { id: "bo-marketing-triggers", label: "Triggers" },
+                { id: "bo-marketing-executions", label: "Executions" }
               ]
             },
             {
@@ -1818,10 +1830,21 @@
               label: "File Center",
               icon: "backofficeFileCenter",
               children: [
-                { id: "bo-files-documents", label: "Documents" },
-                { id: "bo-files-kyc", label: "KYC Files", badge: 4 },
-                { id: "bo-files-templates", label: "Templates" },
-                { id: "bo-files-downloads", label: "Downloads" }
+                { id: "bo-files-user-exports", label: "User Exports" },
+                { id: "bo-files-deposit-exports", label: "Deposit Exports" },
+                { id: "bo-files-withdrawal-exports", label: "Withdrawal Exports" },
+                { id: "bo-files-internal-transfer-exports", label: "Internal Transfer Exports" },
+                { id: "bo-files-whitelist-exports", label: "Whitelist Exports" },
+                { id: "bo-files-payment-exports", label: "Payment Exports" },
+                { id: "bo-files-wallet-balance", label: "Wallet Balance" },
+                { id: "bo-files-transaction", label: "Transaction" },
+                { id: "bo-files-kpi-reporter-exports", label: "KPI Reporter Exports" },
+                { id: "bo-files-visual-dashboard-exports", label: "Visual Dashboard Exports" },
+                { id: "bo-files-partner-reporter-exports", label: "Partner Reporter Exports" },
+                { id: "bo-files-partner-accounts-exports", label: "Partner Accounts Exports" },
+                { id: "bo-files-partner-commissions-exports", label: "Partner Commissions Exports" },
+                { id: "bo-files-partner-cpa-commissions-exports", label: "Partner CPA Commissions Exports" },
+                { id: "bo-files-imports", label: "Imports" }
               ]
             },
             {
@@ -1829,11 +1852,8 @@
               label: "Compliance",
               icon: "backofficeCompliance",
               children: [
-                { id: "bo-compliance-kyc", label: "KYC Review", badge: 12 },
-                { id: "bo-compliance-risk", label: "Risk Review" },
-                { id: "bo-compliance-aml", label: "AML Monitoring" },
-                { id: "bo-compliance-audit", label: "Audit Trail" },
-                { id: "bo-compliance-settings", label: "Compliance Settings" }
+                { id: "bo-compliance-aml-search", label: "AML Search" },
+                { id: "bo-compliance-aml-history", label: "AML History" }
               ]
             }
           ],
@@ -2251,6 +2271,59 @@
           "AML Monitoring": "AML 监控",
           "Audit Trail": "审计轨迹",
           "Compliance Settings": "合规设置",
+          "Visual Dashboard": "可视化看板",
+          "Clients Dashboards": "客户仪表盘",
+          "KPI Report": "KPI 报表",
+          "Partner Report": "合作伙伴报表",
+          "Referral History": "邀请记录",
+          "Referral Requests": "邀请申请",
+          "Finance": "资金管理",
+          "Deposits": "入金",
+          "Withdrawals": "出金",
+          "Withdrawal List": "出金列表",
+          "Withdrawal Approval": "出金审核",
+          "Internal Transfers": "内部转账",
+          "Transfer Records": "转账记录",
+          "Whitelist": "白名单",
+          "Partners": "合作伙伴",
+          "Reports": "报表",
+          "Commissions": "返佣",
+          "CPA Commissions": "CPA 返佣",
+          "Requests": "申请",
+          "Operation": "运营",
+          "Tags": "标签",
+          "Comment Templates": "评论模板",
+          "Help Center": "帮助中心",
+          "Marketing": "市场营销",
+          "Bonus Management": "奖金管理",
+          "Campaign": "营销活动",
+          "Language Management": "语言管理",
+          "Audience Groups": "用户分组",
+          "Pop-up Cards": "弹窗卡片",
+          "Sticky Banner": "粘性横幅",
+          "Notification Template": "通知模板",
+          "Automations": "自动化",
+          "Events": "事件",
+          "Email Sequence": "邮件序列",
+          "Triggers": "触发器",
+          "Executions": "执行",
+          "User Exports": "用户导出",
+          "Deposit Exports": "入金导出",
+          "Withdrawal Exports": "出金导出",
+          "Internal Transfer Exports": "转账导出",
+          "Whitelist Exports": "白名单导出",
+          "Payment Exports": "支付导出",
+          "Wallet Balance": "钱包余额",
+          "Transaction": "交易记录",
+          "KPI Reporter Exports": "KPI 报表导出",
+          "Visual Dashboard Exports": "可视化看板导出",
+          "Partner Reporter Exports": "伙伴报表导出",
+          "Partner Accounts Exports": "伙伴账户导出",
+          "Partner Commissions Exports": "伙伴返佣导出",
+          "Partner CPA Commissions Exports": "CPA 返佣导出",
+          "Imports": "导入",
+          "AML Search": "AML 查询",
+          "AML History": "AML 历史",
           "Interface customization": "界面定制",
           "File management": "文件管理",
           "Staff management": "员工管理",
