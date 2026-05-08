@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SPEC Interactive UI Demo</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd@5/dist/reset.css" />
     <style>
       :root {
         --primary: #1f3472;
@@ -31,6 +32,9 @@
         --dropdown-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.1);
         --dropdown-item-min-h: 40px;
         --dropdown-item-padding: 10px 8px;
+        --dropdown-panel-padding: 8px;
+        --dropdown-option-padding: 10px 12px;
+        --dropdown-option-radius: 4px;
         --dropdown-text: #1d1d1d;
         --dropdown-muted: #666666;
         --dropdown-min-w: 110px;
@@ -155,7 +159,7 @@
         width: max-content;
         min-width: var(--dropdown-min-w);
         max-width: var(--dropdown-max-w);
-        padding: 0;
+        padding: var(--dropdown-panel-padding);
         border: 1px solid var(--line-soft);
         border-radius: var(--dropdown-radius);
         background: var(--white);
@@ -180,9 +184,9 @@
         gap: 8px;
         width: 100%;
         min-height: var(--dropdown-item-min-h);
-        padding: var(--dropdown-item-padding);
+        padding: var(--dropdown-option-padding);
         border: 0;
-        border-radius: 0;
+        border-radius: var(--dropdown-option-radius);
         background: transparent;
         color: var(--dropdown-text);
         font-size: 14px;
@@ -338,7 +342,7 @@
         width: max-content;
         min-width: var(--dropdown-min-w);
         max-width: var(--dropdown-max-w);
-        padding: 0;
+        padding: var(--dropdown-panel-padding);
         border: 1px solid var(--line-soft);
         border-radius: var(--dropdown-radius);
         background: var(--white);
@@ -359,9 +363,9 @@
       .language-option {
         width: 100%;
         min-height: var(--dropdown-item-min-h);
-        padding: var(--dropdown-item-padding);
+        padding: var(--dropdown-option-padding);
         border: 0;
-        border-radius: 0;
+        border-radius: var(--dropdown-option-radius);
         background: transparent;
         color: var(--dropdown-text);
         font-size: 13px;
@@ -863,7 +867,7 @@
         width: 100%;
         min-width: 100%;
         min-height: 40px;
-        padding: 10px 16px;
+        padding: var(--dropdown-item-padding);
         border: 0;
         border-radius: 0;
         background: transparent;
@@ -912,9 +916,6 @@
 
       .content-shell {
         width: min(100%, 1480px);
-      }
-
-      .app.sidebar-collapsed .content-shell {
         margin-inline: auto;
       }
 
@@ -941,6 +942,63 @@
         font-size: 13px;
       }
 
+
+
+      .breadcrumb-nav {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        min-height: 24px;
+        margin-bottom: 8px;
+        color: var(--pale);
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 18px;
+      }
+
+      .breadcrumb-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        padding: 2px 6px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        background: transparent;
+        color: var(--pale);
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 18px;
+        transition: color 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+      }
+
+      .breadcrumb-link:hover,
+      .breadcrumb-link:focus-visible {
+        border-color: #e5e9f2;
+        background: var(--column-head);
+        color: var(--primary);
+        outline: none;
+      }
+
+      .breadcrumb-current {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: var(--text);
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 18px;
+      }
+
+      .breadcrumb-separator {
+        color: #c5c5c5;
+        font-size: 12px;
+        line-height: 18px;
+        user-select: none;
+      }
+
       .actions {
         display: flex;
         gap: 10px;
@@ -959,17 +1017,48 @@
         background: var(--primary);
         color: var(--white);
         font-weight: 500;
-        transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+        transition: none;
       }
 
-      .btn:hover {
-        box-shadow: 0 3px 6px 0 rgba(31, 52, 114, 0.22);
-        transform: translateY(-1px);
+      .btn:hover,
+      .btn:focus-visible {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: var(--white);
+        box-shadow: none;
+        transform: none;
+        outline: none;
       }
 
       .btn.secondary {
         background: var(--white);
         color: var(--primary);
+      }
+
+      .btn.secondary:hover,
+      .btn.secondary:focus-visible {
+        border-color: var(--primary);
+        background: var(--white);
+        color: var(--primary);
+        box-shadow: none;
+        outline: none;
+      }
+
+      .btn.danger-outline,
+      .danger-outline-btn {
+        border-color: var(--error);
+        background: var(--white);
+        color: var(--error);
+      }
+
+      .btn.danger-outline:hover,
+      .btn.danger-outline:focus-visible,
+      .danger-outline-btn:hover,
+      .danger-outline-btn:focus-visible {
+        border-color: var(--error);
+        background: var(--white);
+        color: var(--error);
+        outline: none;
       }
 
       .tabs {
@@ -1034,7 +1123,12 @@
       }
 
       .field input,
-      .field select {
+      .field select,
+      .filter-select-control,
+      .popup-select-wrap select,
+      .popup-input-wrap input,
+      .popup-input-wrap textarea,
+      .popup-control {
         width: 100%;
         min-height: 38px;
         min-width: 0;
@@ -1043,20 +1137,147 @@
         border-radius: 4px;
         background: #fbfbfb;
         color: var(--text);
+        font-size: 14px;
         font-weight: 400;
+        line-height: 20px;
         outline: none;
+        box-shadow: none;
         transition: border-color 0.18s ease, box-shadow 0.18s ease;
       }
 
-      .field input::placeholder {
+      .field input::placeholder,
+      .popup-input-wrap input::placeholder,
+      .popup-input-wrap textarea::placeholder,
+      .popup-control::placeholder {
         color: var(--muted);
         font-weight: 400;
       }
 
       .field input:focus,
-      .field select:focus {
+      .field select:focus,
+      .filter-select-control:focus-visible,
+      .popup-select-wrap select:focus,
+      .popup-input-wrap input:focus,
+      .popup-input-wrap textarea:focus,
+      .popup-control:focus {
         border-color: var(--primary);
         box-shadow: 0 0 0 3px rgba(31, 52, 114, 0.08);
+        outline: none;
+      }
+
+      .popup-ant-datepicker {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .popup-ant-datepicker .ant-picker {
+        width: 100%;
+        min-height: 38px;
+        padding: 7px 12px;
+        border: 1px solid var(--line-soft);
+        border-radius: 4px;
+        background: #fbfbfb;
+        color: var(--text);
+        font-family: "ubuntu-font", "Ubuntu", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+        box-shadow: none;
+      }
+
+      .popup-ant-datepicker .ant-picker:hover,
+      .popup-ant-datepicker .ant-picker-focused {
+        border-color: var(--primary);
+      }
+
+      .popup-ant-datepicker .ant-picker-focused {
+        box-shadow: 0 0 0 3px rgba(31, 52, 114, 0.08);
+      }
+
+      .popup-ant-datepicker .ant-picker-input > input {
+        color: var(--text);
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+      }
+
+      .popup-ant-datepicker .ant-picker-input > input::placeholder {
+        color: var(--muted) !important;
+        opacity: 1;
+      }
+
+      .popup-ant-datepicker .ant-picker-suffix,
+      .popup-ant-datepicker .ant-picker-clear {
+        color: var(--text);
+      }
+
+      .popup-ant-datepicker.has-error .ant-picker {
+        border-color: var(--error);
+        background: #fff8f8;
+        box-shadow: none;
+      }
+
+      .popup-ant-picker-dropdown {
+        z-index: 3000;
+      }
+
+      .popup-ant-picker-dropdown .ant-picker-panel-container {
+        overflow: hidden;
+        padding: var(--dropdown-panel-padding);
+        border: 1px solid var(--line-soft);
+        border-radius: 8px;
+        box-shadow: 0 12px 32px rgba(31, 52, 114, 0.14);
+      }
+
+      .popup-ant-picker-dropdown .ant-picker-panel {
+        border-color: var(--line-soft);
+      }
+
+      .popup-ant-picker-dropdown table {
+        width: auto;
+        min-width: 0;
+        border-collapse: collapse;
+        border-spacing: 0;
+      }
+
+      .popup-ant-picker-dropdown th,
+      .popup-ant-picker-dropdown td {
+        min-width: 0;
+        max-width: none;
+        padding: 0;
+        border-bottom: 0;
+        background: transparent;
+        text-align: center;
+        white-space: normal;
+      }
+
+      .popup-ant-picker-dropdown tr:hover td {
+        background: transparent;
+      }
+
+      .popup-ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner,
+      .popup-ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-range-start .ant-picker-cell-inner,
+      .popup-ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-range-end .ant-picker-cell-inner,
+      .popup-ant-picker-dropdown .ant-picker-time-panel-column > li.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner,
+      .popup-ant-picker-dropdown .ant-btn-primary {
+        background: var(--primary);
+        color: var(--white) !important;
+      }
+
+      .popup-ant-picker-dropdown .ant-btn-primary {
+        border-color: var(--primary);
+        box-shadow: none;
+      }
+
+      .popup-ant-picker-dropdown .ant-picker-now-btn,
+      .popup-ant-picker-dropdown .ant-picker-today-btn,
+      .popup-ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner {
+        color: var(--primary);
+      }
+
+      .popup-ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
+        border-color: var(--primary);
       }
 
       .filter-select {
@@ -1069,22 +1290,11 @@
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        width: 100%;
-        min-height: 38px;
-        min-width: 0;
-        padding: 8px 12px;
-        border: 1px solid var(--line-soft);
-        border-radius: 4px;
-        background: #fbfbfb;
-        color: var(--text);
-        font-size: 14px;
-        font-weight: 500;
-        line-height: 1.4;
         text-align: left;
-        transition: border-color 0.18s ease, box-shadow 0.18s ease;
       }
 
-      .filter-select-control::after {
+      .filter-select-control::after,
+      .select-icon-arrow::after {
         content: "";
         width: 7px;
         height: 7px;
@@ -1095,8 +1305,7 @@
       }
 
       .filter-select-control:hover,
-      .filter-select-control[aria-expanded="true"],
-      .filter-select-control:focus-visible {
+      .filter-select-control[aria-expanded="true"] {
         border-color: var(--primary);
         box-shadow: 0 0 0 3px rgba(31, 52, 114, 0.08);
         outline: none;
@@ -1108,7 +1317,7 @@
         left: 0;
         right: 0;
         z-index: 1200;
-        padding: 0;
+        padding: var(--dropdown-panel-padding);
         border: 1px solid var(--line-soft);
         border-radius: var(--dropdown-radius);
         background: var(--white);
@@ -1133,9 +1342,9 @@
         gap: 8px;
         width: 100%;
         min-height: var(--dropdown-item-min-h);
-        padding: var(--dropdown-item-padding);
+        padding: var(--dropdown-option-padding);
         border: 0;
-        border-radius: 0;
+        border-radius: var(--dropdown-option-radius);
         background: transparent;
         color: var(--dropdown-text);
         font-size: 14px;
@@ -1175,15 +1384,15 @@
         background: rgba(93, 100, 125, 0.24);
       }
 
-      table {
+      .table-wrap table {
         width: 100%;
         min-width: 2360px;
         border-collapse: separate;
         border-spacing: 0;
       }
 
-      th,
-      td {
+      .table-wrap th,
+      .table-wrap td {
         min-width: 170px;
         max-width: 220px;
         padding: 14px 20px;
@@ -1192,7 +1401,7 @@
         white-space: nowrap;
       }
 
-      th {
+      .table-wrap th {
         position: relative;
         height: auto;
         background: #f6f7f9;
@@ -1201,18 +1410,19 @@
         font-weight: 500;
       }
 
-      td {
+      .table-wrap td {
         height: auto;
         color: #333333;
         font-size: 14px;
         font-weight: 500;
       }
 
-      tr:hover td {
+      .table-wrap tr:hover td {
         background: #f9fafb;
       }
 
-      .table-action-cell {
+      .table-wrap th.table-action-cell,
+      .table-wrap td.table-action-cell {
         position: sticky;
         right: 0;
         z-index: 3;
@@ -1224,7 +1434,7 @@
         box-shadow: none;
       }
 
-      th.table-action-cell {
+      .table-wrap th.table-action-cell {
         z-index: 4;
         background: #f6f7f9;
       }
@@ -1244,11 +1454,15 @@
         font-weight: 500;
         line-height: 1.4;
         white-space: nowrap;
-        transition: box-shadow 0.18s ease, transform 0.18s ease;
+        transition: none;
       }
 
       .table-action-button:hover {
+        border-color: var(--primary);
         background: var(--primary);
+        color: var(--white);
+        box-shadow: none;
+        transform: none;
       }
 
       .table-action-button:disabled,
@@ -1278,6 +1492,7 @@
         display: grid;
         width: 150px;
         overflow: hidden;
+        padding: var(--dropdown-panel-padding);
         border: 1px solid var(--line-soft);
         border-radius: var(--dropdown-radius);
         background: var(--white);
@@ -1301,8 +1516,9 @@
         gap: 8px;
         width: 100%;
         min-height: 40px;
-        padding: var(--dropdown-item-padding);
+        padding: var(--dropdown-option-padding);
         border: 0;
+        border-radius: var(--dropdown-option-radius);
         background: transparent;
         color: var(--dropdown-text);
         font-size: 14px;
@@ -1319,6 +1535,11 @@
         background: var(--dropdown-hover);
         color: var(--dropdown-text);
         font-weight: 400;
+      }
+
+      .action-menu-item[data-action-menu="Delete"],
+      .action-menu-item[data-action-menu="Delete"]:hover {
+        color: var(--error);
       }
 
       .table-pagination {
@@ -1366,9 +1587,10 @@
         bottom: calc(100% + 6px);
         z-index: 1200;
         display: grid;
-        width: 72px;
+        width: max-content;
+        min-width: 72px;
         gap: 0;
-        padding: 0;
+        padding: var(--dropdown-panel-padding);
         border: 1px solid var(--line-soft);
         border-radius: var(--dropdown-radius);
         background: var(--white);
@@ -1391,9 +1613,9 @@
         align-items: center;
         justify-content: space-between;
         min-height: var(--dropdown-item-min-h);
-        padding: var(--dropdown-item-padding);
+        padding: var(--dropdown-option-padding);
         border: 0;
-        border-radius: 0;
+        border-radius: var(--dropdown-option-radius);
         background: transparent;
         color: var(--dropdown-text);
         font-size: 14px;
@@ -1543,6 +1765,878 @@
       }
 
       [hidden] { display: none !important; }
+
+
+
+      .popup-edit-page {
+        display: block;
+      }
+
+      .popup-edit-card {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        margin-bottom: 16px;
+        padding: 20px 24px 24px;
+        border: 1px solid var(--line-soft);
+        border-radius: 10px;
+        background: var(--white);
+        box-shadow: none;
+      }
+
+      .popup-edit-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .popup-edit-title {
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 20px;
+      }
+
+      .popup-edit-back {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 32px;
+        padding: 6px 12px;
+        border: 1px solid var(--line-soft);
+        border-radius: 4px;
+        background: var(--white);
+        color: var(--primary);
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 18px;
+      }
+
+      .popup-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(260px, 1fr));
+        gap: 16px 20px;
+      }
+
+      .popup-field {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .popup-field-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 18px;
+        color: #666666;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 18px;
+      }
+
+      .popup-required { color: var(--error); }
+
+      .popup-tooltip-wrap {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .popup-tooltip-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 14px;
+        height: 14px;
+        border: 1px solid var(--line-soft);
+        border-radius: 50%;
+        background: #edf1f7;
+        color: var(--pale);
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 1;
+        cursor: help;
+      }
+
+      .popup-tooltip-box {
+        position: absolute;
+        left: 20px;
+        top: -8px;
+        z-index: 99;
+        display: none;
+        width: 240px;
+        padding: 8px 10px;
+        border-radius: 4px;
+        background: var(--secondary);
+        box-shadow: 0 2px 10px 1px rgba(0, 0, 0, 0.2);
+        color: var(--white);
+        font-size: 11px;
+        font-weight: 400;
+        line-height: 1.5;
+        white-space: normal;
+      }
+
+      .popup-tooltip-wrap:hover .popup-tooltip-box,
+      .popup-tooltip-wrap:focus-within .popup-tooltip-box { display: block; }
+
+      .popup-select-wrap,
+      .popup-input-wrap {
+        position: relative;
+        width: 100%;
+        min-width: 0;
+      }
+
+      .popup-select-wrap select,
+      .popup-input-wrap input,
+      .popup-input-wrap textarea {
+        font-family: "ubuntu-font", "Ubuntu", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      .popup-select-wrap select {
+        appearance: none;
+        padding-right: 36px;
+        cursor: pointer;
+      }
+
+      .popup-input-wrap input[maxlength],
+      .popup-input-wrap textarea[maxlength] { padding-right: 70px; }
+
+      .popup-select-arrow {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 12px;
+        height: 12px;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: var(--muted);
+      }
+
+      .popup-input-wrap input.has-error,
+      .popup-input-wrap textarea.has-error {
+        border-color: var(--error);
+        background: #fff8f8;
+        box-shadow: none;
+      }
+
+      .popup-input-wrap input.has-success { border-color: var(--success); }
+
+      .popup-char-count {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #c5c5c5;
+        font-size: 11px;
+        line-height: 16px;
+        pointer-events: none;
+      }
+
+      .popup-input-hint,
+      .popup-input-error {
+        font-size: 11px;
+        font-weight: 400;
+        line-height: 16px;
+      }
+
+      .popup-input-hint { color: #768485; }
+
+      .popup-input-error {
+        display: none;
+        color: var(--error);
+      }
+
+      .popup-input-error.show {
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .popup-input-error.show::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        margin-top: 5px;
+        border-radius: 50%;
+        background: var(--error);
+        flex-shrink: 0;
+      }
+
+      .popup-divider {
+        height: 1px;
+        margin: 2px 0;
+        border: 0;
+        background: var(--line-soft);
+      }
+
+      .popup-toggle-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+      }
+
+      .popup-toggle-label-group {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .popup-toggle-label-title {
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 20px;
+      }
+
+      .popup-toggle-label-desc {
+        color: #768485;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 18px;
+      }
+
+      .popup-toggle {
+        position: relative;
+        flex-shrink: 0;
+        width: 40px;
+        height: 22px;
+        margin-top: 1px;
+      }
+
+      .popup-toggle input {
+        position: absolute;
+        width: 0;
+        height: 0;
+        opacity: 0;
+      }
+
+      .popup-toggle-slider {
+        position: absolute;
+        inset: 0;
+        border-radius: 22px;
+        background: #c5c5c5;
+        cursor: pointer;
+        transition: background 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .popup-toggle-slider::before {
+        content: "";
+        position: absolute;
+        left: 3px;
+        top: 3px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--white);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+        transition: transform 0.2s ease;
+      }
+
+      .popup-toggle input:checked + .popup-toggle-slider { background: var(--primary); }
+      .popup-toggle input:checked + .popup-toggle-slider::before { transform: translateX(18px); }
+      .popup-toggle input:focus-visible + .popup-toggle-slider { box-shadow: 0 3px 6px 0 rgba(31, 52, 114, 0.16); }
+
+      .popup-redirect-section {
+        overflow: hidden;
+        margin-top: -2px;
+        transition: max-height 0.3s ease, opacity 0.2s ease;
+      }
+
+      .popup-redirect-section.hidden {
+        max-height: 0;
+        opacity: 0;
+      }
+
+      .popup-redirect-section.visible {
+        max-height: 220px;
+        opacity: 1;
+      }
+
+      .popup-format-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 2px;
+      }
+
+      .popup-format-tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        padding: 2px 8px;
+        border: 1px solid transparent;
+        border-radius: 3px;
+        background: #edf1f7;
+        color: var(--pale);
+        font-size: 11px;
+        font-weight: 500;
+        line-height: 16px;
+        cursor: pointer;
+        transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+      }
+
+      .popup-format-tag:hover,
+      .popup-format-tag:focus-visible {
+        border-color: var(--primary);
+        background: var(--white);
+        color: var(--primary);
+        outline: none;
+      }
+
+      .popup-url-input-wrap {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: stretch;
+        overflow: hidden;
+        padding: 0;
+      }
+
+      .popup-url-input-wrap:focus-within {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(31, 52, 114, 0.08);
+      }
+
+      .popup-url-input-wrap.popup-has-error {
+        border-color: var(--error);
+        background: #fff8f8;
+        box-shadow: none;
+      }
+
+      .popup-url-prefix {
+        display: inline-flex;
+        align-items: center;
+        min-height: 36px;
+        padding: 0 12px;
+        border-right: 1px solid var(--line-soft);
+        background: var(--column-head);
+        color: #768485;
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 20px;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+
+      .popup-url-input-wrap input {
+        width: 100%;
+        min-height: 36px;
+        min-width: 0;
+        padding: 8px 70px 8px 12px;
+        border: none;
+        border-radius: 0;
+        background: transparent;
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+        outline: none;
+        box-shadow: none !important;
+      }
+
+      .popup-url-input-wrap input:focus { box-shadow: none; }
+
+      .popup-multi-select {
+        position: relative;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        width: 100%;
+        min-height: 38px;
+        padding: 6px 36px 6px 8px;
+        border: 1px solid var(--line-soft);
+        border-radius: 4px;
+        background: #fbfbfb;
+        color: var(--text);
+        text-align: left;
+        cursor: pointer;
+        transition: border-color 0.18s ease, box-shadow 0.18s ease;
+      }
+
+      .popup-multi-select:hover,
+      .popup-multi-select:focus-visible {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(31, 52, 114, 0.08);
+        outline: none;
+      }
+
+      .popup-select {
+        width: 100%;
+      }
+
+      .popup-select .filter-select-menu {
+        max-height: 240px;
+        overflow-y: auto;
+      }
+
+      .popup-selected-values {
+        display: flex;
+        flex: 1 1 auto;
+        flex-wrap: wrap;
+        gap: 6px;
+        min-width: 0;
+      }
+
+      .popup-selected-tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        padding: 2px 8px;
+        border: 1px solid #dce2f1;
+        border-radius: 3px;
+        background: #f8faff;
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 16px;
+      }
+
+      .popup-select-placeholder {
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 400;
+      }
+
+      .popup-option-check {
+        margin-left: auto;
+        color: var(--primary);
+        font-size: 12px;
+        opacity: 0;
+      }
+
+      .filter-select-option.active .popup-option-check {
+        opacity: 1;
+      }
+
+      .popup-locales {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .popup-locale-switch-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .popup-locale-tabs.tabs {
+        flex: 1 1 auto;
+        min-width: 0;
+        margin: 0;
+        gap: 26px;
+      }
+
+      .popup-locale-tabs .tab {
+        padding: 0 18px;
+      }
+
+      .popup-locale-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        flex: 0 0 auto;
+      }
+
+      .popup-locale-card {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px 0 0;
+        border: 0;
+        border-top: 1px solid var(--line-soft);
+        border-radius: 0;
+        background: transparent;
+      }
+
+      .popup-readonly-locale {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        min-height: 38px;
+        padding: 8px 12px;
+        border: 1px solid var(--line-soft);
+        border-radius: 4px;
+        background: #f8faff;
+        color: var(--primary);
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 20px;
+      }
+
+      .popup-locale-header {
+        display: none;
+      }
+
+      .popup-locale-title {
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 18px;
+      }
+
+      .popup-textarea-wrap textarea {
+        min-height: 104px;
+        padding-bottom: 28px;
+        resize: vertical;
+      }
+
+      .popup-textarea-wrap .popup-char-count {
+        top: auto;
+        bottom: 8px;
+        transform: none;
+      }
+
+      .popup-locale-cta-field.is-hidden { display: none; }
+
+      .popup-add-locale,
+      .popup-locale-actions .danger-outline-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 104px;
+        min-height: 40px;
+        padding: 8px 18px;
+        border-radius: 4px;
+        background: var(--white);
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 20px;
+        cursor: pointer;
+        transition: none;
+      }
+
+      .popup-add-locale {
+        border: 1px solid var(--primary);
+        color: var(--primary);
+      }
+
+      .popup-locale-actions .danger-outline-btn {
+        border: 1px solid var(--error);
+        color: var(--error);
+      }
+
+      .popup-add-locale:hover,
+      .popup-add-locale:focus-visible {
+        background: var(--white);
+        box-shadow: none;
+        outline: none;
+      }
+
+      .popup-settings-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(260px, 1fr));
+        gap: 16px 20px;
+      }
+
+      .popup-upload {
+        display: grid;
+        grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+        gap: 16px;
+        align-items: stretch;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+      }
+
+      .popup-cover-requirement {
+        color: #777777;
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 20px;
+      }
+
+      .popup-upload-input {
+        position: fixed;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .popup-upload.is-empty {
+        width: min(320px, 100%);
+        grid-template-columns: 1fr;
+      }
+
+      .popup-upload.is-empty .popup-upload-meta {
+        display: none;
+      }
+
+      .popup-upload.is-empty .popup-cover-preview {
+        min-height: 174px;
+        aspect-ratio: 440 / 240;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        border: 1px dashed #c5c5c5;
+        background: #fbfbfb;
+        color: #c5c5c5;
+        cursor: pointer;
+      }
+
+      .popup-cover-preview {
+        position: relative;
+        display: flex;
+        min-height: 174px;
+        aspect-ratio: 440 / 240;
+        flex-direction: column;
+        justify-content: flex-end;
+        overflow: hidden;
+        padding: 16px;
+        border: 1px solid #dce2f1;
+        border-radius: 6px;
+        background:
+          linear-gradient(135deg, rgba(31, 52, 114, 0.84), rgba(31, 52, 114, 0.48)),
+          repeating-linear-gradient(45deg, #eef2fb 0, #eef2fb 10px, #f8faff 10px, #f8faff 20px);
+        color: var(--white);
+      }
+
+      .popup-cover-preview.has-image {
+        padding: 0;
+        background: #fbfbfb;
+        color: var(--text);
+      }
+
+      .popup-upload.is-empty .popup-cover-preview:hover,
+      .popup-upload.is-empty .popup-cover-preview:focus-visible {
+        border-color: var(--primary);
+        background: #f8faff;
+        outline: none;
+      }
+
+      .popup-cover-image {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .popup-empty-upload {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 12px;
+        color: #c5c5c5;
+        text-align: center;
+      }
+
+      .popup-upload-icon {
+        width: 34px;
+        height: 34px;
+        color: #999999;
+      }
+
+      .popup-empty-upload-text {
+        color: #c5c5c5;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+      }
+
+      .popup-image-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 5000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 32px;
+        background: rgba(29, 29, 29, 0.62);
+      }
+
+      .popup-image-modal.open {
+        display: flex;
+      }
+
+      .popup-image-dialog {
+        width: min(960px, calc(100vw - 64px));
+        max-height: calc(100vh - 64px);
+        overflow: hidden;
+        border-radius: 8px;
+        background: var(--white);
+        box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24);
+      }
+
+      .popup-image-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--line-soft);
+      }
+
+      .popup-image-title {
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 20px;
+      }
+
+      .popup-image-close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border: 0;
+        border-radius: 4px;
+        background: transparent;
+        color: var(--text);
+        font-size: 22px;
+        font-weight: 400;
+        line-height: 1;
+        cursor: pointer;
+      }
+
+      .popup-image-body {
+        padding: 16px;
+        background: #f9fafb;
+      }
+
+      .popup-image-large {
+        display: block;
+        width: 100%;
+        max-height: calc(100vh - 168px);
+        object-fit: contain;
+        border-radius: 6px;
+        background: var(--white);
+      }
+
+      .popup-upload-meta {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .popup-upload-name {
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 20px;
+        word-break: break-all;
+      }
+
+      .popup-upload-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .popup-ghost-btn,
+      .popup-icon-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 32px;
+        padding: 6px 12px;
+        border: 1px solid var(--primary);
+        border-radius: 4px;
+        background: var(--white);
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 18px;
+        cursor: pointer;
+        transition: none;
+      }
+
+      .popup-icon-btn { min-width: 64px; }
+
+      .popup-ghost-btn.primary {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: var(--white);
+      }
+
+      .popup-ghost-btn:hover,
+      .popup-icon-btn:hover,
+      .popup-ghost-btn:focus-visible,
+      .popup-icon-btn:focus-visible {
+        border-color: var(--primary);
+        background: var(--white);
+        color: var(--primary);
+        outline: none;
+      }
+
+      .popup-icon-btn.danger-outline-btn {
+        border-color: var(--error);
+        background: var(--white);
+        color: var(--error);
+      }
+
+      .popup-icon-btn.danger-outline-btn:hover,
+      .popup-icon-btn.danger-outline-btn:focus-visible {
+        border-color: var(--error);
+        background: var(--white);
+        color: var(--error);
+      }
+
+      .popup-ghost-btn.primary:hover,
+      .popup-ghost-btn.primary:focus-visible {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: var(--white);
+      }
+
+      .popup-edit-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 4px;
+        padding: 16px 0 4px;
+      }
+
+      .popup-localized-note {
+        color: #768485;
+        font-size: 13px;
+      }
+
+      @media (max-width: 1023px) {
+        .popup-form-grid,
+        .popup-settings-grid { grid-template-columns: 1fr; }
+        .popup-upload { grid-template-columns: 1fr; }
+        .popup-locale-switch-row { align-items: stretch; flex-direction: column; }
+        .popup-locale-actions { justify-content: flex-start; }
+      }
+
+      @media (max-width: 767px) {
+        .popup-edit-card { gap: 16px; padding: 16px; }
+        .popup-edit-header { align-items: flex-start; flex-direction: column; }
+        .popup-tooltip-box { left: auto; right: -8px; top: 22px; width: min(260px, calc(100vw - 48px)); }
+        .popup-edit-actions { flex-direction: column-reverse; }
+        .popup-edit-actions .btn { width: 100%; }
+        .popup-upload.is-empty { width: 100%; }
+        .popup-upload.is-empty .popup-cover-preview { min-height: 174px; }
+      }
+
+      @media (max-width: 520px) {
+        .popup-url-input-wrap { grid-template-columns: 1fr; }
+        .popup-url-prefix {
+          min-height: 34px;
+          border-right: 0;
+          border-bottom: 1px solid var(--line-soft);
+        }
+      }
 
       @media (max-width: 1180px) {
         .valuation,
@@ -1881,11 +2975,11 @@
           <div class="content-shell">
             <div class="page-head">
               <div>
+                <nav class="breadcrumb-nav" id="breadcrumbNav" aria-label="Page navigation"></nav>
                 <h1 class="headline" id="headline">Headline</h1>
                 <p class="page-subtitle" id="pageSubtitle">二级选中时，一级保持常态；所有 hover、点击、折叠、切换均可交互。</p>
               </div>
               <div class="actions">
-                <button class="btn secondary" id="resetButton" type="button">Reset</button>
                 <button class="btn" id="primaryAction" type="button">Create</button>
               </div>
             </div>
@@ -1904,6 +2998,7 @@
               <div class="mobile-cards" id="mobileCards"></div>
               <div class="table-pagination" id="pagination" aria-label="Pagination"></div>
             </section>
+              <section class="popup-edit-page" id="popupEditPage" hidden></section>
           </div>
         </main>
       </div>
@@ -1912,6 +3007,11 @@
       <div class="toast" id="toast" role="status" aria-live="polite"></div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/locale/zh-cn.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/antd@5/dist/antd-with-locales.min.js"></script>
     <script>
       const icon = {
         dashboard: '<svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="12" y="3" width="5" height="5" rx="1"/><rect x="3" y="12" width="5" height="5" rx="1"/><rect x="12" y="12" width="5" height="5" rx="1"/></svg>',
@@ -2728,6 +3828,80 @@
           "Collapse menu": "折叠菜单",
           "Filter conditions": "筛选条件",
           "Actions": "操作",
+          "Edit": "编辑",
+          "Copy": "复制",
+          "Delete": "删除",
+          "Common settings": "通用设置",
+          "Audience": "受众",
+          "Channels": "渠道",
+          "Web Global": "全球 Web",
+          "Web Japan": "日本 Web",
+          "Draft": "草稿",
+          "Archived": "已归档",
+          "Time zone": "时区",
+          "(GMT+08:00) China Standard Time - Shanghai": "(GMT+08:00) 中国标准时间 - 上海",
+          "Start time": "开始时间",
+          "End time": "结束时间",
+          "Page path": "页面路径",
+          "/* represents the home page. Multi-level paths are supported.": "/* 代表首页，支持多级路径。",
+          "/* represents the home page. Client Interface / Web both support multi-level paths.": "/* 代表首页，Client interface / web 均支持多级路径。",
+          "Path must start with /. Please check the format.": "路径必须以 / 开头，请检查格式。",
+          "Allow redirect": "允许跳转",
+          "Redirect URL": "跳转链接",
+          "Users will be redirected to this full URL after clicking the pop-up card. It must start with https://.": "用户点击弹窗卡片后将跳转到此完整链接，必须以 https:// 开头。",
+          "Full URL, must start with https://": "完整 URL，必须以 https:// 开头",
+          "Enter a valid URL that starts with https://": "请输入有效的 URL，需以 https:// 开头",
+          "Localized content": "本地化内容",
+          "Locale": "语言项",
+          "Add": "新增",
+          "Add locale": "添加语言项",
+          "Locale added": "已添加语言项",
+          "Locale removed": "已移除语言项",
+          "At least one locale is required": "至少需要保留一个语言项",
+          "Language": "语言",
+          "Title": "标题",
+          "Body": "正文",
+          "CTA text": "CTA 文案",
+          "Button text": "按钮文案",
+          "5-50 characters": "5-50 个字符",
+          "5-200 characters": "5-200 个字符",
+          "Shown only when Allow redirect is enabled.": "仅在允许跳转开启时显示。",
+          "English (en-us)": "英语 (en-us)",
+          "Simplified Chinese": "简体中文",
+          "Japanese": "日语",
+          "Pop-up settings": "弹窗设置",
+          "Cover image": "封面图片",
+          "Pop-up cover": "弹窗封面",
+          "Existing uploaded image": "已上传图片",
+          "Required size: 440x240, PNG/JPG, up to 300KB": "要求尺寸：440x240，PNG/JPG，不超过 300KB",
+          "Preview": "预览",
+          "View": "查看",
+          "Re-upload": "重新上传",
+          "Display frequency": "展示频率",
+          "Every visit (up to 3 times)": "每次访问（最多 3 次）",
+          "Once per day": "每天一次",
+          "First visit only": "仅首次访问",
+          "Priority": "优先级",
+          "Cancel": "取消",
+          "Save": "保存",
+          "Pop-up card saved": "弹窗卡片已保存",
+          "No cover image": "暂无封面图片",
+          "Upload required": "需要上传",
+          "PNG/JPG, up to 300KB": "PNG/JPG，不超过 300KB",
+          "Cover image removed": "封面图片已移除",
+          "Preview opened": "已打开预览",
+          "Cover image viewed": "已查看封面图片",
+          "Image preview": "图片预览",
+          "Close image preview": "关闭图片预览",
+          "Re-upload picker opened": "已打开重新上传选择器",
+          "Cover action clicked": "已点击封面操作",
+          "Select": "请选择",
+          "Enter title": "请输入标题",
+          "Enter body": "请输入正文",
+          "Enter page path": "请输入页面路径",
+          "Enter priority": "请输入优先级",
+          "Select start time": "请选择开始时间",
+          "Select end time": "请选择结束时间",
           "Page": "页码",
           "Rows per page": "每页条数",
           "No permission": "无操作权限",
@@ -2749,6 +3923,7 @@
       const sidebarModeLabel = document.getElementById("sidebarModeLabel");
       const topbarRight = document.getElementById("topbarRight");
       const headline = document.getElementById("headline");
+      const breadcrumbNav = document.getElementById("breadcrumbNav");
       const pageSubtitle = document.getElementById("pageSubtitle");
       const tabs = document.getElementById("tabs");
       const filterCard = document.getElementById("filterCard");
@@ -2756,6 +3931,9 @@
       const tableBody = document.getElementById("tableBody");
       const mobileCards = document.getElementById("mobileCards");
       const pagination = document.getElementById("pagination");
+      const panelCard = document.querySelector(".panel-card");
+      const pageHeadActions = document.querySelector(".page-head .actions");
+      const popupEditPage = document.getElementById("popupEditPage");
       const menuTrigger = document.getElementById("menuTrigger");
       const overlay = document.getElementById("overlay");
       const collapseButton = document.getElementById("collapseButton");
@@ -2783,14 +3961,35 @@
         toastTimer: 0,
         flyoutTimer: 0,
         activeActionRow: "",
+        view: "list",
+        editingRow: "",
+        popupFormMode: "edit",
         filterStatus: "All",
+        activePopupLocale: "en",
+        popupLocaleValues: {
+          en: { language: "", title: "", body: "", cta: "" }
+        },
         dragStartY: 0,
         dragStartTop: 0
       };
 
+      const popupLocaleOptions = [
+        { id: "en", label: "English (en-us)" },
+        { id: "zh", label: "简体中文 (zh-cn)" },
+        { id: "ja", label: "日本語 (ja-jp)" }
+      ];
+
       function t(value) {
         if (!value) return "";
         return state.lang === "zh" ? (i18n.zh[value] || value) : value;
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
       }
 
       function actionMessage(key) {
@@ -2818,9 +4017,9 @@
 
       function actionMenuTemplate(rowKey = "") {
         return `
-          <button class="action-menu-item" type="button" data-action-menu="Edit" role="menuitem">Edit</button>
-          <button class="action-menu-item" type="button" data-action-menu="Copy" role="menuitem">Copy</button>
-          <button class="action-menu-item" type="button" data-action-menu="Delete" role="menuitem">Delete</button>
+          <button class="action-menu-item" type="button" data-action-menu="Edit" role="menuitem">${t("Edit")}</button>
+          <button class="action-menu-item" type="button" data-action-menu="Copy" role="menuitem">${t("Copy")}</button>
+          <button class="action-menu-item" type="button" data-action-menu="Delete" role="menuitem">${t("Delete")}</button>
         `;
       }
 
@@ -2839,6 +4038,772 @@
         actionMenu.classList.remove("open");
         actionMenu.setAttribute("aria-hidden", "true");
         state.activeActionRow = "";
+      }
+
+
+      function isPopupCardsPage() {
+        return state.mode === "backoffice" && state.activeNav === "bo-marketing-pop-up-cards";
+      }
+
+      function popupLocaleValuesForMode(mode) {
+        if (mode === "edit") {
+          return {
+            en: { language: "English (en-us)", title: "12345", body: "测试page path 是否支持多级路径", cta: "" }
+          };
+        }
+        return {
+          en: { language: "English (en-us)", title: "", body: "", cta: "" },
+          zh: { language: "简体中文 (zh-cn)", title: "", body: "", cta: "" },
+          ja: { language: "日本語 (ja-jp)", title: "", body: "", cta: "" }
+        };
+      }
+
+      function resetPopupForm(mode) {
+        state.popupFormMode = mode;
+        state.activePopupLocale = "en";
+        state.popupLocaleValues = popupLocaleValuesForMode(mode);
+      }
+
+      function setListView() {
+        state.view = "list";
+        state.editingRow = "";
+        if (["#backoffice-marketing-pop-up-cards-edit", "#backoffice-marketing-pop-up-cards-add"].includes(location.hash)) {
+          history.replaceState(null, "", location.pathname + location.search);
+        }
+        renderContentView();
+      }
+
+      function openPopupEdit(rowKey = "") {
+        if (!isPopupCardsPage()) return false;
+        state.view = "popup-edit";
+        state.editingRow = rowKey;
+        resetPopupForm("edit");
+        if (location.hash !== "#backoffice-marketing-pop-up-cards-edit") {
+          history.replaceState(null, "", "#backoffice-marketing-pop-up-cards-edit");
+        }
+        renderContentView();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return true;
+      }
+
+      function openPopupCreate() {
+        if (!isPopupCardsPage()) return false;
+        state.view = "popup-edit";
+        state.editingRow = "";
+        resetPopupForm("create");
+        if (location.hash !== "#backoffice-marketing-pop-up-cards-add") {
+          history.replaceState(null, "", "#backoffice-marketing-pop-up-cards-add");
+        }
+        renderContentView();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return true;
+      }
+
+      function popupSelectTemplate({ options, selected, multiple = false, label = "", role = "" }) {
+        const selectedValues = Array.isArray(selected) ? selected.filter(Boolean) : selected ? [selected] : [];
+        const selectedSet = new Set(selectedValues);
+        const placeholder = label ? `${t("Select")} ${label}` : t("Select");
+        const controlContent = multiple
+          ? `<span class="popup-selected-values" data-popup-selected-values>${selectedValues.length ? selectedValues.map((value) => `<span class="popup-selected-tag">${t(value)}</span>`).join("") : `<span class="popup-select-placeholder">${placeholder}</span>`}</span>`
+          : `<span data-popup-selected-text class="${selectedValues.length ? "" : "popup-select-placeholder"}">${selectedValues.length ? t(selectedValues[0]) : placeholder}</span>`;
+        return `
+          <div class="filter-select popup-select ${multiple ? "is-multiple" : ""}" data-popup-select data-popup-select-multiple="${multiple}" data-popup-select-role="${role}" data-popup-placeholder="${placeholder}">
+            <button class="filter-select-control ${multiple ? "popup-multi-select" : "popup-select-control"}" type="button" aria-haspopup="listbox" aria-expanded="false">
+              ${controlContent}
+            </button>
+            <div class="filter-select-menu" role="listbox">
+              ${options.map((value) => {
+                const active = selectedSet.has(value);
+                return `<button class="filter-select-option ${active ? "active" : ""}" type="button" data-popup-select-option="${value}" role="option" aria-selected="${active}"><span>${t(value)}</span><span class="popup-option-check">✓</span></button>`;
+              }).join("")}
+            </div>
+          </div>
+        `;
+      }
+
+      function updatePopupSelectControl(select) {
+        const isMultiple = select.dataset.popupSelectMultiple === "true";
+        const activeOptions = Array.from(select.querySelectorAll(".filter-select-option.active"));
+        if (isMultiple) {
+          const values = activeOptions.map((option) => option.dataset.popupSelectOption || option.textContent.trim());
+          const container = select.querySelector("[data-popup-selected-values]");
+          if (container) {
+            container.innerHTML = values.length
+              ? values.map((value) => `<span class="popup-selected-tag">${t(value)}</span>`).join("")
+              : `<span class="popup-select-placeholder">${select.dataset.popupPlaceholder || t("Select")}</span>`;
+          }
+          return;
+        }
+        const active = activeOptions[0];
+        const text = select.querySelector("[data-popup-selected-text]");
+        if (active && text) {
+          text.textContent = t(active.dataset.popupSelectOption || active.textContent.trim());
+          text.classList.remove("popup-select-placeholder");
+        } else if (text) {
+          text.textContent = select.dataset.popupPlaceholder || t("Select");
+          text.classList.add("popup-select-placeholder");
+        }
+      }
+
+      function handlePopupSelectClick(event) {
+        const control = event.target.closest(".filter-select-control");
+        if (control) {
+          const select = control.closest(".filter-select");
+          if (!select?.hasAttribute("data-popup-select")) return;
+          closeModeMenu();
+          closeLanguageMenu();
+          closePageSizeMenu();
+          toggleFilterSelect(select);
+          return;
+        }
+
+        const option = event.target.closest(".filter-select-option[data-popup-select-option]");
+        if (!option) return;
+        const select = option.closest(".filter-select[data-popup-select]");
+        if (!select) return;
+        const isMultiple = select.dataset.popupSelectMultiple === "true";
+        if (isMultiple) {
+          const activeCount = select.querySelectorAll(".filter-select-option.active").length;
+          option.classList.toggle("active");
+          option.setAttribute("aria-selected", String(option.classList.contains("active")));
+        } else {
+          select.querySelectorAll(".filter-select-option").forEach((item) => {
+            const active = item === option;
+            item.classList.toggle("active", active);
+            item.setAttribute("aria-selected", String(active));
+          });
+          toggleFilterSelect(select);
+        }
+        updatePopupSelectControl(select);
+        if (select.dataset.popupSelectRole === "locale-language") {
+          const card = select.closest("[data-locale-card]");
+          const key = card?.dataset.localeKey;
+          if (key) {
+            state.popupLocaleValues[key] ||= { language: "", title: "", body: "", cta: "" };
+            state.popupLocaleValues[key].language = normalizeLocaleLabel(option.dataset.popupSelectOption || "");
+            renderPopupLocalePanel();
+          }
+        }
+      }
+
+      function popupLocaleKeys() {
+        return Object.keys(state.popupLocaleValues);
+      }
+
+      function activePopupLocaleKey() {
+        const keys = popupLocaleKeys();
+        if (!keys.includes(state.activePopupLocale)) state.activePopupLocale = keys[0] || "en";
+        return state.activePopupLocale;
+      }
+
+      function normalizeLocaleLabel(label) {
+        const map = {
+          "English": "English (en-us)",
+          "Simplified Chinese": "简体中文 (zh-cn)",
+          "Japanese": "日本語 (ja-jp)"
+        };
+        return map[label] || label;
+      }
+
+      function popupLocaleLabel(localeKey, index) {
+        const language = normalizeLocaleLabel(state.popupLocaleValues[localeKey]?.language);
+        return language || `${t("Locale")} ${index + 1}`;
+      }
+
+      function popupLocaleTabsTemplate() {
+        const keys = popupLocaleKeys();
+        const activeKey = activePopupLocaleKey();
+        return `
+          <div class="popup-locale-switch-row">
+            <div class="popup-locale-tabs tabs" role="tablist" aria-label="${t("Localized content")}">
+              ${keys.map((key, index) => `
+                <button class="tab ${key === activeKey ? "active" : ""}" type="button" role="tab" aria-selected="${key === activeKey}" data-popup-locale="${key}">${popupLocaleLabel(key, index)}</button>
+              `).join("")}
+            </div>
+            <div class="popup-locale-actions">
+              <button class="popup-add-locale" id="popupAddLocale" type="button">${t("Add locale")}</button>
+              <button class="popup-icon-btn danger-outline-btn" type="button" data-remove-locale="${activeKey}">${t("Delete")}</button>
+            </div>
+          </div>
+        `;
+      }
+
+      function popupLocaleTemplate(localeKey, index) {
+        const values = state.popupLocaleValues[localeKey] || { language: "", title: "", body: "", cta: "" };
+        const title = values.title || "";
+        const body = values.body || "";
+        const cta = values.cta || "";
+        const selectedLanguage = normalizeLocaleLabel(values.language || "");
+        return `
+          <div class="popup-locale-card" data-locale-card data-locale-key="${localeKey}">
+            <div class="popup-form-grid">
+              <div class="popup-field">
+                <div class="popup-field-label">${t("Language")} <span class="popup-required">*</span></div>
+                ${popupSelectTemplate({ options: popupLocaleOptions.map((item) => item.label), selected: selectedLanguage, label: t("Language"), role: "locale-language" })}
+              </div>
+
+              <div class="popup-field">
+                <div class="popup-field-label">${t("Title")} <span class="popup-required">*</span></div>
+                <div class="popup-input-wrap">
+                  <input class="popup-control" type="text" value="${escapeHtml(title)}" minlength="5" maxlength="50" data-locale-field="title" data-locale-key="${localeKey}" placeholder="${t("Enter title")}" />
+                  <span class="popup-char-count">${title.length}/50</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="popup-field">
+              <div class="popup-field-label">${t("Body")} <span class="popup-required">*</span></div>
+              <div class="popup-input-wrap popup-textarea-wrap">
+                <textarea class="popup-control" minlength="5" maxlength="200" data-locale-field="body" data-locale-key="${localeKey}" placeholder="${t("Enter body")}">${escapeHtml(body)}</textarea>
+                <span class="popup-char-count">${body.length}/200</span>
+              </div>
+            </div>
+
+            <div class="popup-field popup-locale-cta-field is-hidden">
+              <div class="popup-field-label">${t("CTA text")}</div>
+              <div class="popup-input-wrap">
+                <input class="popup-control" type="text" value="${escapeHtml(cta)}" maxlength="20" data-locale-field="cta" data-locale-key="${localeKey}" placeholder="${t("Button text")}" />
+                <span class="popup-char-count">${cta.length}/20</span>
+              </div>
+              <div class="popup-input-hint">${t("Shown only when Allow redirect is enabled.")}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderPopupLocalePanel() {
+        const locales = document.getElementById("popupLocales");
+        if (!locales) return;
+        const keys = popupLocaleKeys();
+        const activeKey = activePopupLocaleKey();
+        const activeIndex = Math.max(0, keys.indexOf(activeKey));
+        locales.innerHTML = `
+          ${popupLocaleTabsTemplate()}
+          ${popupLocaleTemplate(activeKey, activeIndex)}
+        `;
+        syncPopupCtaVisibility(Boolean(document.getElementById("popupRedirectToggle")?.checked));
+      }
+
+      function updatePopupCharCount(el) {
+        const count = el.parentElement?.querySelector(".popup-char-count");
+        if (!count) return;
+        const max = el.getAttribute("maxlength") || "";
+        count.textContent = `${el.value.length}/${max}`;
+      }
+
+      function syncPopupCtaVisibility(show) {
+        document.querySelectorAll(".popup-locale-cta-field").forEach((field) => {
+          field.classList.toggle("is-hidden", !show);
+        });
+      }
+
+      function initPopupLocalizedContent() {
+        const locales = document.getElementById("popupLocales");
+        renderPopupLocalePanel();
+
+        locales?.addEventListener("click", (event) => {
+          const tab = event.target.closest("[data-popup-locale]");
+          if (tab) {
+            state.activePopupLocale = tab.dataset.popupLocale || activePopupLocaleKey();
+            renderPopupLocalePanel();
+            return;
+          }
+
+          const addButton = event.target.closest("#popupAddLocale");
+          if (addButton) {
+            const nextKey = `locale_${Date.now()}`;
+            state.popupLocaleValues[nextKey] = { language: "", title: "", body: "", cta: "" };
+            state.activePopupLocale = nextKey;
+            renderPopupLocalePanel();
+            showToast(t("Locale added"));
+            return;
+          }
+
+          const removeButton = event.target.closest("[data-remove-locale]");
+          if (removeButton) {
+            if (popupLocaleKeys().length <= 1) {
+              showToast(t("At least one locale is required"));
+              return;
+            }
+            const removedKey = removeButton.dataset.removeLocale;
+            const keysBeforeRemove = popupLocaleKeys();
+            const removedIndex = keysBeforeRemove.indexOf(removedKey);
+            delete state.popupLocaleValues[removedKey];
+            if (state.activePopupLocale === removedKey) {
+              const remainingKeys = popupLocaleKeys();
+              state.activePopupLocale = remainingKeys[Math.max(0, removedIndex - 1)] || remainingKeys[0] || "";
+            }
+            renderPopupLocalePanel();
+            showToast(t("Locale removed"));
+          }
+        });
+
+        locales?.addEventListener("input", (event) => {
+          const input = event.target.closest("[data-locale-field]");
+          if (!input) return;
+          const key = input.dataset.localeKey;
+          state.popupLocaleValues[key] ||= { language: "", title: "", body: "", cta: "" };
+          state.popupLocaleValues[key][input.dataset.localeField] = input.value;
+          updatePopupCharCount(input);
+        });
+      }
+
+      function popupEmptyUploadTemplate() {
+        return `
+          <div class="popup-empty-upload">
+            <svg class="popup-upload-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 15V4m0 0 4 4m-4-4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M5 15v4h14v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <div class="popup-empty-upload-text">${t("Supports .jpg,.jpeg,.png formats, size not exceeding 300KB")}</div>
+          </div>
+        `;
+      }
+
+      function setPopupCoverEmpty() {
+        const upload = document.getElementById("popupCoverUpload");
+        const preview = document.getElementById("popupCoverPreview");
+        const fileInput = document.getElementById("popupCoverInput");
+        if (!upload || !preview) return;
+        upload.classList.add("is-empty");
+        preview.classList.remove("has-image");
+        preview.innerHTML = popupEmptyUploadTemplate();
+        upload.querySelector(".popup-upload-name")?.replaceChildren(document.createTextNode(t("No cover image")));
+        if (fileInput) fileInput.value = "";
+      }
+
+      function closePopupCoverViewer() {
+        document.getElementById("popupImageModal")?.classList.remove("open");
+      }
+
+      function openPopupCoverViewer() {
+        const image = document.querySelector("#popupCoverPreview .popup-cover-image");
+        if (!image?.getAttribute("src")) {
+          showToast(t("No cover image"));
+          return;
+        }
+        let modal = document.getElementById("popupImageModal");
+        if (!modal) {
+          modal = document.createElement("div");
+          modal.id = "popupImageModal";
+          modal.className = "popup-image-modal";
+          modal.innerHTML = `
+            <div class="popup-image-dialog" role="dialog" aria-modal="true" aria-label="${t("Image preview")}">
+              <div class="popup-image-header">
+                <div class="popup-image-title">${t("Image preview")}</div>
+                <button class="popup-image-close" type="button" aria-label="${t("Close image preview")}">×</button>
+              </div>
+              <div class="popup-image-body">
+                <img class="popup-image-large" alt="${escapeHtml(image.alt || t("Cover image"))}" />
+              </div>
+            </div>
+          `;
+          document.body.appendChild(modal);
+          modal.addEventListener("click", (event) => {
+            if (event.target === modal || event.target.closest(".popup-image-close")) closePopupCoverViewer();
+          });
+          document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") closePopupCoverViewer();
+          });
+        }
+        const largeImage = modal.querySelector(".popup-image-large");
+        if (largeImage) {
+          largeImage.src = image.getAttribute("src") || "";
+          largeImage.alt = image.alt || t("Cover image");
+        }
+        modal.classList.add("open");
+      }
+
+      function setPopupCoverImage(file, src) {
+        const upload = document.getElementById("popupCoverUpload");
+        const preview = document.getElementById("popupCoverPreview");
+        if (!upload || !preview) return;
+        upload.classList.remove("is-empty");
+        preview.classList.add("has-image");
+        preview.innerHTML = `
+          <img class="popup-cover-image" src="${src}" alt="${escapeHtml(file.name)}" />
+        `;
+        upload.querySelector(".popup-upload-name")?.replaceChildren(document.createTextNode(file.name));
+      }
+
+      function openPopupCoverPicker() {
+        document.getElementById("popupCoverInput")?.click();
+      }
+
+      function initPopupUploadActions() {
+        const fileInput = document.getElementById("popupCoverInput");
+        fileInput?.addEventListener("change", () => {
+          const file = fileInput.files?.[0];
+          if (!file) return;
+          const validType = ["image/jpeg", "image/png"].includes(file.type);
+          if (!validType) {
+            showToast(t("Only JPG, JPEG, and PNG files are supported"));
+            fileInput.value = "";
+            return;
+          }
+          if (file.size > 300 * 1024) {
+            showToast(t("Image size must not exceed 300KB"));
+            fileInput.value = "";
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = () => {
+            setPopupCoverImage(file, String(reader.result || ""));
+            showToast(t("Cover image uploaded"));
+          };
+          reader.readAsDataURL(file);
+        });
+
+        document.getElementById("popupCoverUpload")?.addEventListener("click", (event) => {
+          const action = event.target.closest("[data-cover-action]")?.dataset.coverAction;
+          const clickedEmptyPreview = event.target.closest("#popupCoverPreview") && event.currentTarget.classList.contains("is-empty");
+          if (!action && clickedEmptyPreview) {
+            openPopupCoverPicker();
+            return;
+          }
+          if (!action) return;
+          if (action === "delete") {
+            setPopupCoverEmpty();
+            showToast(t("Cover image removed"));
+            return;
+          }
+          if (action === "reupload") {
+            openPopupCoverPicker();
+            return;
+          }
+          if (action === "view") {
+            openPopupCoverViewer();
+            return;
+          }
+          const messages = {
+            preview: t("Preview opened"),
+          };
+          showToast(messages[action] || t("Cover action clicked"));
+        });
+
+        document.getElementById("popupCoverPreview")?.addEventListener("keydown", (event) => {
+          if (!["Enter", " "].includes(event.key)) return;
+          if (!document.getElementById("popupCoverUpload")?.classList.contains("is-empty")) return;
+          event.preventDefault();
+          openPopupCoverPicker();
+        });
+
+        document.getElementById("popupSaveButton")?.addEventListener("click", () => showToast(t("Pop-up card saved")));
+      }
+
+      function popupEditTemplate() {
+        return `
+          <div class="popup-edit-card">
+            <div class="popup-edit-header">
+              <div class="popup-edit-title">${t("Common settings")}</div>
+            </div>
+
+            <div class="popup-form-grid">
+              <div class="popup-field">
+                <div class="popup-field-label">
+                  ${t("Audience")} <span class="popup-required">*</span>
+                  <div class="popup-tooltip-wrap">
+                    <div class="popup-tooltip-icon">?</div>
+                    <div class="popup-tooltip-box">选择弹窗展示的目标受众区域，决定哪些地区的用户能看到此弹窗。</div>
+                  </div>
+                </div>
+                ${popupSelectTemplate({ options: ["中国", "日本", "新加坡", "全球"], selected: [], multiple: true, label: t("Audience") })}
+              </div>
+
+              <div class="popup-field">
+                <div class="popup-field-label">
+                  ${t("Channels")} <span class="popup-required">*</span>
+                  <div class="popup-tooltip-wrap">
+                    <div class="popup-tooltip-icon">?</div>
+                    <div class="popup-tooltip-box">选择弹窗出现的渠道，例如 CRM 后台、Web Global 或 Web Japan。</div>
+                  </div>
+                </div>
+                ${popupSelectTemplate({ options: ["CRM", "Web Global", "Web Japan"], selected: "", label: t("Channels") })}
+              </div>
+
+              <div class="popup-field">
+                <div class="popup-field-label">${t("Status")} <span class="popup-required">*</span></div>
+                ${popupSelectTemplate({ options: ["Draft", "Published", "Archived"], selected: "", label: t("Status") })}
+              </div>
+
+              <div class="popup-field">
+                <div class="popup-field-label">${t("Time zone")} <span class="popup-required">*</span></div>
+                ${popupSelectTemplate({ options: ["(GMT+08:00) China Standard Time - Shanghai", "(GMT+00:00) UTC", "(GMT+08:00) Singapore"], selected: "", label: t("Time zone") })}
+              </div>
+
+              <div class="popup-field">
+                <div class="popup-field-label">${t("Start time")}</div>
+                <div class="popup-ant-datepicker" id="popupStartTimePicker" data-value=""></div>
+                <input type="hidden" value="" id="popupStartTime" />
+              </div>
+
+              <div class="popup-field">
+                <div class="popup-field-label">${t("End time")}</div>
+                <div class="popup-ant-datepicker" id="popupEndTimePicker" data-value=""></div>
+                <input type="hidden" value="" id="popupEndTime" />
+                <div class="popup-input-error" id="popupTimeError">结束时间不能早于开始时间</div>
+              </div>
+            </div>
+
+            <div class="popup-field">
+              <div class="popup-field-label">
+                ${t("Page path")} <span class="popup-required">*</span>
+                <div class="popup-tooltip-wrap">
+                  <div class="popup-tooltip-icon">?</div>
+                  <div class="popup-tooltip-box">弹窗出现的页面路径。填写相对路径，以 / 开头。支持多级路径和 * 通配符。</div>
+                </div>
+              </div>
+              <div class="popup-input-wrap" id="popupPagePathWrap">
+                <input class="popup-control" type="text" id="popupPagePath" value="" maxlength="32" oninput="validatePopupPath(this)" placeholder="${t("Enter page path")}" />
+                <span class="popup-char-count" id="popupPagePathCount">0/32</span>
+              </div>
+              <div class="popup-input-hint">${t("/* represents the home page. Client Interface / Web both support multi-level paths.")}</div>
+              <div class="popup-input-error" id="popupPathError">${t("Path must start with /. Please check the format.")}</div>
+            </div>
+
+            <div class="popup-toggle-row">
+              <label class="popup-toggle">
+                <input type="checkbox" id="popupRedirectToggle" onchange="togglePopupRedirect(this)" />
+                <span class="popup-toggle-slider"></span>
+              </label>
+              <div class="popup-toggle-label-group">
+                <div class="popup-toggle-label-title">${t("Allow redirect")}</div>
+              </div>
+            </div>
+
+            <div class="popup-redirect-section hidden" id="popupRedirectSection">
+              <div class="popup-field">
+                <div class="popup-field-label">
+                  ${t("Redirect URL")} <span class="popup-required">*</span>
+                  <div class="popup-tooltip-wrap">
+                    <div class="popup-tooltip-icon">?</div>
+                    <div class="popup-tooltip-box">${t("Users will be redirected to this full URL after clicking the pop-up card. It must start with https://.")}</div>
+                  </div>
+                </div>
+                <div class="popup-input-wrap">
+                  <input class="popup-control" type="text" id="popupRedirectUrl" value="" maxlength="128" oninput="validatePopupUrl(this)" placeholder="https://" />
+                  <span class="popup-char-count" id="popupRedirectCount">0/128</span>
+                </div>
+                <div class="popup-input-hint">${t("Full URL, must start with https://")}</div>
+                <div class="popup-input-error" id="popupUrlError">${t("Enter a valid URL that starts with https://")}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="popup-edit-card">
+            <div class="popup-edit-header">
+              <div class="popup-edit-title">${t("Localized content")}</div>
+            </div>
+            <div class="popup-locales" id="popupLocales"></div>
+          </div>
+
+          <div class="popup-edit-card">
+            <div class="popup-edit-header">
+              <div>
+                <div class="popup-edit-title">${t("Pop-up settings")}</div>
+              </div>
+            </div>
+
+            <div class="popup-field">
+              <div class="popup-field-label">${t("Cover image")} <span class="popup-required">*</span></div>
+              <div class="popup-cover-requirement">${t("Required size: 440x240, PNG/JPG, up to 300KB")}</div>
+              <input class="popup-upload-input" id="popupCoverInput" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" />
+              <div class="popup-upload is-empty" id="popupCoverUpload">
+                <div class="popup-cover-preview" id="popupCoverPreview" aria-label="${t("Cover image")}" tabindex="0">
+                  ${popupEmptyUploadTemplate()}
+                </div>
+                <div class="popup-upload-meta">
+                  <div class="popup-upload-name">${t("No cover image")}</div>
+                  <div class="popup-upload-actions">
+                    <button class="popup-ghost-btn" type="button" data-cover-action="preview">${t("Preview")}</button>
+                    <button class="popup-icon-btn" type="button" data-cover-action="view" aria-label="${t("View")}">${t("View")}</button>
+                    <button class="popup-icon-btn danger-outline-btn" type="button" data-cover-action="delete" aria-label="${t("Delete")}">${t("Delete")}</button>
+                    <button class="popup-ghost-btn primary" type="button" data-cover-action="reupload">${t("Re-upload")}</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="popup-settings-grid">
+              <div class="popup-field">
+                <div class="popup-field-label">${t("Display frequency")} <span class="popup-required">*</span></div>
+                ${popupSelectTemplate({ options: ["Every visit (up to 3 times)", "Once per day", "First visit only"], selected: "", label: t("Display frequency") })}
+              </div>
+
+              <div class="popup-field">
+                <div class="popup-field-label">${t("Priority")} <span class="popup-required">*</span></div>
+                <div class="popup-input-wrap">
+                  <input class="popup-control" type="number" min="1" step="1" value="" placeholder="${t("Enter priority")}" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="popup-edit-actions">
+            <button class="btn secondary" type="button" data-popup-back>${t("Cancel")}</button>
+            <button class="btn" type="button" id="popupSaveButton">${t("Save")}</button>
+          </div>
+        `;
+      }
+
+      function renderContentView() {
+        document.getElementById("primaryAction").textContent = t("Create");
+        const editing = state.view === "popup-edit" && isPopupCardsPage();
+        filterCard.hidden = editing;
+        tabs.hidden = editing;
+        panelCard.hidden = editing;
+        pageHeadActions.hidden = editing;
+        popupEditPage.hidden = !editing;
+        renderBreadcrumb();
+        if (editing) {
+          popupEditPage.innerHTML = popupEditTemplate();
+          initPopupEditPage();
+        } else {
+          popupEditPage.innerHTML = "";
+        }
+      }
+
+      function initPopupEditPage() {
+        document.querySelector("[data-popup-back]")?.addEventListener("click", setListView);
+        initPopupLocalizedContent();
+        initPopupUploadActions();
+        initAntdDatePickers();
+      }
+
+      function validatePopupTimeRange() {
+        const start = document.getElementById("popupStartTime")?.value || "";
+        const end = document.getElementById("popupEndTime")?.value || "";
+        const err = document.getElementById("popupTimeError");
+        const endPicker = document.getElementById("popupEndTimePicker");
+        const invalid = Boolean(start && end && end <= start);
+        endPicker?.classList.toggle("has-error", invalid);
+        err?.classList.toggle("show", invalid);
+      }
+
+      function renderNativeDateInput(mount, inputId, placeholder = "") {
+        const hidden = document.getElementById(inputId);
+        if (!hidden) return;
+        hidden.type = "text";
+        hidden.className = "popup-control";
+        hidden.placeholder = placeholder;
+        hidden.addEventListener("blur", validatePopupTimeRange);
+        mount.replaceWith(hidden);
+      }
+
+      function initAntdDatePickers() {
+        const canUseAntd = window.React && window.ReactDOM && window.antd && window.dayjs;
+        const fields = [
+          { mountId: "popupStartTimePicker", inputId: "popupStartTime", placeholder: t("Select start time") },
+          { mountId: "popupEndTimePicker", inputId: "popupEndTime", placeholder: t("Select end time") },
+        ];
+        if (!canUseAntd) {
+          fields.forEach(({ mountId, inputId, placeholder }) => {
+            const mount = document.getElementById(mountId);
+            if (mount) renderNativeDateInput(mount, inputId, placeholder);
+          });
+          return;
+        }
+
+        const { ConfigProvider, DatePicker } = window.antd;
+        const pickerLocale = state.lang === "zh" ? window.antd.locales?.zh_CN : window.antd.locales?.en_US;
+        window.dayjs.locale(state.lang === "zh" ? "zh-cn" : "en");
+        fields.forEach(({ mountId, inputId, placeholder }) => {
+          const mount = document.getElementById(mountId);
+          const hidden = document.getElementById(inputId);
+          if (!mount || !hidden) return;
+          const value = hidden.value || mount.dataset.value || "";
+          const root = window.ReactDOM.createRoot(mount);
+          root.render(window.React.createElement(
+            ConfigProvider,
+            {
+              locale: pickerLocale,
+              theme: {
+                token: {
+                  colorPrimary: "#1f3472",
+                  borderRadius: 4,
+                  controlHeight: 38,
+                  fontFamily: "\"ubuntu-font\", \"Ubuntu\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+                },
+                components: {
+                  DatePicker: {
+                    activeBorderColor: "#1f3472",
+                    hoverBorderColor: "#1f3472",
+                    activeShadow: "0 0 0 3px rgba(31, 52, 114, 0.08)",
+                  },
+                },
+              },
+            },
+            window.React.createElement(DatePicker, {
+              allowClear: false,
+              className: "popup-ant-picker",
+              format: "YYYY-MM-DD HH:mm:ss",
+              getPopupContainer: () => document.body,
+              inputReadOnly: false,
+              placement: "bottomLeft",
+              onBlur: validatePopupTimeRange,
+              onChange: (_date, dateString) => {
+                hidden.value = dateString;
+                validatePopupTimeRange();
+              },
+              popupClassName: "popup-ant-picker-dropdown",
+              placeholder,
+              showTime: { format: "HH:mm:ss" },
+              value: value ? window.dayjs(value) : null,
+            })
+          ));
+        });
+        validatePopupTimeRange();
+      }
+
+      function validatePopupPath(el) {
+        const val = el.value;
+        const count = document.getElementById("popupPagePathCount");
+        const wrap = document.getElementById("popupPagePathWrap");
+        count.textContent = val.length + "/32";
+        const err = document.getElementById("popupPathError");
+        if (val && !val.startsWith("/")) {
+          el.classList.add("has-error");
+          wrap.classList.add("popup-has-error");
+          err.classList.add("show");
+        } else {
+          el.classList.remove("has-error");
+          wrap.classList.remove("popup-has-error");
+          err.classList.remove("show");
+          if (val) el.classList.add("has-success");
+          else el.classList.remove("has-success");
+        }
+      }
+
+      function validatePopupUrl(el) {
+        const val = el.value;
+        const count = document.getElementById("popupRedirectCount");
+        count.textContent = val.length + "/128";
+        const err = document.getElementById("popupUrlError");
+        if (val && !val.startsWith("https://")) {
+          el.classList.add("has-error");
+          err.classList.add("show");
+        } else {
+          el.classList.remove("has-error");
+          err.classList.remove("show");
+        }
+      }
+
+      function togglePopupRedirect(cb) {
+        const sec = document.getElementById("popupRedirectSection");
+        if (cb.checked) {
+          sec.classList.remove("hidden");
+          sec.classList.add("visible");
+        } else {
+          sec.classList.remove("visible");
+          sec.classList.add("hidden");
+        }
+        syncPopupCtaVisibility(cb.checked);
+      }
+
+      function fillPopupPath(path) {
+        const el = document.getElementById("popupPagePath");
+        el.value = path;
+        validatePopupPath(el);
       }
 
       function openActionMenu(button) {
@@ -3130,6 +5095,8 @@
         state.activeNav = data[mode].active;
         state.activeTab = data[mode].tabs[0].id;
         state.activePage = 1;
+        state.view = "list";
+        state.editingRow = "";
         state.headlineKey = "Headline";
         state.collapsedGroups = getDefaultCollapsedGroups(mode, state.activeNav);
         app.classList.toggle("mode-client", mode === "client");
@@ -3144,9 +5111,61 @@
         renderTabs();
         renderFilters();
         renderTable();
+        renderContentView();
         closeModeMenu();
         closeDrawer();
         showToast(mode === "admin" ? t("Switched to Admin") : mode === "backoffice" ? t("Switched to Backoffice") : t("Switched to Client"));
+      }
+
+
+
+      function openPopupCardsEditDemo() {
+        state.mode = "backoffice";
+        state.activeNav = "bo-marketing-pop-up-cards";
+        state.activeTab = data.backoffice.tabs[0].id;
+        state.activePage = 1;
+        state.headlineKey = "Pop-up Cards";
+        state.collapsedGroups = getDefaultCollapsedGroups("backoffice", state.activeNav);
+        app.classList.toggle("mode-client", false);
+        app.classList.toggle("mode-backoffice", true);
+        app.classList.toggle("mode-admin", false);
+        modeLabel.textContent = t(data.backoffice.label);
+        sidebarModeLabel.textContent = t(data.backoffice.label);
+        topbarRight.innerHTML = topbarTemplate();
+        updateStaticText();
+        renderModeOptions();
+        renderNav();
+        renderTabs();
+        renderFilters();
+        renderTable();
+        openPopupEdit(data.backoffice.rows[0][0]);
+        closeModeMenu();
+        closeDrawer();
+      }
+
+
+
+      function breadcrumbLabel(item) {
+        return item?.title || item?.label || "";
+      }
+
+      function renderBreadcrumb() {
+        const currentItem = findNavItem(state.activeNav);
+        const parentItem = findParentNavItem(state.activeNav);
+        const trail = [];
+        if (parentItem) trail.push({ label: breadcrumbLabel(parentItem), nav: parentItem.id, level: "parent" });
+        if (currentItem) trail.push({ label: breadcrumbLabel(currentItem), nav: currentItem.id, level: "current" });
+        if (state.view === "popup-edit" && isPopupCardsPage()) {
+          trail.push({ label: state.popupFormMode === "create" ? "Add" : "Edit", nav: "popup-edit", level: "edit" });
+        }
+
+        breadcrumbNav.innerHTML = trail.map((item, index) => {
+          const isLast = index === trail.length - 1;
+          const content = isLast
+            ? `<span class="breadcrumb-current">${t(item.label)}</span>`
+            : `<button class="breadcrumb-link" type="button" data-breadcrumb-nav="${item.nav}">${t(item.label)}</button>`;
+          return `${index ? '<span class="breadcrumb-separator">＞</span>' : ''}${content}`;
+        }).join("");
       }
 
       function updateStaticText() {
@@ -3157,8 +5176,8 @@
         modeLabel.textContent = t(data[state.mode].label);
         sidebarModeLabel.textContent = t(data[state.mode].label);
         headline.textContent = t(state.headlineKey);
+        renderBreadcrumb();
         pageSubtitle.textContent = t(data[state.mode].subtitle);
-        document.getElementById("resetButton").textContent = t("Reset");
         document.getElementById("primaryAction").textContent = t("Create");
         menuTrigger.setAttribute("aria-label", t("Open menu"));
         sidebar.setAttribute("aria-label", t("Main navigation"));
@@ -3174,6 +5193,7 @@
         renderTabs();
         renderFilters();
         renderTable();
+        renderContentView();
         closeModeMenu();
         closeLanguageMenu();
       }
@@ -3346,6 +5366,33 @@
         if (!event.target.closest(".table-action-button") && !event.target.closest(".action-menu")) closeActionMenu();
       });
 
+
+
+      breadcrumbNav.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-breadcrumb-nav]");
+        if (!button) return;
+        const target = button.dataset.breadcrumbNav;
+        if (target === "popup-edit") return;
+        state.view = "list";
+        state.editingRow = "";
+        if (["#backoffice-marketing-pop-up-cards-edit", "#backoffice-marketing-pop-up-cards-add"].includes(location.hash)) {
+          history.replaceState(null, "", location.pathname + location.search);
+        }
+        state.activeNav = target;
+        state.activePage = 1;
+        state.headlineKey = findNavItem(target)?.label || "Headline";
+        const parent = findParentNavItem(target);
+        if (parent) state.collapsedGroups.delete(parent.id);
+        renderNav();
+        renderTabs();
+        renderFilters();
+        renderTable();
+        renderContentView();
+        headline.textContent = t(state.headlineKey);
+        closeDrawer();
+        closeActionMenu();
+      });
+
       navScroll.addEventListener("click", (event) => {
         const quickButton = event.target.closest(".sidebar-quick-action");
         if (quickButton) {
@@ -3371,9 +5418,14 @@
         }
         state.activeNav = id;
         state.activePage = 1;
+        state.view = "list";
+        state.editingRow = "";
         state.headlineKey = findNavItem(id)?.label || "Headline";
         renderNav();
         renderTabs();
+        renderFilters();
+        renderTable();
+        renderContentView();
         headline.textContent = t(state.headlineKey);
         closeDrawer();
       });
@@ -3392,9 +5444,14 @@
         const button = event.target.closest(".sidebar-flyout-item");
         if (!button) return;
         state.activeNav = button.dataset.nav;
+        state.view = "list";
+        state.editingRow = "";
         state.headlineKey = findNavItem(state.activeNav)?.label || "Headline";
         renderNav();
         renderTabs();
+        renderFilters();
+        renderTable();
+        renderContentView();
         headline.textContent = t(state.headlineKey);
         closeSidebarFlyout();
       });
@@ -3430,6 +5487,8 @@
           showToast(t("Filters applied"));
         }
       });
+
+      popupEditPage.addEventListener("click", handlePopupSelectClick);
 
       document.querySelector(".panel-card").addEventListener("pointerover", (event) => {
         const button = event.target.closest(".table-action-button");
@@ -3468,6 +5527,10 @@
 
         const menuItem = event.target.closest("[data-action-menu]");
         if (menuItem) {
+          if (menuItem.dataset.actionMenu === "Edit" && openPopupEdit(state.activeActionRow)) {
+            closeActionMenu();
+            return;
+          }
           showToast(actionMessage(menuItem.dataset.actionMenu));
           closeActionMenu();
           return;
@@ -3482,6 +5545,10 @@
       actionMenu.addEventListener("click", (event) => {
         const menuItem = event.target.closest("[data-action-menu]");
         if (!menuItem) return;
+        if (menuItem.dataset.actionMenu === "Edit" && openPopupEdit(state.activeActionRow)) {
+          closeActionMenu();
+          return;
+        }
         showToast(actionMessage(menuItem.dataset.actionMenu));
         closeActionMenu();
       });
@@ -3505,8 +5572,10 @@
         if (button) showToast(actionMessage(button.dataset.action));
       });
 
-      document.getElementById("resetButton").addEventListener("click", () => setMode(state.mode));
-      document.getElementById("primaryAction").addEventListener("click", () => showToast(t("Create action clicked")));
+      document.getElementById("primaryAction").addEventListener("click", () => {
+        if (openPopupCreate()) return;
+        showToast(t("Create action clicked"));
+      });
       menuTrigger.addEventListener("click", () => app.classList.add("drawer-open"));
       sidebarCloseButton.addEventListener("click", () => {
         if (window.matchMedia("(max-width: 900px)").matches) {
@@ -3562,6 +5631,18 @@
         syncScrollThumb();
       });
       setMode("backoffice");
+      if (location.hash === "#backoffice-marketing-pop-up-cards-edit") openPopupCardsEditDemo();
+      if (location.hash === "#backoffice-marketing-pop-up-cards-add") {
+        openPopupCardsEditDemo();
+        openPopupCreate();
+      }
+      window.addEventListener("hashchange", () => {
+        if (location.hash === "#backoffice-marketing-pop-up-cards-edit") openPopupCardsEditDemo();
+        if (location.hash === "#backoffice-marketing-pop-up-cards-add") {
+          openPopupCardsEditDemo();
+          openPopupCreate();
+        }
+      });
     </script>
   </body>
 </html>
