@@ -26,6 +26,15 @@
         --shadow-popup: 0 6px 16px 0 rgba(31, 52, 114, 0.06),
           0 3px 6px -4px rgba(31, 52, 114, 0.08),
           0 9px 28px 8px rgba(31, 52, 114, 0.035);
+        --dropdown-radius: 4px;
+        --dropdown-hover: #f2f3f5;
+        --dropdown-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.1);
+        --dropdown-item-min-h: 40px;
+        --dropdown-item-padding: 10px 8px;
+        --dropdown-text: #1d1d1d;
+        --dropdown-muted: #666666;
+        --dropdown-min-w: 110px;
+        --dropdown-max-w: min(320px, calc(100vw - 32px));
         --topbar-h: 64px;
         --sidebar-w: 220px;
       }
@@ -136,17 +145,20 @@
         color: var(--primary);
       }
 
+      /* Dropdown component: independent from sidebar navigation states. */
       .mode-menu {
         position: absolute;
         top: calc(100% + 8px);
         left: 0;
         z-index: 130;
-        width: 280px;
+        width: max-content;
+        min-width: var(--dropdown-min-w);
+        max-width: var(--dropdown-max-w);
         padding: 0;
         border: 1px solid var(--line-soft);
-        border-radius: 8px;
+        border-radius: var(--dropdown-radius);
         background: var(--white);
-        box-shadow: var(--shadow-popup);
+        box-shadow: var(--dropdown-shadow);
         overflow: hidden;
         opacity: 0;
         transform: translateY(-4px);
@@ -163,22 +175,31 @@
       .mode-option {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 16px;
+        justify-content: flex-start;
+        gap: 8px;
         width: 100%;
-        padding: 10px 8px;
+        min-height: var(--dropdown-item-min-h);
+        padding: var(--dropdown-item-padding);
         border: 0;
         border-radius: 0;
         background: transparent;
-        color: var(--text);
+        color: var(--dropdown-text);
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.4;
         text-align: left;
         white-space: nowrap;
       }
 
+      .mode-option span:empty {
+        display: none;
+      }
+
       .mode-option:hover,
       .mode-option.active {
-        background: var(--nav-active);
-        color: var(--primary);
+        background: var(--dropdown-hover);
+        color: var(--dropdown-text);
+        font-weight: 400;
       }
 
       .topbar-right {
@@ -253,12 +274,14 @@
         top: calc(100% + 8px);
         right: 0;
         z-index: 135;
-        width: 132px;
+        width: max-content;
+        min-width: var(--dropdown-min-w);
+        max-width: var(--dropdown-max-w);
         padding: 0;
         border: 1px solid var(--line-soft);
-        border-radius: 8px;
+        border-radius: var(--dropdown-radius);
         background: var(--white);
-        box-shadow: var(--shadow-popup);
+        box-shadow: var(--dropdown-shadow);
         overflow: hidden;
         opacity: 0;
         transform: translateY(-4px);
@@ -274,11 +297,12 @@
 
       .language-option {
         width: 100%;
-        padding: 10px 8px;
+        min-height: var(--dropdown-item-min-h);
+        padding: var(--dropdown-item-padding);
         border: 0;
         border-radius: 0;
         background: transparent;
-        color: var(--text);
+        color: var(--dropdown-text);
         font-size: 13px;
         font-weight: 400;
         text-align: left;
@@ -286,8 +310,9 @@
 
       .language-option:hover,
       .language-option.active {
-        background: var(--nav-active);
-        color: var(--primary);
+        background: var(--dropdown-hover);
+        color: var(--dropdown-text);
+        font-weight: 400;
       }
 
       .icon-button {
@@ -616,6 +641,7 @@
       }
 
       .sidebar-collapsed .nav-item {
+        position: relative;
         display: grid;
         place-items: center;
         padding: 10px 8px;
@@ -638,9 +664,16 @@
       .sidebar-collapsed .nav-section-title,
       .sidebar-collapsed .nav-text,
       .sidebar-collapsed .nav-caret,
-      .sidebar-collapsed .nav-badge,
       .sidebar-collapsed .sub-nav {
         display: none;
+      }
+
+      .sidebar-collapsed .nav-scroll .nav-item > .nav-badge {
+        position: absolute;
+        top: 6px;
+        right: 8px;
+        display: inline-grid;
+        margin: 0;
       }
 
       .sidebar-flyout {
@@ -648,7 +681,9 @@
         z-index: 1000;
         display: grid;
         gap: 0;
-        width: 220px;
+        width: max-content;
+        min-width: 110px;
+        max-width: min(280px, calc(100vw - 32px));
         max-height: calc(100vh - 24px);
         padding: 0;
         border: 1px solid var(--line-soft);
@@ -672,13 +707,14 @@
       }
 
       .sidebar-flyout-item {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 10px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        column-gap: 16px;
         width: 100%;
-        min-height: 34px;
-        padding: 10px 8px;
+        min-width: 100%;
+        min-height: 40px;
+        padding: 10px 16px;
         border: 0;
         border-radius: 0;
         background: transparent;
@@ -701,15 +737,18 @@
       }
 
       .sidebar-flyout-label {
-        flex: 1 1 auto;
         min-width: 0;
         overflow: hidden;
-        white-space: normal;
-        overflow-wrap: anywhere;
-        word-break: normal;
+        white-space: nowrap;
+        text-overflow: ellipsis;
         font-size: 14px;
         font-weight: 400;
         line-height: 18px;
+      }
+
+      .sidebar-flyout-item > .nav-badge {
+        justify-self: end;
+        margin: 0;
       }
 
       .sidebar-flyout-item.active .sidebar-flyout-label {
@@ -805,14 +844,18 @@
         color: #9a9a9a;
         white-space: nowrap;
         font-size: 16px;
-        font-weight: 700;
-        transition: color 0.16s ease, border-color 0.16s ease;
+        font-weight: 400;
+        transition: color 0.16s ease, border-color 0.16s ease, font-weight 0.16s ease;
       }
 
       .tab:hover,
       .tab.active {
         color: var(--primary);
         border-bottom-color: var(--primary);
+      }
+
+      .tab.active {
+        font-weight: 700;
       }
 
       .card {
@@ -837,7 +880,7 @@
       }
 
       .field label {
-        color: var(--pale);
+        color: #666666;
         font-size: 12px;
       }
 
@@ -851,8 +894,14 @@
         border-radius: 4px;
         background: #fbfbfb;
         color: var(--text);
+        font-weight: 400;
         outline: none;
         transition: border-color 0.18s ease, box-shadow 0.18s ease;
+      }
+
+      .field input::placeholder {
+        color: var(--muted);
+        font-weight: 400;
       }
 
       .field input:focus,
@@ -912,9 +961,9 @@
         z-index: 1200;
         padding: 0;
         border: 1px solid var(--line-soft);
-        border-radius: 8px;
+        border-radius: var(--dropdown-radius);
         background: var(--white);
-        box-shadow: var(--shadow-popup);
+        box-shadow: var(--dropdown-shadow);
         overflow: hidden;
         opacity: 0;
         transform: translateY(-4px);
@@ -931,23 +980,27 @@
       .filter-select-option {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 16px;
+        justify-content: flex-start;
+        gap: 8px;
         width: 100%;
-        padding: 10px 8px;
+        min-height: var(--dropdown-item-min-h);
+        padding: var(--dropdown-item-padding);
         border: 0;
         border-radius: 0;
         background: transparent;
-        color: var(--text);
-        font: inherit;
+        color: var(--dropdown-text);
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.4;
         text-align: left;
         white-space: nowrap;
       }
 
       .filter-select-option:hover,
       .filter-select-option.active {
-        background: var(--nav-active);
-        color: var(--primary);
+        background: var(--dropdown-hover);
+        color: var(--dropdown-text);
+        font-weight: 400;
       }
 
       .panel-card {
@@ -994,7 +1047,7 @@
         position: relative;
         height: auto;
         background: #f6f7f9;
-        color: #838383;
+        color: #666666;
         font-size: 13px;
         font-weight: 500;
       }
@@ -1077,9 +1130,9 @@
         width: 150px;
         overflow: hidden;
         border: 1px solid var(--line-soft);
-        border-radius: 8px;
+        border-radius: var(--dropdown-radius);
         background: var(--white);
-        box-shadow: var(--shadow-popup);
+        box-shadow: var(--dropdown-shadow);
         opacity: 0;
         transform: translateY(-4px);
         pointer-events: none;
@@ -1095,22 +1148,28 @@
       .action-menu-item {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-start;
         gap: 8px;
         width: 100%;
         min-height: 40px;
-        padding: 10px 8px;
+        padding: var(--dropdown-item-padding);
         border: 0;
-        background: var(--white);
-        color: var(--text);
+        background: transparent;
+        color: var(--dropdown-text);
         font-size: 14px;
         font-weight: 400;
         line-height: 1.4;
         text-align: left;
       }
 
+      .action-menu-item span:empty {
+        display: none;
+      }
+
       .action-menu-item:hover {
-        background: #f6f7f9;
+        background: var(--dropdown-hover);
+        color: var(--dropdown-text);
+        font-weight: 400;
       }
 
       .table-pagination {
@@ -1159,12 +1218,13 @@
         z-index: 1200;
         display: grid;
         width: 72px;
-        gap: 2px;
-        padding: 6px;
+        gap: 0;
+        padding: 0;
         border: 1px solid var(--line-soft);
-        border-radius: 8px;
+        border-radius: var(--dropdown-radius);
         background: var(--white);
-        box-shadow: var(--shadow-popup);
+        box-shadow: var(--dropdown-shadow);
+        overflow: hidden;
         opacity: 0;
         transform: translateY(4px);
         pointer-events: none;
@@ -1181,22 +1241,23 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        min-height: 30px;
-        padding: 7px 8px;
+        min-height: var(--dropdown-item-min-h);
+        padding: var(--dropdown-item-padding);
         border: 0;
-        border-radius: 4px;
+        border-radius: 0;
         background: transparent;
-        color: var(--text);
-        font-size: 13px;
-        font-weight: 500;
+        color: var(--dropdown-text);
+        font-size: 14px;
+        font-weight: 400;
         line-height: 1.4;
         text-align: left;
       }
 
       .page-size-option:hover,
       .page-size-option.active {
-        background: var(--nav-hover);
-        color: var(--primary);
+        background: var(--dropdown-hover);
+        color: var(--dropdown-text);
+        font-weight: 400;
       }
 
       .page-size-option span:last-child {
@@ -1549,9 +1610,9 @@
               <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m4 6 4 4 4-4" /></svg>
             </button>
             <div class="mode-menu" id="modeMenu" role="menu">
-              <button class="mode-option" type="button" data-mode="client">Client interface <span></span></button>
-              <button class="mode-option" type="button" data-mode="backoffice">Backoffice interface <span></span></button>
-              <button class="mode-option" type="button" data-mode="admin">Admin interface <span></span></button>
+              <button class="mode-option" type="button" data-mode="client">Client interface</button>
+              <button class="mode-option" type="button" data-mode="backoffice">Backoffice interface</button>
+              <button class="mode-option" type="button" data-mode="admin">Admin interface</button>
             </div>
           </div>
         </div>
@@ -2570,9 +2631,10 @@
         const childBadgeTotal = item.children?.reduce((total, child) => total + (Number(child.badge) || 0), 0) || 0;
         const badgeValue = item.badge || childBadgeTotal;
         const badge = badgeValue ? `<span class="nav-badge">${badgeValue}</span>` : "";
+        const shouldReserveCaretSlot = isChild || Boolean(badgeValue);
         const caret = hasChildren
           ? '<span class="nav-caret">⌃</span>'
-          : isChild ? '<span class="nav-caret nav-caret-placeholder">⌃</span>' : "";
+          : shouldReserveCaretSlot ? '<span class="nav-caret nav-caret-placeholder">⌃</span>' : "";
         const itemIcon = isChild ? "" : (icon[item.icon] || icon.dashboard);
         return `<button class="nav-item ${active ? "active" : ""} ${parentActive ? "parent-active" : ""}" type="button" data-nav="${item.id}" data-child="${isChild}" data-has-children="${hasChildren}">${itemIcon}<span class="nav-text">${t(item.label)}</span>${badge}${caret}</button>`;
       }
@@ -2714,7 +2776,7 @@
         document.querySelectorAll(".mode-option").forEach((button) => {
           const active = button.dataset.mode === state.mode;
           button.classList.toggle("active", active);
-          button.innerHTML = `${t(data[button.dataset.mode].label)} <span></span>`;
+          button.textContent = t(data[button.dataset.mode].label);
         });
       }
 
@@ -2861,7 +2923,6 @@
           <button class="sidebar-flyout-item ${child.id === state.activeNav ? "active" : ""}" type="button" data-nav="${child.id}" role="menuitem">
             <span class="sidebar-flyout-label">${t(child.label)}</span>
             ${child.badge ? `<span class="nav-badge">${child.badge}</span>` : ""}
-            <span class="nav-caret nav-caret-placeholder">⌃</span>
           </button>
         `).join("");
 
