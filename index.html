@@ -489,6 +489,7 @@
 
       .sidebar-quick-grid {
         display: none;
+        margin-top: 4px;
       }
 
       .sidebar-quick-grid-inner {
@@ -1573,21 +1574,6 @@
 
         .mode-client .sidebar-quick-grid {
           display: block;
-          position: absolute;
-          left: 0;
-          right: 0;
-          bottom: 52px;
-          z-index: 2;
-        }
-
-        .mode-client .nav-scroll {
-          height: calc(100% - 64px);
-          padding-bottom: 218px;
-        }
-
-        .mode-client .scroll-touch {
-          top: 64px;
-          bottom: 218px;
         }
 
         .sidebar-collapsed .sidebar-role-switch {
@@ -1649,7 +1635,6 @@
 
         .mode-client.sidebar-collapsed .sidebar-quick-grid {
           display: block;
-          bottom: 0;
         }
 
         .sidebar-mode-wrap {
@@ -1694,16 +1679,6 @@
           padding: 12px 0 64px !important;
         }
 
-        .mode-client.sidebar-collapsed .nav-scroll {
-          height: calc(100% - 64px);
-          padding-bottom: 166px !important;
-        }
-
-        .mode-client.sidebar-collapsed .scroll-touch {
-          top: 64px;
-          bottom: 154px;
-        }
-
         .sidebar-collapsed .nav-item {
           display: flex;
           align-items: center;
@@ -1738,18 +1713,6 @@
 
         .collapse-bar {
           display: none;
-        }
-
-        .mode-client .sidebar-quick-grid {
-          bottom: 0;
-        }
-
-        .mode-client .nav-scroll {
-          padding-bottom: 166px;
-        }
-
-        .mode-client .scroll-touch {
-          bottom: 154px;
         }
 
         .content {
@@ -1902,7 +1865,6 @@
             </div>
           </div>
           <nav class="nav-scroll" id="navScroll"></nav>
-          <div class="sidebar-quick-grid" id="sidebarQuickGrid" aria-label="Quick shortcuts"></div>
           <div class="scroll-touch" id="scrollTouch" aria-hidden="true">
             <div class="scroll-thumb" id="scrollThumb"></div>
           </div>
@@ -2776,7 +2738,6 @@
 
       const app = document.getElementById("app");
       const navScroll = document.getElementById("navScroll");
-      const sidebarQuickGrid = document.getElementById("sidebarQuickGrid");
       const sidebar = document.getElementById("sidebar");
       const scrollTouch = document.getElementById("scrollTouch");
       const scrollThumb = document.getElementById("scrollThumb");
@@ -2950,29 +2911,31 @@
         `;
       }
 
-      function renderSidebarQuickGrid() {
-        sidebarQuickGrid.setAttribute("aria-label", t("Quick shortcuts"));
-        sidebarQuickGrid.innerHTML = `
-          <div class="sidebar-quick-grid-inner">
+      function sidebarQuickGridTemplate() {
+        return `
+          <div class="sidebar-quick-grid" aria-label="${t("Quick shortcuts")}">
+            <div class="sidebar-quick-grid-inner">
             ${sidebarQuickActions.map((item) => `
               <button class="sidebar-quick-action" type="button" data-action="${item.action}" aria-label="${t(item.label)}">
                 <span class="sidebar-quick-icon" aria-hidden="true">${item.icon}${item.badge ? `<span class="sidebar-quick-badge">${item.badge}</span>` : ""}</span>
                 <span class="sidebar-quick-label">${t(item.label)}</span>
               </button>
             `).join("")}
+            </div>
           </div>
         `;
       }
 
       function renderNav() {
         const current = data[state.mode];
-        navScroll.innerHTML = current.nav.map((item) => {
+        const navItems = current.nav.map((item) => {
           if (item.title) return `<div class="nav-section-title">${t(item.title)}</div>`;
           const hasChildren = Boolean(item.children?.length);
           const groupCollapsed = state.collapsedGroups.has(item.id);
           const children = hasChildren ? `<div class="sub-nav">${item.children.map((child) => navButton(child, true)).join("")}</div>` : "";
           return `<div class="nav-group ${groupCollapsed ? "collapsed" : ""}" data-group="${item.id}">${navButton(item, false, hasChildren)}${children}</div>`;
         }).join("");
+        navScroll.innerHTML = `${navItems}${state.mode === "client" ? sidebarQuickGridTemplate() : ""}`;
         syncScrollThumb();
       }
 
@@ -3177,7 +3140,6 @@
         topbarRight.innerHTML = topbarTemplate();
         updateStaticText();
         renderModeOptions();
-        renderSidebarQuickGrid();
         renderNav();
         renderTabs();
         renderFilters();
@@ -3200,7 +3162,6 @@
         document.getElementById("primaryAction").textContent = t("Create");
         menuTrigger.setAttribute("aria-label", t("Open menu"));
         sidebar.setAttribute("aria-label", t("Main navigation"));
-        sidebarQuickGrid.setAttribute("aria-label", t("Quick shortcuts"));
         collapseButton.setAttribute("aria-label", t("Collapse menu"));
         filterCard.setAttribute("aria-label", t("Filter conditions"));
       }
@@ -3209,7 +3170,6 @@
         updateStaticText();
         renderModeOptions();
         topbarRight.innerHTML = topbarTemplate();
-        renderSidebarQuickGrid();
         renderNav();
         renderTabs();
         renderFilters();
@@ -3387,6 +3347,13 @@
       });
 
       navScroll.addEventListener("click", (event) => {
+        const quickButton = event.target.closest(".sidebar-quick-action");
+        if (quickButton) {
+          showToast(actionMessage(quickButton.dataset.action));
+          closeDrawer();
+          return;
+        }
+
         const button = event.target.closest(".nav-item");
         if (!button) return;
         const id = button.dataset.nav;
@@ -3536,13 +3503,6 @@
         }
         const button = event.target.closest("[data-action]");
         if (button) showToast(actionMessage(button.dataset.action));
-      });
-
-      sidebarQuickGrid.addEventListener("click", (event) => {
-        const button = event.target.closest(".sidebar-quick-action");
-        if (!button) return;
-        showToast(actionMessage(button.dataset.action));
-        closeDrawer();
       });
 
       document.getElementById("resetButton").addEventListener("click", () => setMode(state.mode));
