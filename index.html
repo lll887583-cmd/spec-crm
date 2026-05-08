@@ -487,6 +487,88 @@
         height: 0;
       }
 
+      .sidebar-quick-grid {
+        display: none;
+      }
+
+      .sidebar-quick-grid-inner {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        border-top: 1px solid var(--line-soft);
+        border-bottom: 1px solid var(--line-soft);
+        background: var(--white);
+      }
+
+      .sidebar-quick-action {
+        position: relative;
+        display: grid;
+        place-items: center;
+        gap: 7px;
+        min-height: 76px;
+        padding: 12px 8px 11px;
+        border: 0;
+        border-right: 1px solid var(--line-soft);
+        border-bottom: 1px solid var(--line-soft);
+        background: transparent;
+        color: var(--primary);
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 18px;
+        text-align: center;
+        transition: background 0.16s ease, color 0.16s ease;
+      }
+
+      .sidebar-quick-action:nth-child(2n) {
+        border-right: 0;
+      }
+
+      .sidebar-quick-action:nth-last-child(-n + 2) {
+        border-bottom: 0;
+      }
+
+      .sidebar-quick-action:hover {
+        background: var(--nav-hover);
+      }
+
+      .sidebar-quick-icon {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        color: currentColor;
+      }
+
+      .sidebar-quick-icon svg {
+        display: block;
+        width: 24px;
+        height: 24px;
+      }
+
+      .sidebar-quick-badge {
+        position: absolute;
+        top: -5px;
+        right: -7px;
+        display: inline-grid;
+        place-items: center;
+        min-width: 15px;
+        height: 15px;
+        padding: 0 4px;
+        border: 1px solid var(--white);
+        border-radius: 999px;
+        background: #df3731;
+        color: var(--white);
+        font-size: 9px;
+        font-weight: 700;
+        line-height: 1;
+      }
+
+      .sidebar-quick-label {
+        color: #666666;
+        font-weight: 400;
+        white-space: nowrap;
+      }
+
       .scroll-touch {
         position: absolute;
         top: 64px;
@@ -1489,12 +1571,39 @@
           height: calc(100% - 64px);
         }
 
+        .mode-client .sidebar-quick-grid {
+          display: block;
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 52px;
+          z-index: 2;
+        }
+
+        .mode-client .nav-scroll {
+          height: calc(100% - 64px);
+          padding-bottom: 218px;
+        }
+
+        .mode-client .scroll-touch {
+          top: 64px;
+          bottom: 218px;
+        }
+
         .sidebar-collapsed .sidebar-role-switch {
+          display: none;
+        }
+
+        .sidebar-collapsed .sidebar-quick-grid {
           display: none;
         }
 
         .sidebar-collapsed .nav-scroll {
           height: 100%;
+        }
+
+        .sidebar-collapsed .scroll-touch {
+          top: 64px;
         }
       }
 
@@ -1536,6 +1645,11 @@
 
         .sidebar-collapsed .sidebar-role-switch {
           display: flex;
+        }
+
+        .mode-client.sidebar-collapsed .sidebar-quick-grid {
+          display: block;
+          bottom: 0;
         }
 
         .sidebar-mode-wrap {
@@ -1580,6 +1694,16 @@
           padding: 12px 0 64px !important;
         }
 
+        .mode-client.sidebar-collapsed .nav-scroll {
+          height: calc(100% - 64px);
+          padding-bottom: 166px !important;
+        }
+
+        .mode-client.sidebar-collapsed .scroll-touch {
+          top: 64px;
+          bottom: 154px;
+        }
+
         .sidebar-collapsed .nav-item {
           display: flex;
           align-items: center;
@@ -1614,6 +1738,18 @@
 
         .collapse-bar {
           display: none;
+        }
+
+        .mode-client .sidebar-quick-grid {
+          bottom: 0;
+        }
+
+        .mode-client .nav-scroll {
+          padding-bottom: 166px;
+        }
+
+        .mode-client .scroll-touch {
+          bottom: 154px;
         }
 
         .content {
@@ -1746,6 +1882,7 @@
             </div>
           </div>
           <nav class="nav-scroll" id="navScroll"></nav>
+          <div class="sidebar-quick-grid" id="sidebarQuickGrid" aria-label="Quick shortcuts"></div>
           <div class="scroll-touch" id="scrollTouch" aria-hidden="true">
             <div class="scroll-thumb" id="scrollThumb"></div>
           </div>
@@ -1855,6 +1992,13 @@
         news: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9.21804 15.6395C9.11304 15.6395 9.00744 15.6143 8.91084 15.5639L7.26204 14.6969L5.61324 15.5639C5.39064 15.6809 5.12124 15.6617 4.91844 15.5135C4.81881 15.4411 4.74142 15.3423 4.69498 15.2282C4.64854 15.1141 4.63492 14.9893 4.65564 14.8679L4.97064 13.0319L3.63684 11.7317C3.45684 11.5565 3.39204 11.2943 3.47004 11.0549C3.50819 10.9378 3.57828 10.8337 3.67241 10.7543C3.76655 10.6749 3.88099 10.6234 4.00284 10.6055L5.84604 10.3379L6.67044 8.66752C6.78144 8.44252 7.01124 8.29972 7.26204 8.29972C7.51284 8.29972 7.74264 8.44252 7.85364 8.66752L8.67804 10.3379L10.5212 10.6055C10.7696 10.6415 10.9766 10.8155 11.054 11.0549C11.1314 11.2937 11.0666 11.5559 10.8872 11.7317L9.55344 13.0319L9.86844 14.8679C9.91104 15.1157 9.80904 15.3659 9.60564 15.5135C9.49104 15.5969 9.35484 15.6395 9.21804 15.6395ZM7.26204 13.2911C7.36764 13.2911 7.47324 13.3163 7.56924 13.3667L8.34144 13.7729L8.19384 12.9131C8.15724 12.6989 8.22804 12.4805 8.38344 12.3287L9.00804 11.7197L8.14464 11.5943C8.03874 11.5789 7.93817 11.538 7.85161 11.4751C7.76506 11.4122 7.69512 11.3291 7.64784 11.2331L7.26204 10.4507L6.87624 11.2331C6.78024 11.4281 6.59424 11.5631 6.37944 11.5943L5.51604 11.7197L6.14064 12.3287C6.2173 12.4034 6.27463 12.4957 6.30766 12.5975C6.34069 12.6993 6.34844 12.8076 6.33024 12.9131L6.18264 13.7729L6.95484 13.3667C7.05144 13.3169 7.15704 13.2911 7.26204 13.2911ZM13.712 10.5257C13.415 10.5257 13.1366 10.3403 13.0328 10.0439C12.9008 9.66892 13.0982 9.25792 13.4732 9.12592L18.9956 7.18552C19.3706 7.05352 19.7816 7.25092 19.9136 7.62592C20.0456 8.00092 19.8482 8.41192 19.4732 8.54392L13.9508 10.4843C13.8716 10.5125 13.7912 10.5257 13.712 10.5257ZM13.7744 13.5551C13.4774 13.5551 13.199 13.3697 13.0952 13.0733C12.9632 12.6983 13.1606 12.2873 13.5356 12.1553L19.058 10.2149C19.433 10.0829 19.844 10.2803 19.976 10.6553C20.108 11.0303 19.9106 11.4413 19.5356 11.5733L14.0132 13.5137C13.9346 13.5419 13.8536 13.5551 13.7744 13.5551ZM13.805 16.5545C13.508 16.5545 13.2296 16.3691 13.1258 16.0727C12.9938 15.6977 13.1912 15.2867 13.5662 15.1547L19.0886 13.2143C19.4636 13.0823 19.8746 13.2797 20.0066 13.6547C20.1386 14.0297 19.9412 14.4407 19.5662 14.5727L14.0438 16.5131C13.9652 16.5413 13.8842 16.5545 13.805 16.5545Z" fill="currentColor"></path><path d="M11.8503 22.4611C11.7759 22.4611 11.7009 22.4497 11.6289 22.4263L3.09928 19.6735C1.30048 19.2175 0.921875 18.1459 0.921875 17.3251V4.5229C0.921875 3.1477 2.04027 2.0293 3.41547 2.0293C3.49167 2.0293 3.56667 2.0413 3.63928 2.0647L11.8665 4.7521L20.1849 2.0641C20.2563 2.0407 20.3313 2.0293 20.4063 2.0293C21.7815 2.0293 22.8999 3.1477 22.8999 4.5229V17.3257C22.8999 18.9721 21.4443 19.4413 20.7453 19.6669C20.7447 19.6669 20.7435 19.6675 20.7429 19.6675L12.0693 22.4275C11.9973 22.4497 11.9235 22.4611 11.8503 22.4611ZM3.31527 3.4741C2.78127 3.5245 2.36187 3.9757 2.36187 4.5229V17.3257C2.36187 17.5639 2.36187 18.0067 3.47127 18.2827C3.48747 18.2869 3.50307 18.2911 3.51867 18.2965L11.8515 20.9857L20.3043 18.2959C21.3789 17.9491 21.4593 17.6869 21.4593 17.3257V4.5229C21.4593 3.9757 21.0393 3.5239 20.5047 3.4741L12.0861 6.1945C11.9415 6.2413 11.7855 6.2407 11.6409 6.1939L3.31527 3.4741Z" fill="currentColor"></path></svg>',
         calendar: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M20.5258 22.5608H3.58777C2.30377 22.5608 1.25977 21.5168 1.25977 20.2388V5.62878C1.25977 4.34478 2.30377 3.30078 3.58777 3.30078H20.5258C21.8038 3.30078 22.8478 4.34478 22.8478 5.62278V20.2328C22.8478 21.5168 21.8038 22.5608 20.5258 22.5608ZM3.58777 4.74078C3.10177 4.74078 2.69977 5.13678 2.69977 5.62878V20.2388C2.69977 20.7248 3.09577 21.1208 3.58177 21.1208H20.5198C21.0058 21.1208 21.4018 20.7248 21.4018 20.2388V5.62878C21.4018 5.14278 21.0058 4.74678 20.5198 4.74678H3.58777V4.74078Z" fill="currentColor"></path><path d="M22.1114 10.6686H2.16141C1.76541 10.6686 1.44141 10.3446 1.44141 9.94862C1.44141 9.55262 1.76541 9.22863 2.16141 9.22863H22.1114C22.5074 9.22863 22.8314 9.55262 22.8314 9.94862C22.8314 10.3446 22.5074 10.6686 22.1114 10.6686ZM7.19541 6.79862C6.79941 6.79862 6.47541 6.48063 6.47541 6.08463L6.44541 1.86662C6.44541 1.47062 6.76341 1.14663 7.15941 1.14062C7.55541 1.14062 7.87941 1.45862 7.88541 1.85462L7.91541 6.07262C7.91541 6.46862 7.59741 6.79262 7.19541 6.79862ZM16.8014 6.79862C16.4054 6.79862 16.0814 6.48063 16.0814 6.08463L16.0514 1.86662C16.0514 1.47062 16.3694 1.14663 16.7654 1.14062H16.7714C17.1674 1.14062 17.4914 1.45862 17.4914 1.85462L17.5214 6.07262C17.5274 6.46862 17.2094 6.79262 16.8014 6.79862C16.8074 6.79862 16.8074 6.79862 16.8014 6.79862ZM7.98741 14.4606H5.52741C5.13141 14.4606 4.80741 14.1366 4.80741 13.7406C4.80741 13.3446 5.13141 13.0206 5.52741 13.0206H7.98741C8.38341 13.0206 8.70741 13.3446 8.70741 13.7406C8.70741 14.1366 8.38341 14.4606 7.98741 14.4606ZM7.98741 18.1806H5.52741C5.13141 18.1806 4.80741 17.8566 4.80741 17.4606C4.80741 17.0646 5.13141 16.7406 5.52741 16.7406H7.98741C8.38341 16.7406 8.70741 17.0646 8.70741 17.4606C8.70741 17.8566 8.38341 18.1806 7.98741 18.1806ZM13.0814 14.4666H10.6214C10.2254 14.4666 9.90141 14.1426 9.90141 13.7466C9.90141 13.3506 10.2254 13.0266 10.6214 13.0266H13.0814C13.4774 13.0266 13.8014 13.3506 13.8014 13.7466C13.8014 14.1426 13.4774 14.4666 13.0814 14.4666ZM13.0814 18.1806H10.6214C10.2254 18.1806 9.90141 17.8566 9.90141 17.4606C9.90141 17.0646 10.2254 16.7406 10.6214 16.7406H13.0814C13.4774 16.7406 13.8014 17.0646 13.8014 17.4606C13.8014 17.8566 13.4774 18.1806 13.0814 18.1806ZM18.4454 14.4666H15.9854C15.5894 14.4666 15.2654 14.1426 15.2654 13.7466C15.2654 13.3506 15.5894 13.0266 15.9854 13.0266H18.4454C18.8414 13.0266 19.1654 13.3506 19.1654 13.7466C19.1654 14.1426 18.8414 14.4666 18.4454 14.4666ZM18.4454 18.1806H15.9854C15.5894 18.1806 15.2654 17.8566 15.2654 17.4606C15.2654 17.0646 15.5894 16.7406 15.9854 16.7406H18.4454C18.8414 16.7406 19.1654 17.0646 19.1654 17.4606C19.1654 17.8566 18.8414 18.1806 18.4454 18.1806Z" fill="currentColor"></path></svg>'
       };
+
+      const sidebarQuickActions = [
+        { action: "Support", label: "Support", icon: clientTopbarIcon.messages, badge: 7 },
+        { action: "News", label: "News", icon: clientTopbarIcon.news },
+        { action: "Calendar", label: "Calendar", icon: clientTopbarIcon.calendar },
+        { action: "Notifications", label: "Notifications", icon: icon.adminNotifications }
+      ];
 
       const data = {
         backoffice: {
@@ -2604,13 +2748,15 @@
           "Actions": "操作",
           "Page": "页码",
           "Rows per page": "每页条数",
-          "No permission": "无操作权限"
+          "No permission": "无操作权限",
+          "Quick shortcuts": "快捷入口"
         }
       };
 
 
       const app = document.getElementById("app");
       const navScroll = document.getElementById("navScroll");
+      const sidebarQuickGrid = document.getElementById("sidebarQuickGrid");
       const sidebar = document.getElementById("sidebar");
       const scrollTouch = document.getElementById("scrollTouch");
       const scrollThumb = document.getElementById("scrollThumb");
@@ -2780,6 +2926,20 @@
           <div class="user-box">
             <div class="avatar" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="currentColor"><circle cx="8.5" cy="10" r="1.6"/><circle cx="15.5" cy="10" r="1.6"/><path d="M8 15c1.1 1 2.4 1.5 4 1.5s2.9-.5 4-1.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
             <div><div class="user-name">Fuji Jiro ⌄</div>${showStatus ? `<div class="user-status">${t("Verified")}</div>` : ""}</div>
+          </div>
+        `;
+      }
+
+      function renderSidebarQuickGrid() {
+        sidebarQuickGrid.setAttribute("aria-label", t("Quick shortcuts"));
+        sidebarQuickGrid.innerHTML = `
+          <div class="sidebar-quick-grid-inner">
+            ${sidebarQuickActions.map((item) => `
+              <button class="sidebar-quick-action" type="button" data-action="${item.action}" aria-label="${t(item.label)}">
+                <span class="sidebar-quick-icon" aria-hidden="true">${item.icon}${item.badge ? `<span class="sidebar-quick-badge">${item.badge}</span>` : ""}</span>
+                <span class="sidebar-quick-label">${t(item.label)}</span>
+              </button>
+            `).join("")}
           </div>
         `;
       }
@@ -2997,6 +3157,7 @@
         topbarRight.innerHTML = topbarTemplate();
         updateStaticText();
         renderModeOptions();
+        renderSidebarQuickGrid();
         renderNav();
         renderTabs();
         renderFilters();
@@ -3019,6 +3180,7 @@
         document.getElementById("primaryAction").textContent = t("Create");
         menuTrigger.setAttribute("aria-label", t("Open menu"));
         sidebar.setAttribute("aria-label", t("Main navigation"));
+        sidebarQuickGrid.setAttribute("aria-label", t("Quick shortcuts"));
         collapseButton.setAttribute("aria-label", t("Collapse menu"));
         filterCard.setAttribute("aria-label", t("Filter conditions"));
       }
@@ -3027,6 +3189,7 @@
         updateStaticText();
         renderModeOptions();
         topbarRight.innerHTML = topbarTemplate();
+        renderSidebarQuickGrid();
         renderNav();
         renderTabs();
         renderFilters();
@@ -3353,6 +3516,13 @@
         }
         const button = event.target.closest("[data-action]");
         if (button) showToast(actionMessage(button.dataset.action));
+      });
+
+      sidebarQuickGrid.addEventListener("click", (event) => {
+        const button = event.target.closest(".sidebar-quick-action");
+        if (!button) return;
+        showToast(actionMessage(button.dataset.action));
+        closeDrawer();
       });
 
       document.getElementById("resetButton").addEventListener("click", () => setMode(state.mode));
