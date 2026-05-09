@@ -1741,6 +1741,12 @@
         display: block;
       }
 
+      @media (min-width: 901px) {
+        .app.drawer-open .overlay {
+          display: none;
+        }
+      }
+
       .toast {
         position: fixed;
         right: 24px;
@@ -2222,25 +2228,78 @@
       .popup-locales {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 0;
       }
 
       .popup-locale-switch-row {
         display: flex;
-        align-items: flex-start;
+        align-items: flex-end;
         justify-content: space-between;
-        gap: 16px;
+        gap: 24px;
       }
 
       .popup-locale-tabs.tabs {
         flex: 1 1 auto;
         min-width: 0;
+        width: auto;
+        max-width: none;
         margin: 0;
-        gap: 26px;
+        gap: 8px;
+        padding-bottom: 0;
+        border-bottom: 1px solid var(--line-soft);
+        overflow-x: auto;
+        overflow-y: visible;
+        scrollbar-width: none;
+      }
+
+      .popup-locale-tabs.tabs::-webkit-scrollbar {
+        display: none;
       }
 
       .popup-locale-tabs .tab {
-        padding: 0 18px;
+        flex: 0 0 auto;
+        min-height: 36px;
+        padding: 8px 14px;
+        border: 0;
+        border-radius: 4px 4px 0 0;
+        background: transparent;
+        color: #777777;
+        font-size: 14px;
+        transition: background 0.16s ease, color 0.16s ease, font-weight 0.16s ease;
+      }
+
+      .popup-locale-tabs .tab::after {
+        content: "";
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        bottom: -1px;
+        height: 2px;
+        border-radius: 2px 2px 0 0;
+        background: var(--primary);
+        opacity: 0;
+        transform: scaleX(0.4);
+        transition: opacity 0.16s ease, transform 0.16s ease;
+      }
+
+      .popup-locale-tabs .tab:hover,
+      .popup-locale-tabs .tab:focus-visible {
+        border: 0;
+        background: var(--nav-hover);
+        color: var(--primary);
+        outline: none;
+      }
+
+      .popup-locale-tabs .tab.active {
+        border: 0;
+        background: transparent;
+        color: var(--primary);
+        font-weight: 700;
+      }
+
+      .popup-locale-tabs .tab.active::after {
+        opacity: 1;
+        transform: scaleX(1);
       }
 
       .popup-locale-actions {
@@ -2257,7 +2316,7 @@
         gap: 16px;
         padding: 16px 0 0;
         border: 0;
-        border-top: 1px solid var(--line-soft);
+        border-top: 0;
         border-radius: 0;
         background: transparent;
       }
@@ -2465,6 +2524,100 @@
         display: flex;
       }
 
+      .popup-locale-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 5000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 32px;
+        background: rgba(29, 29, 29, 0.42);
+      }
+
+      .popup-locale-modal.open {
+        display: flex;
+      }
+
+      .popup-locale-dialog {
+        position: relative;
+        width: min(520px, calc(100vw - 32px));
+        padding: 24px;
+        border: 1px solid var(--line-soft);
+        border-radius: 8px;
+        background: var(--white);
+        box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .popup-locale-dialog-close {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border: 0;
+        border-radius: 4px;
+        background: transparent;
+        color: #777777;
+        font-size: 22px;
+        font-weight: 400;
+        line-height: 1;
+        cursor: pointer;
+      }
+
+      .popup-locale-dialog-close:hover,
+      .popup-locale-dialog-close:focus-visible {
+        background: #f5f5f5;
+        color: var(--text);
+        outline: none;
+      }
+
+      .popup-locale-dialog-title {
+        margin: 0 40px 8px 0;
+        color: var(--text);
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 28px;
+      }
+
+      .popup-locale-dialog-desc {
+        margin: 0 0 24px;
+        color: #333333;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 22px;
+      }
+
+      .popup-locale-dialog .filter-select {
+        margin-bottom: 24px;
+      }
+
+      .popup-locale-dialog .filter-select-control {
+        min-height: 40px;
+        background: var(--white);
+        font-size: 14px;
+      }
+
+      .popup-locale-dialog .filter-select-menu {
+        max-height: 280px;
+        overflow-y: auto;
+      }
+
+      .popup-locale-dialog-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .popup-locale-dialog-actions .btn {
+        min-width: 96px;
+        min-height: 40px;
+        font-size: 14px;
+      }
+
       .popup-image-dialog {
         width: min(960px, calc(100vw - 64px));
         max-height: calc(100vh - 64px);
@@ -2600,7 +2753,7 @@
 
       .popup-edit-actions {
         display: flex;
-        justify-content: flex-end;
+        justify-content: flex-start;
         gap: 10px;
         margin-top: 4px;
         padding: 16px 0 4px;
@@ -2617,6 +2770,10 @@
         .popup-upload { grid-template-columns: 1fr; }
         .popup-locale-switch-row { align-items: stretch; flex-direction: column; }
         .popup-locale-actions { justify-content: flex-start; }
+        .popup-locale-modal { padding: 16px; }
+        .popup-locale-dialog { width: 100%; padding: 24px 16px 16px; }
+        .popup-locale-dialog-actions { flex-direction: column-reverse; gap: 10px; }
+        .popup-locale-dialog-actions .btn { width: 100%; }
       }
 
       @media (max-width: 767px) {
@@ -2649,7 +2806,7 @@
         }
       }
 
-      @media (max-width: 1399px) {
+      @media (max-width: 900px) {
         :root {
           --sidebar-w: 280px;
         }
@@ -2671,15 +2828,15 @@
         }
 
         .sidebar-collapsed .sidebar-role-switch {
-          display: none;
+          display: flex;
         }
 
-        .sidebar-collapsed .sidebar-quick-grid {
-          display: none;
+        .mode-client.sidebar-collapsed .sidebar-quick-grid {
+          display: block;
         }
 
         .sidebar-collapsed .nav-scroll {
-          height: 100%;
+          height: calc(100% - 64px);
         }
 
         .sidebar-collapsed .scroll-touch {
@@ -2826,7 +2983,7 @@
         }
       }
 
-      @media (max-width: 1399px) {
+      @media (max-width: 900px) {
         .app.drawer-open .topbar {
           z-index: 40;
         }
@@ -3833,7 +3990,9 @@
           "Delete": "删除",
           "Common settings": "通用设置",
           "Audience": "受众",
+          "Define the target audience regions where the pop-up is displayed.": "选择弹窗展示的目标受众区域，决定哪些地区的用户能看到此弹窗。",
           "Channels": "渠道",
+          "Define the channels where the pop-up is displayed, such as CRM, Web Global, or Web Japan.": "选择弹窗出现的渠道，例如 CRM 后台、Web Global 或 Web Japan。",
           "Web Global": "全球 Web",
           "Web Japan": "日本 Web",
           "Draft": "草稿",
@@ -3842,9 +4001,11 @@
           "(GMT+08:00) China Standard Time - Shanghai": "(GMT+08:00) 中国标准时间 - 上海",
           "Start time": "开始时间",
           "End time": "结束时间",
+          "End time cannot be earlier than start time": "结束时间不能早于开始时间",
           "Page path": "页面路径",
+          "Define the page path where the pop-up takes effect.": "定义弹窗生效的页面路径。",
           "/* represents the home page. Multi-level paths are supported.": "/* 代表首页，支持多级路径。",
-          "/* represents the home page. Client Interface / Web both support multi-level paths.": "/* 代表首页，Client interface / web 均支持多级路径。",
+          "For example, /* displays the pop-up on the home page; /account displays the pop-up only on the account page.": "例如/*代表首页展示 pop-up，/account 代表仅account 页展示 pop-up。",
           "Path must start with /. Please check the format.": "路径必须以 / 开头，请检查格式。",
           "Allow redirect": "允许跳转",
           "Redirect URL": "跳转链接",
@@ -3855,9 +4016,19 @@
           "Locale": "语言项",
           "Add": "新增",
           "Add locale": "添加语言项",
+          "Select a language to add a new localized content entry.": "选择一种语言，用于新增本地化内容项。",
           "Locale added": "已添加语言项",
           "Locale removed": "已移除语言项",
           "At least one locale is required": "至少需要保留一个语言项",
+          "All locale options have been added": "所有语言项均已添加",
+          "Please select a language": "请选择语言",
+          "Delete locale": "删除语言项",
+          "Are you sure you want to delete this localized content entry?": "确认删除这个本地化内容项吗？",
+          "Delete pop-up card": "删除弹窗卡片",
+          "Are you sure you want to delete this pop-up card?": "确认删除这个弹窗卡片吗？",
+          "Delete cover image": "删除封面图片",
+          "Are you sure you want to delete this cover image?": "确认删除这张封面图片吗？",
+          "Are you sure you want to delete this item?": "确认删除这条数据吗？",
           "Language": "语言",
           "Title": "标题",
           "Body": "正文",
@@ -3866,9 +4037,6 @@
           "5-50 characters": "5-50 个字符",
           "5-200 characters": "5-200 个字符",
           "Shown only when Allow redirect is enabled.": "仅在允许跳转开启时显示。",
-          "English (en-us)": "英语 (en-us)",
-          "Simplified Chinese": "简体中文",
-          "Japanese": "日语",
           "Pop-up settings": "弹窗设置",
           "Cover image": "封面图片",
           "Pop-up cover": "弹窗封面",
@@ -3889,6 +4057,9 @@
           "Upload required": "需要上传",
           "PNG/JPG, up to 300KB": "PNG/JPG，不超过 300KB",
           "Cover image removed": "封面图片已移除",
+          "Cover image uploaded": "封面图片已上传",
+          "Only JPG, JPEG, and PNG files are supported": "仅支持 JPG、JPEG 和 PNG 文件",
+          "Image size must not exceed 300KB": "图片大小不能超过 300KB",
           "Preview opened": "已打开预览",
           "Cover image viewed": "已查看封面图片",
           "Image preview": "图片预览",
@@ -3969,14 +4140,21 @@
         popupLocaleValues: {
           en: { language: "", title: "", body: "", cta: "" }
         },
+        pendingConfirmAction: null,
         dragStartY: 0,
         dragStartTop: 0
       };
 
       const popupLocaleOptions = [
-        { id: "en", label: "English (en-us)" },
-        { id: "zh", label: "简体中文 (zh-cn)" },
-        { id: "ja", label: "日本語 (ja-jp)" }
+        { id: "en", label: "English" },
+        { id: "ja", label: "日本語" },
+        { id: "zh_hant", label: "繁體中文" },
+        { id: "vi", label: "Tiếng Việt" },
+        { id: "th", label: "ภาษาไทย" },
+        { id: "ko", label: "한국어" },
+        { id: "id", label: "Indonesia" },
+        { id: "ms", label: "Melayu" },
+        { id: "zh_hans", label: "简体中文" }
       ];
 
       function t(value) {
@@ -4048,13 +4226,11 @@
       function popupLocaleValuesForMode(mode) {
         if (mode === "edit") {
           return {
-            en: { language: "English (en-us)", title: "12345", body: "测试page path 是否支持多级路径", cta: "" }
+            en: { language: "English", title: "12345", body: "测试page path 是否支持多级路径", cta: "" }
           };
         }
         return {
-          en: { language: "English (en-us)", title: "", body: "", cta: "" },
-          zh: { language: "简体中文 (zh-cn)", title: "", body: "", cta: "" },
-          ja: { language: "日本語 (ja-jp)", title: "", body: "", cta: "" }
+          en: { language: "English", title: "", body: "", cta: "" }
         };
       }
 
@@ -4099,22 +4275,23 @@
         return true;
       }
 
-      function popupSelectTemplate({ options, selected, multiple = false, label = "", role = "" }) {
+      function popupSelectTemplate({ options, selected, multiple = false, label = "", role = "", translateOptions = true }) {
         const selectedValues = Array.isArray(selected) ? selected.filter(Boolean) : selected ? [selected] : [];
         const selectedSet = new Set(selectedValues);
         const placeholder = label ? `${t("Select")} ${label}` : t("Select");
+        const optionText = (value) => translateOptions ? t(value) : value;
         const controlContent = multiple
-          ? `<span class="popup-selected-values" data-popup-selected-values>${selectedValues.length ? selectedValues.map((value) => `<span class="popup-selected-tag">${t(value)}</span>`).join("") : `<span class="popup-select-placeholder">${placeholder}</span>`}</span>`
-          : `<span data-popup-selected-text class="${selectedValues.length ? "" : "popup-select-placeholder"}">${selectedValues.length ? t(selectedValues[0]) : placeholder}</span>`;
+          ? `<span class="popup-selected-values" data-popup-selected-values>${selectedValues.length ? selectedValues.map((value) => `<span class="popup-selected-tag">${optionText(value)}</span>`).join("") : `<span class="popup-select-placeholder">${placeholder}</span>`}</span>`
+          : `<span data-popup-selected-text class="${selectedValues.length ? "" : "popup-select-placeholder"}">${selectedValues.length ? optionText(selectedValues[0]) : placeholder}</span>`;
         return `
-          <div class="filter-select popup-select ${multiple ? "is-multiple" : ""}" data-popup-select data-popup-select-multiple="${multiple}" data-popup-select-role="${role}" data-popup-placeholder="${placeholder}">
+          <div class="filter-select popup-select ${multiple ? "is-multiple" : ""}" data-popup-select data-popup-select-multiple="${multiple}" data-popup-select-role="${role}" data-popup-placeholder="${placeholder}" data-popup-translate-options="${translateOptions}">
             <button class="filter-select-control ${multiple ? "popup-multi-select" : "popup-select-control"}" type="button" aria-haspopup="listbox" aria-expanded="false">
               ${controlContent}
             </button>
             <div class="filter-select-menu" role="listbox">
               ${options.map((value) => {
                 const active = selectedSet.has(value);
-                return `<button class="filter-select-option ${active ? "active" : ""}" type="button" data-popup-select-option="${value}" role="option" aria-selected="${active}"><span>${t(value)}</span><span class="popup-option-check">✓</span></button>`;
+                return `<button class="filter-select-option ${active ? "active" : ""}" type="button" data-popup-select-option="${value}" role="option" aria-selected="${active}"><span>${optionText(value)}</span><span class="popup-option-check">✓</span></button>`;
               }).join("")}
             </div>
           </div>
@@ -4123,13 +4300,15 @@
 
       function updatePopupSelectControl(select) {
         const isMultiple = select.dataset.popupSelectMultiple === "true";
+        const translateOptions = select.dataset.popupTranslateOptions !== "false";
+        const optionText = (value) => translateOptions ? t(value) : value;
         const activeOptions = Array.from(select.querySelectorAll(".filter-select-option.active"));
         if (isMultiple) {
           const values = activeOptions.map((option) => option.dataset.popupSelectOption || option.textContent.trim());
           const container = select.querySelector("[data-popup-selected-values]");
           if (container) {
             container.innerHTML = values.length
-              ? values.map((value) => `<span class="popup-selected-tag">${t(value)}</span>`).join("")
+              ? values.map((value) => `<span class="popup-selected-tag">${optionText(value)}</span>`).join("")
               : `<span class="popup-select-placeholder">${select.dataset.popupPlaceholder || t("Select")}</span>`;
           }
           return;
@@ -4137,7 +4316,7 @@
         const active = activeOptions[0];
         const text = select.querySelector("[data-popup-selected-text]");
         if (active && text) {
-          text.textContent = t(active.dataset.popupSelectOption || active.textContent.trim());
+          text.textContent = optionText(active.dataset.popupSelectOption || active.textContent.trim());
           text.classList.remove("popup-select-placeholder");
         } else if (text) {
           text.textContent = select.dataset.popupPlaceholder || t("Select");
@@ -4198,9 +4377,11 @@
 
       function normalizeLocaleLabel(label) {
         const map = {
-          "English": "English (en-us)",
-          "Simplified Chinese": "简体中文 (zh-cn)",
-          "Japanese": "日本語 (ja-jp)"
+          "English (en-us)": "English",
+          "Simplified Chinese": "简体中文",
+          "简体中文 (zh-cn)": "简体中文",
+          "Japanese": "日本語",
+          "日本語 (ja-jp)": "日本語"
         };
         return map[label] || label;
       }
@@ -4208,6 +4389,164 @@
       function popupLocaleLabel(localeKey, index) {
         const language = normalizeLocaleLabel(state.popupLocaleValues[localeKey]?.language);
         return language || `${t("Locale")} ${index + 1}`;
+      }
+
+      function popupAvailableLocaleOptionsForAdd() {
+        const usedLanguages = new Set(Object.values(state.popupLocaleValues)
+          .map((item) => normalizeLocaleLabel(item?.language || ""))
+          .filter(Boolean));
+        return popupLocaleOptions.filter((option) => !usedLanguages.has(option.label));
+      }
+
+      function popupLocaleKeyForOption(option) {
+        if (!state.popupLocaleValues[option.id]) return option.id;
+        return `${option.id}_${Date.now()}`;
+      }
+
+      function closeAddLocaleModal() {
+        const modal = document.getElementById("popupLocaleModal");
+        modal?.classList.remove("open");
+        modal?.setAttribute("aria-hidden", "true");
+        if (modal) modal.dataset.modalKind = "";
+        state.pendingConfirmAction = null;
+        closeFilterSelect();
+      }
+
+      function confirmAddLocaleFromModal() {
+        const modal = document.getElementById("popupLocaleModal");
+        const activeOption = modal?.querySelector(".filter-select-option.active");
+        const selectedLabel = normalizeLocaleLabel(activeOption?.dataset.popupSelectOption || "");
+        const localeOption = popupLocaleOptions.find((option) => option.label === selectedLabel);
+        if (!localeOption) {
+          showToast(t("Please select a language"));
+          return;
+        }
+        const nextKey = popupLocaleKeyForOption(localeOption);
+        state.popupLocaleValues[nextKey] = { language: localeOption.label, title: "", body: "", cta: "" };
+        state.activePopupLocale = nextKey;
+        closeAddLocaleModal();
+        renderPopupLocalePanel();
+        showToast(t("Locale added"));
+      }
+
+      function ensureAddLocaleModal() {
+        let modal = document.getElementById("popupLocaleModal");
+        if (modal) return modal;
+        modal = document.createElement("div");
+        modal.id = "popupLocaleModal";
+        modal.className = "popup-locale-modal";
+        modal.setAttribute("aria-hidden", "true");
+        document.body.appendChild(modal);
+        modal.addEventListener("click", (event) => {
+          if (event.target === modal || event.target.closest("[data-locale-modal-cancel]")) {
+            closeAddLocaleModal();
+            return;
+          }
+          if (event.target.closest("[data-locale-modal-confirm]")) {
+            if (modal.dataset.modalKind === "confirm" && typeof state.pendingConfirmAction === "function") {
+              const action = state.pendingConfirmAction;
+              closeAddLocaleModal();
+              action();
+              return;
+            }
+            confirmAddLocaleFromModal();
+            return;
+          }
+          if (modal.dataset.modalKind === "add-locale") handlePopupSelectClick(event);
+        });
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape" && modal.classList.contains("open")) closeAddLocaleModal();
+        });
+        return modal;
+      }
+
+      function openAddLocaleModal() {
+        const options = popupAvailableLocaleOptionsForAdd();
+        if (!options.length) {
+          showToast(t("All locale options have been added"));
+          return;
+        }
+        const selected = options[0].label;
+        const modal = ensureAddLocaleModal();
+        modal.dataset.modalKind = "add-locale";
+        state.pendingConfirmAction = null;
+        modal.innerHTML = `
+          <div class="popup-locale-dialog" role="dialog" aria-modal="true" aria-label="${t("Add locale")}">
+            <button class="popup-locale-dialog-close" type="button" data-locale-modal-cancel aria-label="${t("Cancel")}">×</button>
+            <h2 class="popup-locale-dialog-title">${t("Add locale")}</h2>
+            <p class="popup-locale-dialog-desc">${t("Select a language to add a new localized content entry.")}</p>
+            ${popupSelectTemplate({ options: options.map((item) => item.label), selected, label: t("Language"), role: "add-locale-language", translateOptions: false })}
+            <div class="popup-locale-dialog-actions">
+              <button class="btn secondary" type="button" data-locale-modal-cancel>${t("Cancel")}</button>
+              <button class="btn secondary" type="button" data-locale-modal-confirm>${t("Add locale")}</button>
+            </div>
+          </div>
+        `;
+        modal.classList.add("open");
+        modal.setAttribute("aria-hidden", "false");
+        modal.querySelector(".filter-select-control")?.focus();
+      }
+
+      function openPopupConfirmModal({ title, description, confirmText = "Delete", onConfirm }) {
+        const modal = ensureAddLocaleModal();
+        modal.dataset.modalKind = "confirm";
+        state.pendingConfirmAction = onConfirm;
+        modal.innerHTML = `
+          <div class="popup-locale-dialog" role="dialog" aria-modal="true" aria-label="${t(title)}">
+            <button class="popup-locale-dialog-close" type="button" data-locale-modal-cancel aria-label="${t("Cancel")}">×</button>
+            <h2 class="popup-locale-dialog-title">${t(title)}</h2>
+            <p class="popup-locale-dialog-desc">${t(description)}</p>
+            <div class="popup-locale-dialog-actions">
+              <button class="btn secondary" type="button" data-locale-modal-cancel>${t("Cancel")}</button>
+              <button class="btn danger-outline" type="button" data-locale-modal-confirm>${t(confirmText)}</button>
+            </div>
+          </div>
+        `;
+        modal.classList.add("open");
+        modal.setAttribute("aria-hidden", "false");
+        modal.querySelector("[data-locale-modal-confirm]")?.focus();
+      }
+
+      function removePopupLocale(removedKey) {
+        const keysBeforeRemove = popupLocaleKeys();
+        const removedIndex = keysBeforeRemove.indexOf(removedKey);
+        delete state.popupLocaleValues[removedKey];
+        if (state.activePopupLocale === removedKey) {
+          const remainingKeys = popupLocaleKeys();
+          state.activePopupLocale = remainingKeys[Math.max(0, removedIndex - 1)] || remainingKeys[0] || "";
+        }
+        renderPopupLocalePanel();
+        showToast(t("Locale removed"));
+      }
+
+      function openDeleteLocaleModal(removedKey) {
+        openPopupConfirmModal({
+          title: "Delete locale",
+          description: "Are you sure you want to delete this localized content entry?",
+          confirmText: "Delete",
+          onConfirm: () => removePopupLocale(removedKey)
+        });
+      }
+
+      function openDeleteActionModal(actionKey = "Delete") {
+        openPopupConfirmModal({
+          title: isPopupCardsPage() ? "Delete pop-up card" : "Delete",
+          description: isPopupCardsPage() ? "Are you sure you want to delete this pop-up card?" : "Are you sure you want to delete this item?",
+          confirmText: "Delete",
+          onConfirm: () => showToast(actionMessage(actionKey))
+        });
+      }
+
+      function openDeleteCoverModal() {
+        openPopupConfirmModal({
+          title: "Delete cover image",
+          description: "Are you sure you want to delete this cover image?",
+          confirmText: "Delete",
+          onConfirm: () => {
+            setPopupCoverEmpty();
+            showToast(t("Cover image removed"));
+          }
+        });
       }
 
       function popupLocaleTabsTemplate() {
@@ -4239,7 +4578,7 @@
             <div class="popup-form-grid">
               <div class="popup-field">
                 <div class="popup-field-label">${t("Language")} <span class="popup-required">*</span></div>
-                ${popupSelectTemplate({ options: popupLocaleOptions.map((item) => item.label), selected: selectedLanguage, label: t("Language"), role: "locale-language" })}
+                ${popupSelectTemplate({ options: popupLocaleOptions.map((item) => item.label), selected: selectedLanguage, label: t("Language"), role: "locale-language", translateOptions: false })}
               </div>
 
               <div class="popup-field">
@@ -4311,11 +4650,7 @@
 
           const addButton = event.target.closest("#popupAddLocale");
           if (addButton) {
-            const nextKey = `locale_${Date.now()}`;
-            state.popupLocaleValues[nextKey] = { language: "", title: "", body: "", cta: "" };
-            state.activePopupLocale = nextKey;
-            renderPopupLocalePanel();
-            showToast(t("Locale added"));
+            openAddLocaleModal();
             return;
           }
 
@@ -4325,16 +4660,7 @@
               showToast(t("At least one locale is required"));
               return;
             }
-            const removedKey = removeButton.dataset.removeLocale;
-            const keysBeforeRemove = popupLocaleKeys();
-            const removedIndex = keysBeforeRemove.indexOf(removedKey);
-            delete state.popupLocaleValues[removedKey];
-            if (state.activePopupLocale === removedKey) {
-              const remainingKeys = popupLocaleKeys();
-              state.activePopupLocale = remainingKeys[Math.max(0, removedIndex - 1)] || remainingKeys[0] || "";
-            }
-            renderPopupLocalePanel();
-            showToast(t("Locale removed"));
+            openDeleteLocaleModal(removeButton.dataset.removeLocale);
           }
         });
 
@@ -4463,8 +4789,7 @@
           }
           if (!action) return;
           if (action === "delete") {
-            setPopupCoverEmpty();
-            showToast(t("Cover image removed"));
+            openDeleteCoverModal();
             return;
           }
           if (action === "reupload") {
@@ -4475,10 +4800,7 @@
             openPopupCoverViewer();
             return;
           }
-          const messages = {
-            preview: t("Preview opened"),
-          };
-          showToast(messages[action] || t("Cover action clicked"));
+          showToast(t("Cover action clicked"));
         });
 
         document.getElementById("popupCoverPreview")?.addEventListener("keydown", (event) => {
@@ -4504,7 +4826,7 @@
                   ${t("Audience")} <span class="popup-required">*</span>
                   <div class="popup-tooltip-wrap">
                     <div class="popup-tooltip-icon">?</div>
-                    <div class="popup-tooltip-box">选择弹窗展示的目标受众区域，决定哪些地区的用户能看到此弹窗。</div>
+                    <div class="popup-tooltip-box">${t("Define the target audience regions where the pop-up is displayed.")}</div>
                   </div>
                 </div>
                 ${popupSelectTemplate({ options: ["中国", "日本", "新加坡", "全球"], selected: [], multiple: true, label: t("Audience") })}
@@ -4515,7 +4837,7 @@
                   ${t("Channels")} <span class="popup-required">*</span>
                   <div class="popup-tooltip-wrap">
                     <div class="popup-tooltip-icon">?</div>
-                    <div class="popup-tooltip-box">选择弹窗出现的渠道，例如 CRM 后台、Web Global 或 Web Japan。</div>
+                    <div class="popup-tooltip-box">${t("Define the channels where the pop-up is displayed, such as CRM, Web Global, or Web Japan.")}</div>
                   </div>
                 </div>
                 ${popupSelectTemplate({ options: ["CRM", "Web Global", "Web Japan"], selected: "", label: t("Channels") })}
@@ -4541,7 +4863,7 @@
                 <div class="popup-field-label">${t("End time")}</div>
                 <div class="popup-ant-datepicker" id="popupEndTimePicker" data-value=""></div>
                 <input type="hidden" value="" id="popupEndTime" />
-                <div class="popup-input-error" id="popupTimeError">结束时间不能早于开始时间</div>
+                <div class="popup-input-error" id="popupTimeError">${t("End time cannot be earlier than start time")}</div>
               </div>
             </div>
 
@@ -4550,14 +4872,14 @@
                 ${t("Page path")} <span class="popup-required">*</span>
                 <div class="popup-tooltip-wrap">
                   <div class="popup-tooltip-icon">?</div>
-                  <div class="popup-tooltip-box">弹窗出现的页面路径。填写相对路径，以 / 开头。支持多级路径和 * 通配符。</div>
+                  <div class="popup-tooltip-box">${t("Define the page path where the pop-up takes effect.")}</div>
                 </div>
               </div>
               <div class="popup-input-wrap" id="popupPagePathWrap">
                 <input class="popup-control" type="text" id="popupPagePath" value="" maxlength="32" oninput="validatePopupPath(this)" placeholder="${t("Enter page path")}" />
                 <span class="popup-char-count" id="popupPagePathCount">0/32</span>
               </div>
-              <div class="popup-input-hint">${t("/* represents the home page. Client Interface / Web both support multi-level paths.")}</div>
+              <div class="popup-input-hint">${t("For example, /* displays the pop-up on the home page; /account displays the pop-up only on the account page.")}</div>
               <div class="popup-input-error" id="popupPathError">${t("Path must start with /. Please check the format.")}</div>
             </div>
 
@@ -4615,7 +4937,6 @@
                 <div class="popup-upload-meta">
                   <div class="popup-upload-name">${t("No cover image")}</div>
                   <div class="popup-upload-actions">
-                    <button class="popup-ghost-btn" type="button" data-cover-action="preview">${t("Preview")}</button>
                     <button class="popup-icon-btn" type="button" data-cover-action="view" aria-label="${t("View")}">${t("View")}</button>
                     <button class="popup-icon-btn danger-outline-btn" type="button" data-cover-action="delete" aria-label="${t("Delete")}">${t("Delete")}</button>
                     <button class="popup-ghost-btn primary" type="button" data-cover-action="reupload">${t("Re-upload")}</button>
@@ -5205,7 +5526,7 @@
         }
         state.lang = lang;
         renderAll();
-        showToast(lang === "zh" ? t("Language switched to Chinese") : "Language switched to English");
+        showToast(t(lang === "zh" ? "Language switched to Chinese" : "Language switched to English"));
       }
 
       function closeModeMenu() {
@@ -5267,6 +5588,12 @@
 
       function closeDrawer() {
         app.classList.remove("drawer-open");
+      }
+
+      function syncResponsiveSidebarMode() {
+        if (!window.matchMedia("(max-width: 900px)").matches) {
+          closeDrawer();
+        }
       }
 
       function closeSidebarFlyout() {
@@ -5531,6 +5858,11 @@
             closeActionMenu();
             return;
           }
+          if (menuItem.dataset.actionMenu === "Delete") {
+            closeActionMenu();
+            openDeleteActionModal(menuItem.dataset.actionMenu);
+            return;
+          }
           showToast(actionMessage(menuItem.dataset.actionMenu));
           closeActionMenu();
           return;
@@ -5547,6 +5879,11 @@
         if (!menuItem) return;
         if (menuItem.dataset.actionMenu === "Edit" && openPopupEdit(state.activeActionRow)) {
           closeActionMenu();
+          return;
+        }
+        if (menuItem.dataset.actionMenu === "Delete") {
+          closeActionMenu();
+          openDeleteActionModal(menuItem.dataset.actionMenu);
           return;
         }
         showToast(actionMessage(menuItem.dataset.actionMenu));
@@ -5587,6 +5924,7 @@
         syncScrollThumb();
       });
       overlay.addEventListener("click", closeDrawer);
+      window.addEventListener("resize", syncResponsiveSidebarMode);
       collapseButton.addEventListener("click", () => {
         app.classList.toggle("sidebar-collapsed");
         closeSidebarFlyout();
