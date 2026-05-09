@@ -33,6 +33,7 @@
         --dropdown-item-min-h: 40px;
         --dropdown-item-padding: 10px 8px;
         --dropdown-panel-padding: 8px;
+        --dropdown-option-gap: 4px;
         --dropdown-option-padding: 10px 12px;
         --dropdown-option-radius: 4px;
         --dropdown-text: #1d1d1d;
@@ -156,6 +157,8 @@
         top: calc(100% + 8px);
         left: 0;
         z-index: 130;
+        display: grid;
+        gap: var(--dropdown-option-gap);
         width: max-content;
         min-width: var(--dropdown-min-w);
         max-width: var(--dropdown-max-w);
@@ -339,6 +342,8 @@
         top: calc(100% + 8px);
         right: 0;
         z-index: 135;
+        display: grid;
+        gap: var(--dropdown-option-gap);
         width: max-content;
         min-width: var(--dropdown-min-w);
         max-width: var(--dropdown-max-w);
@@ -937,9 +942,11 @@
       }
 
       .page-subtitle {
-        margin: 6px 0 0;
+        display: none;
+        margin: 0;
         color: var(--muted);
         font-size: 13px;
+        font-weight: 400;
       }
 
 
@@ -974,8 +981,8 @@
 
       .breadcrumb-link:hover,
       .breadcrumb-link:focus-visible {
-        border-color: #e5e9f2;
-        background: var(--column-head);
+        border-color: #d8e0ef;
+        background: #f8fbff;
         color: var(--primary);
         outline: none;
       }
@@ -1317,6 +1324,8 @@
         left: 0;
         right: 0;
         z-index: 1200;
+        display: grid;
+        gap: var(--dropdown-option-gap);
         padding: var(--dropdown-panel-padding);
         border: 1px solid var(--line-soft);
         border-radius: var(--dropdown-radius);
@@ -1490,6 +1499,7 @@
         position: fixed;
         z-index: 1500;
         display: grid;
+        gap: var(--dropdown-option-gap);
         width: 150px;
         overflow: hidden;
         padding: var(--dropdown-panel-padding);
@@ -1589,7 +1599,7 @@
         display: grid;
         width: max-content;
         min-width: 72px;
-        gap: 0;
+        gap: var(--dropdown-option-gap);
         padding: var(--dropdown-panel-padding);
         border: 1px solid var(--line-soft);
         border-radius: var(--dropdown-radius);
@@ -2160,7 +2170,7 @@
         gap: 6px;
         width: 100%;
         min-height: 38px;
-        padding: 6px 36px 6px 8px;
+        padding: 6px 12px;
         border: 1px solid var(--line-soft);
         border-radius: 4px;
         background: #fbfbfb;
@@ -2770,16 +2780,15 @@
         .popup-upload { grid-template-columns: 1fr; }
         .popup-locale-switch-row { align-items: stretch; flex-direction: column; }
         .popup-locale-actions { justify-content: flex-start; }
-        .popup-locale-modal { padding: 16px; }
-        .popup-locale-dialog { width: 100%; padding: 24px 16px 16px; }
-        .popup-locale-dialog-actions { flex-direction: column-reverse; gap: 10px; }
-        .popup-locale-dialog-actions .btn { width: 100%; }
+        .popup-locale-modal { padding: 24px; }
       }
 
       @media (max-width: 767px) {
         .popup-edit-card { gap: 16px; padding: 16px; }
         .popup-edit-header { align-items: flex-start; flex-direction: column; }
         .popup-tooltip-box { left: auto; right: -8px; top: 22px; width: min(260px, calc(100vw - 48px)); }
+        .popup-locale-modal { padding: 16px; }
+        .popup-locale-dialog { width: min(420px, calc(100vw - 32px)); padding: 20px; }
         .popup-edit-actions { flex-direction: column-reverse; }
         .popup-edit-actions .btn { width: 100%; }
         .popup-upload.is-empty { width: 100%; }
@@ -3712,6 +3721,7 @@
           "Admin interface": "管理员界面",
           "Client interface": "客户端界面",
           "Secondary selections keep their parent in the regular state. Hover, click, collapse, and switching are fully interactive.": "二级选中时，一级保持常态；所有悬浮、点击、折叠、切换均可交互。",
+          "Configure localized pop-up card content, display timing, page targeting, and cover image settings.": "配置弹窗卡片的本地化内容、展示时间、页面投放范围和封面图片设置。",
           "The Admin sidebar follows the current UIUX rules with expandable groups, selected subitems, collapsed flyouts, and responsive layouts.": "Admin 侧边栏按当前 UIUX 规则支持一级展开、二级选中、收起悬浮菜单与多端自适应。",
           "The client sidebar shows a transparent scroll handle on scroll or hover, and menu states can be switched by click.": "客户端侧栏在滚动或悬浮触控区时显示透明拨杆，菜单状态可点击切换。",
           "Headline": "标题",
@@ -5489,6 +5499,11 @@
         }).join("");
       }
 
+      function currentPageSubtitle() {
+        if (isPopupCardsPage()) return "Configure localized pop-up card content, display timing, page targeting, and cover image settings.";
+        return data[state.mode].subtitle;
+      }
+
       function updateStaticText() {
         document.documentElement.lang = state.lang === "zh" ? "zh-CN" : "en";
         document.title = state.lang === "zh"
@@ -5498,7 +5513,7 @@
         sidebarModeLabel.textContent = t(data[state.mode].label);
         headline.textContent = t(state.headlineKey);
         renderBreadcrumb();
-        pageSubtitle.textContent = t(data[state.mode].subtitle);
+        pageSubtitle.textContent = t(currentPageSubtitle());
         document.getElementById("primaryAction").textContent = t("Create");
         menuTrigger.setAttribute("aria-label", t("Open menu"));
         sidebar.setAttribute("aria-label", t("Main navigation"));
