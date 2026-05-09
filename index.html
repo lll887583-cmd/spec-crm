@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SPEC Interactive UI Demo</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd@5/dist/reset.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css" />
     <style>
       :root {
         --primary: #1f3472;
@@ -2683,6 +2684,59 @@
         background: var(--white);
       }
 
+      .popup-crop-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 5200;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 32px;
+        background: rgba(29, 29, 29, 0.62);
+      }
+
+      .popup-crop-modal.open {
+        display: flex;
+      }
+
+      .popup-crop-dialog {
+        width: min(820px, calc(100vw - 64px));
+        max-height: calc(100vh - 64px);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border: 1px solid var(--line-soft);
+        border-radius: 8px;
+        background: var(--white);
+        box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24);
+      }
+
+      .popup-crop-body {
+        min-height: 360px;
+        padding: 16px;
+        background: #f9fafb;
+      }
+
+      .popup-crop-canvas {
+        width: 100%;
+        height: min(520px, calc(100vh - 216px));
+        min-height: 320px;
+      }
+
+      .popup-crop-image {
+        display: block;
+        max-width: 100%;
+      }
+
+      .popup-crop-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        padding: 12px 16px;
+        border-top: 1px solid var(--line-soft);
+        background: var(--white);
+      }
+
       .popup-upload-meta {
         display: flex;
         min-width: 0;
@@ -2789,6 +2843,12 @@
         .popup-tooltip-box { left: auto; right: -8px; top: 22px; width: min(260px, calc(100vw - 48px)); }
         .popup-locale-modal { padding: 16px; }
         .popup-locale-dialog { width: min(420px, calc(100vw - 32px)); padding: 20px; }
+        .popup-crop-modal { padding: 16px; }
+        .popup-crop-dialog { width: calc(100vw - 32px); max-height: calc(100vh - 32px); }
+        .popup-crop-body { min-height: 300px; padding: 12px; }
+        .popup-crop-canvas { height: min(420px, calc(100vh - 232px)); min-height: 260px; }
+        .popup-crop-actions { flex-direction: column-reverse; }
+        .popup-crop-actions .btn { width: 100%; }
         .popup-edit-actions { flex-direction: column-reverse; }
         .popup-edit-actions .btn { width: 100%; }
         .popup-upload.is-empty { width: 100%; }
@@ -3178,6 +3238,7 @@
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/locale/zh-cn.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/antd@5/dist/antd-with-locales.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
     <script>
       const icon = {
         dashboard: '<svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="12" y="3" width="5" height="5" rx="1"/><rect x="3" y="12" width="5" height="5" rx="1"/><rect x="12" y="12" width="5" height="5" rx="1"/></svg>',
@@ -4051,7 +4112,7 @@
           "Cover image": "封面图片",
           "Pop-up cover": "弹窗封面",
           "Existing uploaded image": "已上传图片",
-          "Required size: 440x240, PNG/JPG, up to 300KB": "要求尺寸：440x240，PNG/JPG，不超过 300KB",
+          "Recommended crop: 440x240, PNG/JPG. Final compressed image within 300KB.": "建议裁切：440x240，PNG/JPG。压缩后最终图片限制在 300KB 内。",
           "Preview": "预览",
           "View": "查看",
           "Re-upload": "重新上传",
@@ -4065,11 +4126,19 @@
           "Pop-up card saved": "弹窗卡片已保存",
           "No cover image": "暂无封面图片",
           "Upload required": "需要上传",
-          "PNG/JPG, up to 300KB": "PNG/JPG，不超过 300KB",
+          "PNG/JPG, final image within 300KB": "PNG/JPG，最终图片不超过 300KB",
+          "Upload and crop the cover image": "上传后裁切封面图片",
           "Cover image removed": "封面图片已移除",
           "Cover image uploaded": "封面图片已上传",
+          "Cover image cropped and uploaded": "封面图片已裁切并上传",
           "Only JPG, JPEG, and PNG files are supported": "仅支持 JPG、JPEG 和 PNG 文件",
           "Image size must not exceed 300KB": "图片大小不能超过 300KB",
+          "Image selected. Crop and compression will keep the final image within 300KB": "已选择图片，裁切和压缩后最终图片将限制在 300KB 内",
+          "Crop cover image": "裁切封面图片",
+          "Drag to crop the final 440x240 cover image. The preview and View use this cropped result.": "拖拽裁切最终 440x240 封面图。预览和查看都会使用这张裁切结果。",
+          "Apply crop": "应用裁切",
+          "Cropper library is still loading. Please try again.": "裁切工具仍在加载，请稍后重试。",
+          "Image crop failed. Please try another file.": "图片裁切失败，请更换图片重试。",
           "Preview opened": "已打开预览",
           "Cover image viewed": "已查看封面图片",
           "Image preview": "图片预览",
@@ -4154,6 +4223,8 @@
         dragStartY: 0,
         dragStartTop: 0
       };
+      let popupCoverCropper = null;
+      let popupCoverCropFile = null;
 
       const popupLocaleOptions = [
         { id: "en", label: "English" },
@@ -4691,7 +4762,7 @@
               <path d="M12 15V4m0 0 4 4m-4-4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
               <path d="M5 15v4h14v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div class="popup-empty-upload-text">${t("Supports .jpg,.jpeg,.png formats, size not exceeding 300KB")}</div>
+            <div class="popup-empty-upload-text">${t("Upload and crop the cover image")}</div>
           </div>
         `;
       }
@@ -4710,6 +4781,131 @@
 
       function closePopupCoverViewer() {
         document.getElementById("popupImageModal")?.classList.remove("open");
+      }
+
+      function destroyPopupCoverCropper() {
+        if (!popupCoverCropper) return;
+        popupCoverCropper.destroy();
+        popupCoverCropper = null;
+      }
+
+      function closePopupCoverCropper(resetInput = true) {
+        document.getElementById("popupCropModal")?.classList.remove("open");
+        destroyPopupCoverCropper();
+        popupCoverCropFile = null;
+        if (resetInput) {
+          const fileInput = document.getElementById("popupCoverInput");
+          if (fileInput) fileInput.value = "";
+        }
+      }
+
+      function imageBlobToDataUrl(blob) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result || ""));
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(blob);
+        });
+      }
+
+      function canvasToBlob(canvas, type, quality) {
+        return new Promise((resolve) => canvas.toBlob(resolve, type, quality));
+      }
+
+      async function cropCanvasToCoverDataUrl(canvas) {
+        const maxBytes = 300 * 1024;
+        let blob = null;
+        for (let quality = 0.92; quality >= 0.56; quality -= 0.08) {
+          blob = await canvasToBlob(canvas, "image/jpeg", quality);
+          if (blob && blob.size <= maxBytes) break;
+        }
+        if (!blob) throw new Error("cover crop failed");
+        return imageBlobToDataUrl(blob);
+      }
+
+      function ensurePopupCropModal() {
+        let modal = document.getElementById("popupCropModal");
+        if (!modal) {
+          modal = document.createElement("div");
+          modal.id = "popupCropModal";
+          modal.className = "popup-crop-modal";
+          document.body.appendChild(modal);
+          modal.addEventListener("click", (event) => {
+            if (event.target === modal || event.target.closest("[data-crop-action='cancel']")) {
+              closePopupCoverCropper(true);
+            }
+          });
+          document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && modal.classList.contains("open")) closePopupCoverCropper(true);
+          });
+        }
+        modal.innerHTML = `
+          <div class="popup-crop-dialog" role="dialog" aria-modal="true" aria-label="${t("Crop cover image")}">
+            <div class="popup-image-header">
+              <div>
+                <div class="popup-image-title">${t("Crop cover image")}</div>
+                <div class="popup-cover-requirement">${t("Drag to crop the final 440x240 cover image. The preview and View use this cropped result.")}</div>
+              </div>
+              <button class="popup-image-close" type="button" data-crop-action="cancel" aria-label="${t("Cancel")}">×</button>
+            </div>
+            <div class="popup-crop-body">
+              <div class="popup-crop-canvas">
+                <img class="popup-crop-image" id="popupCropImage" alt="${t("Cover image")}" />
+              </div>
+            </div>
+            <div class="popup-crop-actions">
+              <button class="btn secondary" type="button" data-crop-action="cancel">${t("Cancel")}</button>
+              <button class="btn" type="button" data-crop-action="apply">${t("Apply crop")}</button>
+            </div>
+          </div>
+        `;
+        modal.querySelector("[data-crop-action='apply']")?.addEventListener("click", async () => {
+          try {
+            const canvas = popupCoverCropper?.getCroppedCanvas({
+              width: 440,
+              height: 240,
+              fillColor: "#ffffff",
+              imageSmoothingEnabled: true,
+              imageSmoothingQuality: "high"
+            });
+            if (!canvas || !popupCoverCropFile) throw new Error("cover crop failed");
+            const src = await cropCanvasToCoverDataUrl(canvas);
+            setPopupCoverImage(popupCoverCropFile, src);
+            closePopupCoverCropper(false);
+            const fileInput = document.getElementById("popupCoverInput");
+            if (fileInput) fileInput.value = "";
+            showToast(t("Cover image cropped and uploaded"));
+          } catch (error) {
+            showToast(t("Image crop failed. Please try another file."));
+          }
+        });
+        return modal;
+      }
+
+      function openPopupCoverCropper(file, src) {
+        if (!window.Cropper) {
+          showToast(t("Cropper library is still loading. Please try again."));
+          const fileInput = document.getElementById("popupCoverInput");
+          if (fileInput) fileInput.value = "";
+          return;
+        }
+        const modal = ensurePopupCropModal();
+        const image = modal.querySelector("#popupCropImage");
+        if (!image) return;
+        popupCoverCropFile = file;
+        destroyPopupCoverCropper();
+        image.onload = () => {
+          popupCoverCropper = new Cropper(image, {
+            aspectRatio: 440 / 240,
+            viewMode: 1,
+            autoCropArea: 1,
+            background: false,
+            responsive: true,
+            dragMode: "move"
+          });
+        };
+        image.src = src;
+        modal.classList.add("open");
       }
 
       function openPopupCoverViewer() {
@@ -4777,15 +4973,9 @@
             fileInput.value = "";
             return;
           }
-          if (file.size > 300 * 1024) {
-            showToast(t("Image size must not exceed 300KB"));
-            fileInput.value = "";
-            return;
-          }
           const reader = new FileReader();
           reader.onload = () => {
-            setPopupCoverImage(file, String(reader.result || ""));
-            showToast(t("Cover image uploaded"));
+            openPopupCoverCropper(file, String(reader.result || ""));
           };
           reader.readAsDataURL(file);
         });
@@ -4938,7 +5128,7 @@
 
             <div class="popup-field">
               <div class="popup-field-label">${t("Cover image")} <span class="popup-required">*</span></div>
-              <div class="popup-cover-requirement">${t("Required size: 440x240, PNG/JPG, up to 300KB")}</div>
+              <div class="popup-cover-requirement">${t("Recommended crop: 440x240, PNG/JPG. Final compressed image within 300KB.")}</div>
               <input class="popup-upload-input" id="popupCoverInput" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" />
               <div class="popup-upload is-empty" id="popupCoverUpload">
                 <div class="popup-cover-preview" id="popupCoverPreview" aria-label="${t("Cover image")}" tabindex="0">
