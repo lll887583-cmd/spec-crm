@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SPEC Interactive UI Demo</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd@5/dist/reset.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css" />
     <style>
       :root {
         --primary: #1f3472;
@@ -22,7 +24,23 @@
         --nav-hover: #f9fafb;
         --nav-active: #f9fafb;
         --column-head: #f8faff;
-        --shadow-card: 0 1px 6px 1px rgba(0, 0, 0, 0.06);
+        --shadow-card: none;
+        --shadow-popup: 0 6px 16px 0 rgba(31, 52, 114, 0.06),
+          0 3px 6px -4px rgba(31, 52, 114, 0.08),
+          0 9px 28px 8px rgba(31, 52, 114, 0.035);
+        --dropdown-radius: 4px;
+        --dropdown-hover: #f2f3f5;
+        --dropdown-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.1);
+        --dropdown-item-min-h: 40px;
+        --dropdown-item-padding: 10px 8px;
+        --dropdown-panel-padding: 8px;
+        --dropdown-option-gap: 4px;
+        --dropdown-option-padding: 10px 12px;
+        --dropdown-option-radius: 4px;
+        --dropdown-text: #1d1d1d;
+        --dropdown-muted: #666666;
+        --dropdown-min-w: 110px;
+        --dropdown-max-w: min(320px, calc(100vw - 32px));
         --topbar-h: 64px;
         --sidebar-w: 220px;
       }
@@ -124,6 +142,7 @@
         border-radius: 5px;
         background: transparent;
         color: var(--text);
+        font-weight: 400;
         transition: background 0.18s ease, color 0.18s ease;
       }
 
@@ -133,17 +152,22 @@
         color: var(--primary);
       }
 
+      /* Dropdown component: independent from sidebar navigation states. */
       .mode-menu {
         position: absolute;
         top: calc(100% + 8px);
         left: 0;
         z-index: 130;
-        width: 280px;
-        padding: 0;
+        display: grid;
+        gap: var(--dropdown-option-gap);
+        width: max-content;
+        min-width: var(--dropdown-min-w);
+        max-width: var(--dropdown-max-w);
+        padding: var(--dropdown-panel-padding);
         border: 1px solid var(--line-soft);
-        border-radius: 8px;
+        border-radius: var(--dropdown-radius);
         background: var(--white);
-        box-shadow: 0 0 5.8px 0 rgba(31, 52, 114, 0.15);
+        box-shadow: var(--dropdown-shadow);
         overflow: hidden;
         opacity: 0;
         transform: translateY(-4px);
@@ -160,22 +184,91 @@
       .mode-option {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 16px;
+        justify-content: flex-start;
+        gap: 8px;
         width: 100%;
-        padding: 10px 8px;
+        min-height: var(--dropdown-item-min-h);
+        padding: var(--dropdown-option-padding);
         border: 0;
-        border-radius: 0;
+        border-radius: var(--dropdown-option-radius);
         background: transparent;
-        color: var(--text);
+        color: var(--dropdown-text);
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.4;
         text-align: left;
         white-space: nowrap;
       }
 
+      .mode-option span:empty {
+        display: none;
+      }
+
       .mode-option:hover,
       .mode-option.active {
-        background: var(--nav-active);
+        background: var(--dropdown-hover);
+        color: var(--dropdown-text);
+        font-weight: 400;
+      }
+
+      .sidebar-role-switch {
+        display: none;
+        align-items: center;
+        gap: 14px;
+        min-height: 64px;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--line-soft);
+        background: var(--white);
+      }
+
+      .sidebar-close-button {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        flex: 0 0 auto;
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
         color: var(--primary);
+        transition: background 0.18s ease, color 0.18s ease;
+      }
+
+      .sidebar-close-button:hover {
+        background: var(--nav-hover);
+      }
+
+      .sidebar-role-divider {
+        width: 1px;
+        height: 28px;
+        flex: 0 0 auto;
+        background: var(--line-soft);
+      }
+
+      .sidebar-mode-wrap {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+
+      .sidebar-mode-control {
+        justify-content: space-between;
+        width: 100%;
+        min-height: 44px;
+        padding: 8px 8px 8px 10px;
+        color: var(--primary);
+        font-weight: 400;
+      }
+
+      .sidebar-mode-control span {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .sidebar-mode-menu {
+        width: 100%;
+        min-width: 100%;
       }
 
       .topbar-right {
@@ -250,12 +343,16 @@
         top: calc(100% + 8px);
         right: 0;
         z-index: 135;
-        width: 132px;
-        padding: 0;
+        display: grid;
+        gap: var(--dropdown-option-gap);
+        width: max-content;
+        min-width: var(--dropdown-min-w);
+        max-width: var(--dropdown-max-w);
+        padding: var(--dropdown-panel-padding);
         border: 1px solid var(--line-soft);
-        border-radius: 8px;
+        border-radius: var(--dropdown-radius);
         background: var(--white);
-        box-shadow: 0 0 5.8px 0 rgba(31, 52, 114, 0.15);
+        box-shadow: var(--dropdown-shadow);
         overflow: hidden;
         opacity: 0;
         transform: translateY(-4px);
@@ -271,11 +368,12 @@
 
       .language-option {
         width: 100%;
-        padding: 10px 8px;
+        min-height: var(--dropdown-item-min-h);
+        padding: var(--dropdown-option-padding);
         border: 0;
-        border-radius: 0;
+        border-radius: var(--dropdown-option-radius);
         background: transparent;
-        color: var(--text);
+        color: var(--dropdown-text);
         font-size: 13px;
         font-weight: 400;
         text-align: left;
@@ -283,8 +381,9 @@
 
       .language-option:hover,
       .language-option.active {
-        background: var(--nav-active);
-        color: var(--primary);
+        background: var(--dropdown-hover);
+        color: var(--dropdown-text);
+        font-weight: 400;
       }
 
       .icon-button {
@@ -398,6 +497,89 @@
         height: 0;
       }
 
+      .sidebar-quick-grid {
+        display: none;
+        margin-top: 4px;
+      }
+
+      .sidebar-quick-grid-inner {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        border-top: 1px solid var(--line-soft);
+        border-bottom: 1px solid var(--line-soft);
+        background: var(--white);
+      }
+
+      .sidebar-quick-action {
+        position: relative;
+        display: grid;
+        place-items: center;
+        gap: 7px;
+        min-height: 76px;
+        padding: 12px 8px 11px;
+        border: 0;
+        border-right: 1px solid var(--line-soft);
+        border-bottom: 1px solid var(--line-soft);
+        background: transparent;
+        color: var(--primary);
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 18px;
+        text-align: center;
+        transition: background 0.16s ease, color 0.16s ease;
+      }
+
+      .sidebar-quick-action:nth-child(2n) {
+        border-right: 0;
+      }
+
+      .sidebar-quick-action:nth-last-child(-n + 2) {
+        border-bottom: 0;
+      }
+
+      .sidebar-quick-action:hover {
+        background: var(--nav-hover);
+      }
+
+      .sidebar-quick-icon {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        color: currentColor;
+      }
+
+      .sidebar-quick-icon svg {
+        display: block;
+        width: 24px;
+        height: 24px;
+      }
+
+      .sidebar-quick-badge {
+        position: absolute;
+        top: -5px;
+        right: -7px;
+        display: inline-grid;
+        place-items: center;
+        min-width: 15px;
+        height: 15px;
+        padding: 0 4px;
+        border: 1px solid var(--white);
+        border-radius: 999px;
+        background: #df3731;
+        color: var(--white);
+        font-size: 9px;
+        font-weight: 700;
+        line-height: 1;
+      }
+
+      .sidebar-quick-label {
+        color: #666666;
+        font-weight: 400;
+        white-space: nowrap;
+      }
+
       .scroll-touch {
         position: absolute;
         top: 64px;
@@ -432,9 +614,11 @@
       }
 
       .nav-section-title {
-        margin: 14px 0 8px 16px;
-        color: #8a8a8a;
-        font-size: 11px;
+        margin: 14px 0 0;
+        padding: 8px 0 8px 16px;
+        border-top: 1px solid var(--line-soft);
+        color: #777777;
+        font-size: 13px;
         font-weight: 400;
       }
 
@@ -505,6 +689,10 @@
         transition: transform 0.18s ease;
       }
 
+      .nav-text + .nav-caret {
+        margin-left: auto;
+      }
+
       .nav-caret-placeholder {
         visibility: hidden;
         transform: none !important;
@@ -521,6 +709,7 @@
         min-width: 17px;
         height: 17px;
         margin-top: 0;
+        margin-left: auto;
         padding: 0 5px;
         border-radius: 999px;
         background: #df3731;
@@ -611,6 +800,7 @@
       }
 
       .sidebar-collapsed .nav-item {
+        position: relative;
         display: grid;
         place-items: center;
         padding: 10px 8px;
@@ -633,9 +823,16 @@
       .sidebar-collapsed .nav-section-title,
       .sidebar-collapsed .nav-text,
       .sidebar-collapsed .nav-caret,
-      .sidebar-collapsed .nav-badge,
       .sidebar-collapsed .sub-nav {
         display: none;
+      }
+
+      .sidebar-collapsed .nav-scroll .nav-item > .nav-badge {
+        position: absolute;
+        top: 6px;
+        right: 8px;
+        display: inline-grid;
+        margin: 0;
       }
 
       .sidebar-flyout {
@@ -643,13 +840,19 @@
         z-index: 1000;
         display: grid;
         gap: 0;
-        width: 180px;
+        width: max-content;
+        min-width: 110px;
+        max-width: min(280px, calc(100vw - 32px));
+        max-height: calc(100vh - 24px);
         padding: 0;
         border: 1px solid var(--line-soft);
         border-radius: 8px;
         background: var(--white);
-        box-shadow: 0 0 5.8px 0 rgba(31, 52, 114, 0.15);
-        overflow: hidden;
+        box-shadow: var(--shadow-popup);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(63, 68, 78, 0.28) transparent;
         opacity: 0;
         transform: translateX(-6px);
         pointer-events: none;
@@ -663,13 +866,14 @@
       }
 
       .sidebar-flyout-item {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 10px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        column-gap: 16px;
         width: 100%;
-        min-height: 34px;
-        padding: 10px 8px;
+        min-width: 100%;
+        min-height: 40px;
+        padding: var(--dropdown-item-padding);
         border: 0;
         border-radius: 0;
         background: transparent;
@@ -692,16 +896,18 @@
       }
 
       .sidebar-flyout-label {
-        flex: 1 1 auto;
         min-width: 0;
-        max-width: 140px;
         overflow: hidden;
-        white-space: normal;
-        overflow-wrap: anywhere;
-        word-break: normal;
+        white-space: nowrap;
+        text-overflow: ellipsis;
         font-size: 14px;
         font-weight: 400;
         line-height: 18px;
+      }
+
+      .sidebar-flyout-item > .nav-badge {
+        justify-self: end;
+        margin: 0;
       }
 
       .sidebar-flyout-item.active .sidebar-flyout-label {
@@ -716,9 +922,6 @@
 
       .content-shell {
         width: min(100%, 1480px);
-      }
-
-      .app.sidebar-collapsed .content-shell {
         margin-inline: auto;
       }
 
@@ -740,9 +943,68 @@
       }
 
       .page-subtitle {
-        margin: 6px 0 0;
+        display: none;
+        margin: 0;
         color: var(--muted);
         font-size: 13px;
+        font-weight: 400;
+      }
+
+
+
+      .breadcrumb-nav {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        min-height: 24px;
+        margin-bottom: 8px;
+        color: var(--pale);
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 18px;
+      }
+
+      .breadcrumb-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        padding: 2px 6px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        background: transparent;
+        color: var(--pale);
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 18px;
+        transition: color 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+      }
+
+      .breadcrumb-link:hover,
+      .breadcrumb-link:focus-visible {
+        border-color: #d8e0ef;
+        background: #f8fbff;
+        color: var(--primary);
+        outline: none;
+      }
+
+      .breadcrumb-current {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: var(--text);
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 18px;
+      }
+
+      .breadcrumb-separator {
+        color: #c5c5c5;
+        font-size: 12px;
+        line-height: 18px;
+        user-select: none;
       }
 
       .actions {
@@ -763,17 +1025,48 @@
         background: var(--primary);
         color: var(--white);
         font-weight: 500;
-        transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+        transition: none;
       }
 
-      .btn:hover {
-        box-shadow: 0 3px 6px 0 rgba(31, 52, 114, 0.22);
-        transform: translateY(-1px);
+      .btn:hover,
+      .btn:focus-visible {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: var(--white);
+        box-shadow: none;
+        transform: none;
+        outline: none;
       }
 
       .btn.secondary {
         background: var(--white);
         color: var(--primary);
+      }
+
+      .btn.secondary:hover,
+      .btn.secondary:focus-visible {
+        border-color: var(--primary);
+        background: var(--white);
+        color: var(--primary);
+        box-shadow: none;
+        outline: none;
+      }
+
+      .btn.danger-outline,
+      .danger-outline-btn {
+        border-color: var(--error);
+        background: var(--white);
+        color: var(--error);
+      }
+
+      .btn.danger-outline:hover,
+      .btn.danger-outline:focus-visible,
+      .danger-outline-btn:hover,
+      .danger-outline-btn:focus-visible {
+        border-color: var(--error);
+        background: var(--white);
+        color: var(--error);
+        outline: none;
       }
 
       .tabs {
@@ -797,14 +1090,18 @@
         color: #9a9a9a;
         white-space: nowrap;
         font-size: 16px;
-        font-weight: 700;
-        transition: color 0.16s ease, border-color 0.16s ease;
+        font-weight: 400;
+        transition: color 0.16s ease, border-color 0.16s ease, font-weight 0.16s ease;
       }
 
       .tab:hover,
       .tab.active {
         color: var(--primary);
         border-bottom-color: var(--primary);
+      }
+
+      .tab.active {
+        font-weight: 700;
       }
 
       .card {
@@ -829,12 +1126,17 @@
       }
 
       .field label {
-        color: var(--pale);
+        color: #666666;
         font-size: 12px;
       }
 
       .field input,
-      .field select {
+      .field select,
+      .filter-select-control,
+      .popup-select-wrap select,
+      .popup-input-wrap input,
+      .popup-input-wrap textarea,
+      .popup-control {
         width: 100%;
         min-height: 38px;
         min-width: 0;
@@ -843,14 +1145,147 @@
         border-radius: 4px;
         background: #fbfbfb;
         color: var(--text);
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
         outline: none;
+        box-shadow: none;
         transition: border-color 0.18s ease, box-shadow 0.18s ease;
       }
 
+      .field input::placeholder,
+      .popup-input-wrap input::placeholder,
+      .popup-input-wrap textarea::placeholder,
+      .popup-control::placeholder {
+        color: var(--muted);
+        font-weight: 400;
+      }
+
       .field input:focus,
-      .field select:focus {
+      .field select:focus,
+      .filter-select-control:focus-visible,
+      .popup-select-wrap select:focus,
+      .popup-input-wrap input:focus,
+      .popup-input-wrap textarea:focus,
+      .popup-control:focus {
         border-color: var(--primary);
         box-shadow: 0 0 0 3px rgba(31, 52, 114, 0.08);
+        outline: none;
+      }
+
+      .popup-ant-datepicker {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .popup-ant-datepicker .ant-picker {
+        width: 100%;
+        min-height: 38px;
+        padding: 7px 12px;
+        border: 1px solid var(--line-soft);
+        border-radius: 4px;
+        background: #fbfbfb;
+        color: var(--text);
+        font-family: "ubuntu-font", "Ubuntu", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+        box-shadow: none;
+      }
+
+      .popup-ant-datepicker .ant-picker:hover,
+      .popup-ant-datepicker .ant-picker-focused {
+        border-color: var(--primary);
+      }
+
+      .popup-ant-datepicker .ant-picker-focused {
+        box-shadow: 0 0 0 3px rgba(31, 52, 114, 0.08);
+      }
+
+      .popup-ant-datepicker .ant-picker-input > input {
+        color: var(--text);
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+      }
+
+      .popup-ant-datepicker .ant-picker-input > input::placeholder {
+        color: var(--muted) !important;
+        opacity: 1;
+      }
+
+      .popup-ant-datepicker .ant-picker-suffix,
+      .popup-ant-datepicker .ant-picker-clear {
+        color: var(--text);
+      }
+
+      .popup-ant-datepicker.has-error .ant-picker {
+        border-color: var(--error);
+        background: #fff8f8;
+        box-shadow: none;
+      }
+
+      .popup-ant-picker-dropdown {
+        z-index: 3000;
+      }
+
+      .popup-ant-picker-dropdown .ant-picker-panel-container {
+        overflow: hidden;
+        padding: var(--dropdown-panel-padding);
+        border: 1px solid var(--line-soft);
+        border-radius: 8px;
+        box-shadow: 0 12px 32px rgba(31, 52, 114, 0.14);
+      }
+
+      .popup-ant-picker-dropdown .ant-picker-panel {
+        border-color: var(--line-soft);
+      }
+
+      .popup-ant-picker-dropdown table {
+        width: auto;
+        min-width: 0;
+        border-collapse: collapse;
+        border-spacing: 0;
+      }
+
+      .popup-ant-picker-dropdown th,
+      .popup-ant-picker-dropdown td {
+        min-width: 0;
+        max-width: none;
+        padding: 0;
+        border-bottom: 0;
+        background: transparent;
+        text-align: center;
+        white-space: normal;
+      }
+
+      .popup-ant-picker-dropdown tr:hover td {
+        background: transparent;
+      }
+
+      .popup-ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner,
+      .popup-ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-range-start .ant-picker-cell-inner,
+      .popup-ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-range-end .ant-picker-cell-inner,
+      .popup-ant-picker-dropdown .ant-picker-time-panel-column > li.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner,
+      .popup-ant-picker-dropdown .ant-btn-primary {
+        background: var(--primary);
+        color: var(--white) !important;
+      }
+
+      .popup-ant-picker-dropdown .ant-btn-primary {
+        border-color: var(--primary);
+        box-shadow: none;
+      }
+
+      .popup-ant-picker-dropdown .ant-picker-now-btn,
+      .popup-ant-picker-dropdown .ant-picker-today-btn,
+      .popup-ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner {
+        color: var(--primary);
+      }
+
+      .popup-ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
+        border-color: var(--primary);
       }
 
       .filter-select {
@@ -863,22 +1298,11 @@
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        width: 100%;
-        min-height: 38px;
-        min-width: 0;
-        padding: 8px 12px;
-        border: 1px solid var(--line-soft);
-        border-radius: 4px;
-        background: #fbfbfb;
-        color: var(--text);
-        font-size: 14px;
-        font-weight: 500;
-        line-height: 1.4;
         text-align: left;
-        transition: border-color 0.18s ease, box-shadow 0.18s ease;
       }
 
-      .filter-select-control::after {
+      .filter-select-control::after,
+      .select-icon-arrow::after {
         content: "";
         width: 7px;
         height: 7px;
@@ -889,8 +1313,7 @@
       }
 
       .filter-select-control:hover,
-      .filter-select-control[aria-expanded="true"],
-      .filter-select-control:focus-visible {
+      .filter-select-control[aria-expanded="true"] {
         border-color: var(--primary);
         box-shadow: 0 0 0 3px rgba(31, 52, 114, 0.08);
         outline: none;
@@ -902,11 +1325,13 @@
         left: 0;
         right: 0;
         z-index: 1200;
-        padding: 0;
+        display: grid;
+        gap: var(--dropdown-option-gap);
+        padding: var(--dropdown-panel-padding);
         border: 1px solid var(--line-soft);
-        border-radius: 8px;
+        border-radius: var(--dropdown-radius);
         background: var(--white);
-        box-shadow: 0 0 5.8px 0 rgba(31, 52, 114, 0.15);
+        box-shadow: var(--dropdown-shadow);
         overflow: hidden;
         opacity: 0;
         transform: translateY(-4px);
@@ -923,23 +1348,27 @@
       .filter-select-option {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 16px;
+        justify-content: flex-start;
+        gap: 8px;
         width: 100%;
-        padding: 10px 8px;
+        min-height: var(--dropdown-item-min-h);
+        padding: var(--dropdown-option-padding);
         border: 0;
-        border-radius: 0;
+        border-radius: var(--dropdown-option-radius);
         background: transparent;
-        color: var(--text);
-        font: inherit;
+        color: var(--dropdown-text);
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.4;
         text-align: left;
         white-space: nowrap;
       }
 
       .filter-select-option:hover,
       .filter-select-option.active {
-        background: var(--nav-active);
-        color: var(--primary);
+        background: var(--dropdown-hover);
+        color: var(--dropdown-text);
+        font-weight: 400;
       }
 
       .panel-card {
@@ -965,44 +1394,45 @@
         background: rgba(93, 100, 125, 0.24);
       }
 
-      table {
+      .table-wrap table {
         width: 100%;
         min-width: 2360px;
         border-collapse: separate;
         border-spacing: 0;
       }
 
-      th,
-      td {
+      .table-wrap th,
+      .table-wrap td {
         min-width: 170px;
         max-width: 220px;
-        padding: 20px;
+        padding: 14px 20px;
         border-bottom: 1px solid var(--line-soft);
         text-align: left;
         white-space: nowrap;
       }
 
-      th {
+      .table-wrap th {
         position: relative;
-        height: 64px;
+        height: auto;
         background: #f6f7f9;
-        color: #838383;
+        color: #666666;
         font-size: 13px;
         font-weight: 500;
       }
 
-      td {
-        height: 84px;
+      .table-wrap td {
+        height: auto;
         color: #333333;
         font-size: 14px;
         font-weight: 500;
       }
 
-      tr:hover td {
+      .table-wrap tr:hover td {
         background: #f9fafb;
       }
 
-      .table-action-cell {
+      .table-wrap th.table-action-cell,
+      .table-wrap td.table-action-cell {
         position: sticky;
         right: 0;
         z-index: 3;
@@ -1011,10 +1441,10 @@
         max-width: var(--action-col-w);
         background: var(--white);
         border-left: 1px solid rgba(237, 239, 244, 0.9);
-        box-shadow: -8px 0 12px -14px rgba(31, 52, 114, 0.18);
+        box-shadow: none;
       }
 
-      th.table-action-cell {
+      .table-wrap th.table-action-cell {
         z-index: 4;
         background: #f6f7f9;
       }
@@ -1034,11 +1464,15 @@
         font-weight: 500;
         line-height: 1.4;
         white-space: nowrap;
-        transition: box-shadow 0.18s ease, transform 0.18s ease;
+        transition: none;
       }
 
       .table-action-button:hover {
+        border-color: var(--primary);
         background: var(--primary);
+        color: var(--white);
+        box-shadow: none;
+        transform: none;
       }
 
       .table-action-button:disabled,
@@ -1066,12 +1500,14 @@
         position: fixed;
         z-index: 1500;
         display: grid;
+        gap: var(--dropdown-option-gap);
         width: 150px;
         overflow: hidden;
+        padding: var(--dropdown-panel-padding);
         border: 1px solid var(--line-soft);
-        border-radius: 8px;
+        border-radius: var(--dropdown-radius);
         background: var(--white);
-        box-shadow: 0 0 5.8px rgba(31, 52, 114, 0.15);
+        box-shadow: var(--dropdown-shadow);
         opacity: 0;
         transform: translateY(-4px);
         pointer-events: none;
@@ -1087,22 +1523,34 @@
       .action-menu-item {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-start;
         gap: 8px;
         width: 100%;
         min-height: 40px;
-        padding: 10px 8px;
+        padding: var(--dropdown-option-padding);
         border: 0;
-        background: var(--white);
-        color: var(--text);
+        border-radius: var(--dropdown-option-radius);
+        background: transparent;
+        color: var(--dropdown-text);
         font-size: 14px;
         font-weight: 400;
         line-height: 1.4;
         text-align: left;
       }
 
+      .action-menu-item span:empty {
+        display: none;
+      }
+
       .action-menu-item:hover {
-        background: #f6f7f9;
+        background: var(--dropdown-hover);
+        color: var(--dropdown-text);
+        font-weight: 400;
+      }
+
+      .action-menu-item[data-action-menu="Delete"],
+      .action-menu-item[data-action-menu="Delete"]:hover {
+        color: var(--error);
       }
 
       .table-pagination {
@@ -1150,13 +1598,15 @@
         bottom: calc(100% + 6px);
         z-index: 1200;
         display: grid;
-        width: 72px;
-        gap: 2px;
-        padding: 6px;
+        width: max-content;
+        min-width: 72px;
+        gap: var(--dropdown-option-gap);
+        padding: var(--dropdown-panel-padding);
         border: 1px solid var(--line-soft);
-        border-radius: 8px;
+        border-radius: var(--dropdown-radius);
         background: var(--white);
-        box-shadow: 0 8px 24px rgba(31, 52, 114, 0.12);
+        box-shadow: var(--dropdown-shadow);
+        overflow: hidden;
         opacity: 0;
         transform: translateY(4px);
         pointer-events: none;
@@ -1173,22 +1623,23 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        min-height: 30px;
-        padding: 7px 8px;
+        min-height: var(--dropdown-item-min-h);
+        padding: var(--dropdown-option-padding);
         border: 0;
-        border-radius: 4px;
+        border-radius: var(--dropdown-option-radius);
         background: transparent;
-        color: var(--text);
-        font-size: 13px;
-        font-weight: 500;
+        color: var(--dropdown-text);
+        font-size: 14px;
+        font-weight: 400;
         line-height: 1.4;
         text-align: left;
       }
 
       .page-size-option:hover,
       .page-size-option.active {
-        background: var(--nav-hover);
-        color: var(--primary);
+        background: var(--dropdown-hover);
+        color: var(--dropdown-text);
+        font-weight: 400;
       }
 
       .page-size-option span:last-child {
@@ -1301,6 +1752,12 @@
         display: block;
       }
 
+      @media (min-width: 901px) {
+        .app.drawer-open .overlay {
+          display: none;
+        }
+      }
+
       .toast {
         position: fixed;
         right: 24px;
@@ -1312,7 +1769,7 @@
         border-radius: 8px;
         background: var(--white);
         color: #333333;
-        box-shadow: 0 8px 24px rgba(31, 52, 114, 0.14);
+        box-shadow: var(--shadow-popup);
         opacity: 0;
         transform: translateY(10px);
         pointer-events: none;
@@ -1326,6 +1783,1087 @@
 
       [hidden] { display: none !important; }
 
+
+
+      .popup-edit-page {
+        display: block;
+      }
+
+      .popup-edit-card {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        margin-bottom: 16px;
+        padding: 20px 24px 24px;
+        border: 1px solid var(--line-soft);
+        border-radius: 10px;
+        background: var(--white);
+        box-shadow: none;
+      }
+
+      .popup-edit-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .popup-edit-title {
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 20px;
+      }
+
+      .popup-edit-back {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 32px;
+        padding: 6px 12px;
+        border: 1px solid var(--line-soft);
+        border-radius: 4px;
+        background: var(--white);
+        color: var(--primary);
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 18px;
+      }
+
+      .popup-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(260px, 1fr));
+        gap: 16px 20px;
+      }
+
+      .popup-field {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .popup-field-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 18px;
+        color: #666666;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 18px;
+      }
+
+      .popup-required { color: var(--error); }
+
+      .popup-tooltip-wrap {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .popup-tooltip-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 14px;
+        height: 14px;
+        border: 1px solid var(--line-soft);
+        border-radius: 50%;
+        background: #edf1f7;
+        color: var(--pale);
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 1;
+        cursor: help;
+      }
+
+      .popup-tooltip-box {
+        position: absolute;
+        left: 20px;
+        top: -8px;
+        z-index: 99;
+        display: none;
+        width: 240px;
+        padding: 8px 10px;
+        border-radius: 4px;
+        background: var(--secondary);
+        box-shadow: 0 2px 10px 1px rgba(0, 0, 0, 0.2);
+        color: var(--white);
+        font-size: 11px;
+        font-weight: 400;
+        line-height: 1.5;
+        white-space: normal;
+      }
+
+      .popup-tooltip-wrap:hover .popup-tooltip-box,
+      .popup-tooltip-wrap:focus-within .popup-tooltip-box { display: block; }
+
+      .popup-select-wrap,
+      .popup-input-wrap {
+        position: relative;
+        width: 100%;
+        min-width: 0;
+      }
+
+      .popup-select-wrap select,
+      .popup-input-wrap input,
+      .popup-input-wrap textarea {
+        font-family: "ubuntu-font", "Ubuntu", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      .popup-select-wrap select {
+        appearance: none;
+        padding-right: 36px;
+        cursor: pointer;
+      }
+
+      .popup-input-wrap input[maxlength],
+      .popup-input-wrap textarea[maxlength] { padding-right: 70px; }
+
+      .popup-select-arrow {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 12px;
+        height: 12px;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: var(--muted);
+      }
+
+      .popup-input-wrap input.has-error,
+      .popup-input-wrap textarea.has-error {
+        border-color: var(--error);
+        background: #fff8f8;
+        box-shadow: none;
+      }
+
+      .popup-input-wrap input.has-success { border-color: var(--success); }
+
+      .popup-char-count {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #c5c5c5;
+        font-size: 11px;
+        line-height: 16px;
+        pointer-events: none;
+      }
+
+      .popup-input-hint,
+      .popup-input-error {
+        font-size: 11px;
+        font-weight: 400;
+        line-height: 16px;
+      }
+
+      .popup-input-hint { color: #768485; }
+
+      .popup-input-error {
+        display: none;
+        color: var(--error);
+      }
+
+      .popup-input-error.show {
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .popup-input-error.show::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        margin-top: 5px;
+        border-radius: 50%;
+        background: var(--error);
+        flex-shrink: 0;
+      }
+
+      .popup-divider {
+        height: 1px;
+        margin: 2px 0;
+        border: 0;
+        background: var(--line-soft);
+      }
+
+      .popup-toggle-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+      }
+
+      .popup-toggle-label-group {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .popup-toggle-label-title {
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 20px;
+      }
+
+      .popup-toggle-label-desc {
+        color: #768485;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 18px;
+      }
+
+      .popup-toggle {
+        position: relative;
+        flex-shrink: 0;
+        width: 40px;
+        height: 22px;
+        margin-top: 1px;
+      }
+
+      .popup-toggle input {
+        position: absolute;
+        width: 0;
+        height: 0;
+        opacity: 0;
+      }
+
+      .popup-toggle-slider {
+        position: absolute;
+        inset: 0;
+        border-radius: 22px;
+        background: #c5c5c5;
+        cursor: pointer;
+        transition: background 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .popup-toggle-slider::before {
+        content: "";
+        position: absolute;
+        left: 3px;
+        top: 3px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--white);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+        transition: transform 0.2s ease;
+      }
+
+      .popup-toggle input:checked + .popup-toggle-slider { background: var(--primary); }
+      .popup-toggle input:checked + .popup-toggle-slider::before { transform: translateX(18px); }
+      .popup-toggle input:focus-visible + .popup-toggle-slider { box-shadow: 0 3px 6px 0 rgba(31, 52, 114, 0.16); }
+
+      .popup-redirect-section {
+        overflow: hidden;
+        margin-top: -2px;
+        transition: max-height 0.3s ease, opacity 0.2s ease;
+      }
+
+      .popup-redirect-section.hidden {
+        max-height: 0;
+        opacity: 0;
+      }
+
+      .popup-redirect-section.visible {
+        max-height: 220px;
+        opacity: 1;
+      }
+
+      .popup-format-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 2px;
+      }
+
+      .popup-format-tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        padding: 2px 8px;
+        border: 1px solid transparent;
+        border-radius: 3px;
+        background: #edf1f7;
+        color: var(--pale);
+        font-size: 11px;
+        font-weight: 500;
+        line-height: 16px;
+        cursor: pointer;
+        transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+      }
+
+      .popup-format-tag:hover,
+      .popup-format-tag:focus-visible {
+        border-color: var(--primary);
+        background: var(--white);
+        color: var(--primary);
+        outline: none;
+      }
+
+      .popup-url-input-wrap {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: stretch;
+        overflow: hidden;
+        padding: 0;
+      }
+
+      .popup-url-input-wrap:focus-within {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(31, 52, 114, 0.08);
+      }
+
+      .popup-url-input-wrap.popup-has-error {
+        border-color: var(--error);
+        background: #fff8f8;
+        box-shadow: none;
+      }
+
+      .popup-url-prefix {
+        display: inline-flex;
+        align-items: center;
+        min-height: 36px;
+        padding: 0 12px;
+        border-right: 1px solid var(--line-soft);
+        background: var(--column-head);
+        color: #768485;
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 20px;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+
+      .popup-url-input-wrap input {
+        width: 100%;
+        min-height: 36px;
+        min-width: 0;
+        padding: 8px 70px 8px 12px;
+        border: none;
+        border-radius: 0;
+        background: transparent;
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+        outline: none;
+        box-shadow: none !important;
+      }
+
+      .popup-url-input-wrap input:focus { box-shadow: none; }
+
+      .popup-multi-select {
+        position: relative;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        width: 100%;
+        min-height: 38px;
+        padding: 6px 12px;
+        border: 1px solid var(--line-soft);
+        border-radius: 4px;
+        background: #fbfbfb;
+        color: var(--text);
+        text-align: left;
+        cursor: pointer;
+        transition: border-color 0.18s ease, box-shadow 0.18s ease;
+      }
+
+      .popup-multi-select:hover,
+      .popup-multi-select:focus-visible {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(31, 52, 114, 0.08);
+        outline: none;
+      }
+
+      .popup-select {
+        width: 100%;
+      }
+
+      .popup-select .filter-select-menu {
+        max-height: 240px;
+        overflow-y: auto;
+      }
+
+      .popup-selected-values {
+        display: flex;
+        flex: 1 1 auto;
+        flex-wrap: wrap;
+        gap: 6px;
+        min-width: 0;
+      }
+
+      .popup-selected-tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        padding: 2px 8px;
+        border: 1px solid #dce2f1;
+        border-radius: 3px;
+        background: #f8faff;
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 16px;
+      }
+
+      .popup-select-placeholder {
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 400;
+      }
+
+      .popup-option-check {
+        margin-left: auto;
+        color: var(--primary);
+        font-size: 12px;
+        opacity: 0;
+      }
+
+      .filter-select-option.active .popup-option-check {
+        opacity: 1;
+      }
+
+      .popup-locales {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .popup-locale-switch-row {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .popup-locale-tabs.tabs {
+        flex: 1 1 auto;
+        min-width: 0;
+        width: auto;
+        max-width: none;
+        margin: 0;
+        gap: 8px;
+        padding-bottom: 0;
+        border-bottom: 1px solid var(--line-soft);
+        overflow-x: auto;
+        overflow-y: visible;
+        scrollbar-width: none;
+      }
+
+      .popup-locale-tabs.tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      .popup-locale-tabs .tab {
+        flex: 0 0 auto;
+        min-height: 36px;
+        padding: 8px 14px;
+        border: 0;
+        border-radius: 4px 4px 0 0;
+        background: transparent;
+        color: #777777;
+        font-size: 14px;
+        transition: background 0.16s ease, color 0.16s ease, font-weight 0.16s ease;
+      }
+
+      .popup-locale-tabs .tab::after {
+        content: "";
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        bottom: -1px;
+        height: 2px;
+        border-radius: 2px 2px 0 0;
+        background: var(--primary);
+        opacity: 0;
+        transform: scaleX(0.4);
+        transition: opacity 0.16s ease, transform 0.16s ease;
+      }
+
+      .popup-locale-tabs .tab:hover,
+      .popup-locale-tabs .tab:focus-visible {
+        border: 0;
+        background: var(--nav-hover);
+        color: var(--primary);
+        outline: none;
+      }
+
+      .popup-locale-tabs .tab.active {
+        border: 0;
+        background: transparent;
+        color: var(--primary);
+        font-weight: 700;
+      }
+
+      .popup-locale-tabs .tab.active::after {
+        opacity: 1;
+        transform: scaleX(1);
+      }
+
+      .popup-locale-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        flex: 0 0 auto;
+      }
+
+      .popup-locale-card {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px 0 0;
+        border: 0;
+        border-top: 0;
+        border-radius: 0;
+        background: transparent;
+      }
+
+      .popup-readonly-locale {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        min-height: 38px;
+        padding: 8px 12px;
+        border: 1px solid var(--line-soft);
+        border-radius: 4px;
+        background: #f8faff;
+        color: var(--primary);
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 20px;
+      }
+
+      .popup-locale-header {
+        display: none;
+      }
+
+      .popup-locale-title {
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 18px;
+      }
+
+      .popup-textarea-wrap textarea {
+        min-height: 104px;
+        padding-bottom: 28px;
+        resize: vertical;
+      }
+
+      .popup-textarea-wrap .popup-char-count {
+        top: auto;
+        bottom: 8px;
+        transform: none;
+      }
+
+      .popup-locale-cta-field.is-hidden { display: none; }
+
+      .popup-add-locale,
+      .popup-locale-actions .danger-outline-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 104px;
+        min-height: 40px;
+        padding: 8px 18px;
+        border-radius: 4px;
+        background: var(--white);
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 20px;
+        cursor: pointer;
+        transition: none;
+      }
+
+      .popup-add-locale {
+        border: 1px solid var(--primary);
+        color: var(--primary);
+      }
+
+      .popup-locale-actions .danger-outline-btn {
+        border: 1px solid var(--error);
+        color: var(--error);
+      }
+
+      .popup-add-locale:hover,
+      .popup-add-locale:focus-visible {
+        background: var(--white);
+        box-shadow: none;
+        outline: none;
+      }
+
+      .popup-settings-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(260px, 1fr));
+        gap: 16px 20px;
+      }
+
+      .popup-upload {
+        display: grid;
+        grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+        gap: 16px;
+        align-items: stretch;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+      }
+
+      .popup-cover-requirement {
+        color: #777777;
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 20px;
+      }
+
+      .popup-upload-input {
+        position: fixed;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .popup-upload.is-empty {
+        width: min(320px, 100%);
+        grid-template-columns: 1fr;
+      }
+
+      .popup-upload.is-empty .popup-upload-meta {
+        display: none;
+      }
+
+      .popup-upload.is-empty .popup-cover-preview {
+        min-height: 174px;
+        aspect-ratio: 440 / 240;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        border: 1px dashed #c5c5c5;
+        background: #fbfbfb;
+        color: #c5c5c5;
+        cursor: pointer;
+      }
+
+      .popup-cover-preview {
+        position: relative;
+        display: flex;
+        min-height: 174px;
+        aspect-ratio: 440 / 240;
+        flex-direction: column;
+        justify-content: flex-end;
+        overflow: hidden;
+        padding: 16px;
+        border: 1px solid #dce2f1;
+        border-radius: 6px;
+        background:
+          linear-gradient(135deg, rgba(31, 52, 114, 0.84), rgba(31, 52, 114, 0.48)),
+          repeating-linear-gradient(45deg, #eef2fb 0, #eef2fb 10px, #f8faff 10px, #f8faff 20px);
+        color: var(--white);
+      }
+
+      .popup-cover-preview.has-image {
+        padding: 0;
+        background: #fbfbfb;
+        color: var(--text);
+      }
+
+      .popup-upload.is-empty .popup-cover-preview:hover,
+      .popup-upload.is-empty .popup-cover-preview:focus-visible {
+        border-color: var(--primary);
+        background: #f8faff;
+        outline: none;
+      }
+
+      .popup-cover-image {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .popup-empty-upload {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 12px;
+        color: #c5c5c5;
+        text-align: center;
+      }
+
+      .popup-upload-icon {
+        width: 34px;
+        height: 34px;
+        color: #999999;
+      }
+
+      .popup-empty-upload-text {
+        color: #c5c5c5;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+      }
+
+      .popup-image-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 5000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 32px;
+        background: rgba(29, 29, 29, 0.62);
+      }
+
+      .popup-image-modal.open {
+        display: flex;
+      }
+
+      .popup-locale-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 5000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 32px;
+        background: rgba(29, 29, 29, 0.42);
+      }
+
+      .popup-locale-modal.open {
+        display: flex;
+      }
+
+      .popup-locale-dialog {
+        position: relative;
+        width: min(520px, calc(100vw - 32px));
+        padding: 24px;
+        border: 1px solid var(--line-soft);
+        border-radius: 8px;
+        background: var(--white);
+        box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .popup-locale-dialog-close {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border: 0;
+        border-radius: 4px;
+        background: transparent;
+        color: #777777;
+        font-size: 22px;
+        font-weight: 400;
+        line-height: 1;
+        cursor: pointer;
+      }
+
+      .popup-locale-dialog-close:hover,
+      .popup-locale-dialog-close:focus-visible {
+        background: #f5f5f5;
+        color: var(--text);
+        outline: none;
+      }
+
+      .popup-locale-dialog-title {
+        margin: 0 40px 8px 0;
+        color: var(--text);
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 28px;
+      }
+
+      .popup-locale-dialog-desc {
+        margin: 0 0 24px;
+        color: #333333;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 22px;
+      }
+
+      .popup-locale-dialog .filter-select {
+        margin-bottom: 24px;
+      }
+
+      .popup-locale-dialog .filter-select-control {
+        min-height: 40px;
+        background: var(--white);
+        font-size: 14px;
+      }
+
+      .popup-locale-dialog .filter-select-menu {
+        max-height: 280px;
+        overflow-y: auto;
+      }
+
+      .popup-locale-dialog-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .popup-locale-dialog-actions .btn {
+        min-width: 96px;
+        min-height: 40px;
+        font-size: 14px;
+      }
+
+      .popup-image-dialog {
+        width: min(960px, calc(100vw - 64px));
+        max-height: calc(100vh - 64px);
+        overflow: hidden;
+        border-radius: 8px;
+        background: var(--white);
+        box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24);
+      }
+
+      .popup-image-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--line-soft);
+      }
+
+      .popup-image-title {
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 20px;
+      }
+
+      .popup-image-close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border: 0;
+        border-radius: 4px;
+        background: transparent;
+        color: var(--text);
+        font-size: 22px;
+        font-weight: 400;
+        line-height: 1;
+        cursor: pointer;
+      }
+
+      .popup-image-body {
+        padding: 16px;
+        background: #f9fafb;
+      }
+
+      .popup-image-large {
+        display: block;
+        width: 100%;
+        max-height: calc(100vh - 168px);
+        object-fit: contain;
+        border-radius: 6px;
+        background: var(--white);
+      }
+
+      .popup-crop-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 5200;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 32px;
+        background: rgba(29, 29, 29, 0.62);
+      }
+
+      .popup-crop-modal.open {
+        display: flex;
+      }
+
+      .popup-crop-dialog {
+        width: min(820px, calc(100vw - 64px));
+        max-height: calc(100vh - 64px);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border: 1px solid var(--line-soft);
+        border-radius: 8px;
+        background: var(--white);
+        box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24);
+      }
+
+      .popup-crop-body {
+        min-height: 360px;
+        padding: 16px;
+        background: #f9fafb;
+      }
+
+      .popup-crop-canvas {
+        width: 100%;
+        height: min(520px, calc(100vh - 216px));
+        min-height: 320px;
+      }
+
+      .popup-crop-image {
+        display: block;
+        max-width: 100%;
+      }
+
+      .popup-crop-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        padding: 12px 16px;
+        border-top: 1px solid var(--line-soft);
+        background: var(--white);
+      }
+
+      .popup-upload-meta {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .popup-upload-name {
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 20px;
+        word-break: break-all;
+      }
+
+      .popup-upload-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .popup-ghost-btn,
+      .popup-icon-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 32px;
+        padding: 6px 12px;
+        border: 1px solid var(--primary);
+        border-radius: 4px;
+        background: var(--white);
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 18px;
+        cursor: pointer;
+        transition: none;
+      }
+
+      .popup-icon-btn { min-width: 64px; }
+
+      .popup-ghost-btn.primary {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: var(--white);
+      }
+
+      .popup-ghost-btn:hover,
+      .popup-icon-btn:hover,
+      .popup-ghost-btn:focus-visible,
+      .popup-icon-btn:focus-visible {
+        border-color: var(--primary);
+        background: var(--white);
+        color: var(--primary);
+        outline: none;
+      }
+
+      .popup-icon-btn.danger-outline-btn {
+        border-color: var(--error);
+        background: var(--white);
+        color: var(--error);
+      }
+
+      .popup-icon-btn.danger-outline-btn:hover,
+      .popup-icon-btn.danger-outline-btn:focus-visible {
+        border-color: var(--error);
+        background: var(--white);
+        color: var(--error);
+      }
+
+      .popup-ghost-btn.primary:hover,
+      .popup-ghost-btn.primary:focus-visible {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: var(--white);
+      }
+
+      .popup-edit-actions {
+        display: flex;
+        justify-content: flex-start;
+        gap: 10px;
+        margin-top: 4px;
+        padding: 16px 0 4px;
+      }
+
+      .popup-localized-note {
+        color: #768485;
+        font-size: 13px;
+      }
+
+      @media (max-width: 1023px) {
+        .popup-form-grid,
+        .popup-settings-grid { grid-template-columns: 1fr; }
+        .popup-upload { grid-template-columns: 1fr; }
+        .popup-locale-switch-row { align-items: stretch; flex-direction: column; }
+        .popup-locale-actions { justify-content: flex-start; }
+        .popup-locale-modal { padding: 24px; }
+      }
+
+      @media (max-width: 767px) {
+        .popup-edit-card { gap: 16px; padding: 16px; }
+        .popup-edit-header { align-items: flex-start; flex-direction: column; }
+        .popup-tooltip-box { left: auto; right: -8px; top: 22px; width: min(260px, calc(100vw - 48px)); }
+        .popup-locale-modal { padding: 16px; }
+        .popup-locale-dialog { width: min(420px, calc(100vw - 32px)); padding: 20px; }
+        .popup-crop-modal { padding: 16px; }
+        .popup-crop-dialog { width: calc(100vw - 32px); max-height: calc(100vh - 32px); }
+        .popup-crop-body { min-height: 300px; padding: 12px; }
+        .popup-crop-canvas { height: min(420px, calc(100vh - 232px)); min-height: 260px; }
+        .popup-crop-actions { flex-direction: column-reverse; }
+        .popup-crop-actions .btn { width: 100%; }
+        .popup-edit-actions { flex-direction: column-reverse; }
+        .popup-edit-actions .btn { width: 100%; }
+        .popup-upload.is-empty { width: 100%; }
+        .popup-upload.is-empty .popup-cover-preview { min-height: 174px; }
+      }
+
+      @media (max-width: 520px) {
+        .popup-url-input-wrap { grid-template-columns: 1fr; }
+        .popup-url-prefix {
+          min-height: 34px;
+          border-right: 0;
+          border-bottom: 1px solid var(--line-soft);
+        }
+      }
+
       @media (max-width: 1180px) {
         .valuation,
         .asset-summary {
@@ -1334,6 +2872,44 @@
 
         .filter-card {
           grid-template-columns: repeat(2, minmax(180px, 1fr));
+        }
+      }
+
+      @media (max-width: 900px) {
+        :root {
+          --sidebar-w: 280px;
+        }
+
+        .topbar-left > .mode-wrap {
+          display: none;
+        }
+
+        .sidebar-role-switch {
+          display: flex;
+        }
+
+        .nav-scroll {
+          height: calc(100% - 64px);
+        }
+
+        .mode-client .sidebar-quick-grid {
+          display: block;
+        }
+
+        .sidebar-collapsed .sidebar-role-switch {
+          display: flex;
+        }
+
+        .mode-client.sidebar-collapsed .sidebar-quick-grid {
+          display: block;
+        }
+
+        .sidebar-collapsed .nav-scroll {
+          height: calc(100% - 64px);
+        }
+
+        .sidebar-collapsed .scroll-touch {
+          top: 64px;
         }
       }
 
@@ -1368,6 +2944,23 @@
           display: none;
         }
 
+        .sidebar-role-switch,
+        .sidebar-mode-wrap {
+          display: flex;
+        }
+
+        .sidebar-collapsed .sidebar-role-switch {
+          display: flex;
+        }
+
+        .mode-client.sidebar-collapsed .sidebar-quick-grid {
+          display: block;
+        }
+
+        .sidebar-mode-wrap {
+          position: relative;
+        }
+
         .topbar-icons,
         .topbar-divider,
         .user-box > div:not(.avatar) {
@@ -1390,7 +2983,7 @@
           z-index: 60;
           height: auto;
           transform: translateX(-100%);
-          box-shadow: 12px 0 30px rgba(31, 52, 114, 0.12);
+          box-shadow: none;
         }
 
         .app.drawer-open .sidebar {
@@ -1402,6 +2995,7 @@
         }
 
         .sidebar-collapsed .nav-scroll {
+          height: calc(100% - 64px);
           padding: 12px 0 64px !important;
         }
 
@@ -1455,6 +3049,26 @@
 
         .actions .btn {
           flex: 1;
+        }
+      }
+
+      @media (max-width: 900px) {
+        .app.drawer-open .topbar {
+          z-index: 40;
+        }
+
+        .app.drawer-open .overlay {
+          z-index: 125;
+        }
+
+        .app.drawer-open .sidebar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          z-index: 130;
+          height: 100vh;
+          transform: translateX(0);
         }
       }
 
@@ -1541,9 +3155,9 @@
               <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m4 6 4 4 4-4" /></svg>
             </button>
             <div class="mode-menu" id="modeMenu" role="menu">
-              <button class="mode-option" type="button" data-mode="client">Client interface <span></span></button>
-              <button class="mode-option" type="button" data-mode="backoffice">Backoffice interface <span></span></button>
-              <button class="mode-option" type="button" data-mode="admin">Admin interface <span></span></button>
+              <button class="mode-option" type="button" data-mode="client">Client interface</button>
+              <button class="mode-option" type="button" data-mode="backoffice">Backoffice interface</button>
+              <button class="mode-option" type="button" data-mode="admin">Admin interface</button>
             </div>
           </div>
         </div>
@@ -1553,6 +3167,23 @@
 
       <div class="layout">
         <aside class="sidebar" id="sidebar" aria-label="主导航">
+          <div class="sidebar-role-switch">
+            <button class="sidebar-close-button" id="sidebarCloseButton" type="button" aria-label="关闭菜单">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 5l14 14M19 5 5 19" /></svg>
+            </button>
+            <div class="sidebar-role-divider" aria-hidden="true"></div>
+            <div class="mode-wrap sidebar-mode-wrap">
+              <button class="mode-control sidebar-mode-control" id="sidebarModeControl" type="button" aria-expanded="false" aria-haspopup="true">
+                <span id="sidebarModeLabel">Backoffice interface</span>
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m4 6 4 4 4-4" /></svg>
+              </button>
+              <div class="mode-menu sidebar-mode-menu" id="sidebarModeMenu" role="menu">
+                <button class="mode-option" type="button" data-mode="client">Client interface</button>
+                <button class="mode-option" type="button" data-mode="backoffice">Backoffice interface</button>
+                <button class="mode-option" type="button" data-mode="admin">Admin interface</button>
+              </div>
+            </div>
+          </div>
           <nav class="nav-scroll" id="navScroll"></nav>
           <div class="scroll-touch" id="scrollTouch" aria-hidden="true">
             <div class="scroll-thumb" id="scrollThumb"></div>
@@ -1570,11 +3201,11 @@
           <div class="content-shell">
             <div class="page-head">
               <div>
+                <nav class="breadcrumb-nav" id="breadcrumbNav" aria-label="Page navigation"></nav>
                 <h1 class="headline" id="headline">Headline</h1>
                 <p class="page-subtitle" id="pageSubtitle">二级选中时，一级保持常态；所有 hover、点击、折叠、切换均可交互。</p>
               </div>
               <div class="actions">
-                <button class="btn secondary" id="resetButton" type="button">Reset</button>
                 <button class="btn" id="primaryAction" type="button">Create</button>
               </div>
             </div>
@@ -1593,6 +3224,7 @@
               <div class="mobile-cards" id="mobileCards"></div>
               <div class="table-pagination" id="pagination" aria-label="Pagination"></div>
             </section>
+              <section class="popup-edit-page" id="popupEditPage" hidden></section>
           </div>
         </main>
       </div>
@@ -1601,6 +3233,12 @@
       <div class="toast" id="toast" role="status" aria-live="polite"></div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/locale/zh-cn.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/antd@5/dist/antd-with-locales.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
     <script>
       const icon = {
         dashboard: '<svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="12" y="3" width="5" height="5" rx="1"/><rect x="3" y="12" width="5" height="5" rx="1"/><rect x="12" y="12" width="5" height="5" rx="1"/></svg>',
@@ -1633,7 +3271,7 @@
         adminStaff: '<svg width="24" height="24" viewBox="0 0 17 18" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient x1="15.561%" y1="126.812%" x2="95.826%" y2="18.008%" id="linearGradient-4"><stop stop-color="currentColor" offset="0%"></stop><stop stop-color="currentColor" offset="100%"></stop></linearGradient></defs><g id="-UI" fill="none" fill-rule="evenodd"><g id="ui---blocks" transform="translate(-491 -744)" fill="currentColor"><g id="users1" transform="translate(490 743)"><path fill="currentColor" d="M6.49373922,2.73293854 C7.08319884,1.58291347 8.26211809,1 10.0015582,1 C11.7409984,1 12.9194724,1.58335241 13.5102677,2.7324996 C14,3.69465797 14,4.85653444 14,5.8819003 C14,7.14429423 13.3642384,8.61737978 12.3081975,10.040865 C10.9280427,11.3651496 9.18771217,11.317744 7.60276031,9.90084287 C6.57877456,8.55548912 6,7.10917896 6,5.8819003 C6.00133563,4.85653444 6.00133563,3.69465797 6.49373922,2.73293854 Z" id="Path"></path><path fill="currentColor" d="M17.9861472,18.5615734 C17.9881478,18.6772997 17.944617,18.7889827 17.8653636,18.871457 C17.7861102,18.9539313 17.6778019,19.0002582 17.5648437,18.9999989 L1.44845324,18.9999989 C1.33575077,18.9997084 1.2278605,18.9531606 1.14889859,18.8707599 C1.06927992,18.7885662 1.02471093,18.6773811 1.02496005,18.5615734 C1.02846361,18.3443801 0.78014857,16.7217122 1.77822612,15.6976724 C2.23894468,15.2255909 3.20373838,14.7140197 4.62180556,13.9866014 C6.13534484,13.2116159 6.97488616,12.7498556 7.36159194,12.3751522 C7.45475075,12.2558577 7.54032666,12.1305484 7.61779,12 C8.27470809,12.3657285 8.95264755,12.5604846 9.6323388,12.5717032 L9.69627883,12.5717032 C10.3653652,12.5696237 11.0226029,12.3906354 11.6044069,12.0520546 C11.7086379,12.2212321 11.8076136,12.3522661 11.8076136,12.3522661 C12.1938814,12.7260721 13.0080219,13.2107184 14.522875,13.9866014 C15.9409422,14.7126735 16.905298,15.2246934 17.3664544,15.6976724 C18.1766534,16.5300974 17.9734468,17.7731256 17.9861472,18.5620222 L17.9861472,18.5615734 Z" id="Path"></path></g></g></g></svg>',
         adminWithdrawSettings: '<svg width="24" height="24" viewBox="0 0 25 20" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0)"><path d="M13.3 11.1C13.3 10.9 13.3 10.7 13.2 10.6L9.8 7.2C9.8 7.1 9.6 7 9.5 7C9.4 7 9.2 7.1 9.1 7.2L5.8 10.7C5.7 10.9 5.6 11.1 5.7 11.3C5.8 11.5 6 11.6 6.2 11.6C6.3 11.6 6.5 11.5 6.6 11.4L9 8.8V16.5C9 16.8 9.2 17 9.5 17C9.8 17 10 16.8 10 16.5V8.8L12.5 11.4C12.6 11.5 12.8 11.6 13 11.5C13.1 11.5 13.2 11.3 13.3 11.1ZM19 8.9V2.2C19 1 18 0 16.8 0H2.2C1 0 0 1 0 2.2V11.8C0 12.4 0.2 13 0.6 13.4C1 13.8 1.6 14 2.2 14H3C3.3 14 3.6 13.7 3.6 13.4C3.6 13.1 3.4 12.9 3.1 12.9H2.2C1.6 13 1 12.4 1 11.8V3.8H18V8.8C15.3 9.1 13.2 11.4 13.2 14.2C13.2 17.2 15.7 19.7 18.7 19.7C21.7 19.7 24.2 17.2 24.2 14.2C24.1 11.4 21.8 9.1 19 8.9ZM21.5 13L18.5 16.8C18.4 16.9 18.3 17 18.1 17C18 17 17.8 16.9 17.7 16.8L15.8 14.9C15.6 14.7 15.6 14.4 15.8 14.2C16 14 16.3 14 16.5 14.2L18 15.7L20.6 12.3C20.8 12.1 21.1 12 21.3 12.2C21.7 12.4 21.7 12.7 21.5 13Z" fill="currentColor"></path></g><defs><linearGradient id="paint0_linear" x1="4.25728" y1="21.159" x2="26.0599" y2="13.119" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"></stop><stop offset="1" stop-color="currentColor"></stop></linearGradient><clipPath id="clip0"><rect width="24.1" height="19.8" fill="currentColor"></rect></clipPath></defs></svg>',
         adminBanners: '<svg width="24" height="24" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.54169 14.9998V4.99976C1.54186 2.81389 3.31383 1.04192 5.49969 1.04175H10.4997C10.8449 1.04175 11.1247 1.32157 11.1247 1.66675C11.1247 2.01193 10.8449 2.29175 10.4997 2.29175H5.49969C4.00418 2.29192 2.79186 3.50424 2.79169 4.99976V14.9998C2.79169 16.4954 4.00407 17.7086 5.49969 17.7087H15.4997C16.9955 17.7087 18.2087 16.4955 18.2087 14.9998V9.99976C18.2089 9.65473 18.4886 9.37476 18.8337 9.37476C19.1786 9.37493 19.4585 9.65484 19.4587 9.99976V14.9998C19.4587 17.1859 17.6858 18.9587 15.4997 18.9587H5.49969C3.31372 18.9586 1.54169 17.1858 1.54169 14.9998ZM14.322 1.71851C15.2243 0.816179 16.6872 0.816225 17.5895 1.71851L18.7819 2.91089C19.6839 3.81327 19.6841 5.27625 18.7819 6.17847L12.027 12.9324C11.6736 13.2857 11.2152 13.515 10.7204 13.5857L8.21747 13.9431C7.24883 14.0815 6.41809 13.2516 6.55634 12.283L6.91376 9.78003C6.98446 9.2851 7.21454 8.82593 7.56805 8.47241L14.322 1.71851ZM8.45184 9.3562C8.28957 9.51847 8.18449 9.72961 8.15204 9.95679L7.79364 12.4597C7.77325 12.6034 7.89703 12.7263 8.04071 12.7058L10.5436 12.3484C10.7707 12.3159 10.981 12.2107 11.1432 12.0486L15.9255 7.26538C15.4472 7.06776 14.8805 6.73693 14.322 6.17847C13.763 5.61946 13.4307 5.0525 13.2331 4.57397L8.45184 9.3562ZM16.7057 2.60229C16.2915 2.18817 15.6199 2.18812 15.2057 2.60229L14.2292 3.57788C14.2465 3.66548 14.2725 3.77515 14.3141 3.90015C14.4362 4.26601 14.6864 4.77531 15.2057 5.29468C15.7252 5.81412 16.2344 6.06431 16.6003 6.18628C16.7249 6.22783 16.8341 6.25293 16.9216 6.27026L17.8981 5.29468C18.3122 4.88061 18.3119 4.20891 17.8981 3.79468L16.7057 2.60229Z" fill="currentColor"></path></svg>',
-        adminPaymentSystem: '<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><path d="M19.2956 5.07227C19.6916 5.07227 20.0156 5.39627 20.0156 5.79227V18.5443C20.0156 18.9403 19.6916 19.2643 19.2956 19.2643C18.8996 19.2643 18.5756 18.9403 18.5756 18.5443V5.79227C18.5756 5.39627 18.8936 5.07227 19.2956 5.07227Z" fill="currentColor"></path><path d="M15.2246 11.9693C15.2246 11.7593 15.1286 11.5553 14.9726 11.4233L11.1206 8.13532C10.8206 7.87732 10.3646 7.91332 10.1066 8.21332C9.84861 8.51332 9.88461 8.96932 10.1846 9.22732L13.4006 11.9753L10.1786 14.7773C9.87861 15.0413 9.84861 15.4913 10.1066 15.7913C10.3646 16.0913 10.8206 16.1213 11.1206 15.8633L14.9726 12.5153C15.1286 12.3773 15.2246 12.1793 15.2246 11.9693Z" fill="currentColor"></path><path d="M14.8887 11.968C14.8887 11.572 14.5647 11.248 14.1687 11.248H3.41667C3.02067 11.248 2.69667 11.572 2.69667 11.968C2.69667 12.364 3.02067 12.688 3.41667 12.688H14.1687C14.5647 12.688 14.8887 12.37 14.8887 11.968Z" fill="currentColor"></path></svg>',
+        adminPaymentSystem: '<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="6.5" ry="2.4"/><path d="M5.5 6v4.4c0 1.3 2.9 2.4 6.5 2.4s6.5-1.1 6.5-2.4V6"/><path d="M5.5 10.4v4.4c0 1.3 2.9 2.4 6.5 2.4s6.5-1.1 6.5-2.4v-4.4"/><path d="M5.5 14.8v3.2c0 1.3 2.9 2.4 6.5 2.4s6.5-1.1 6.5-2.4v-3.2"/></svg>',
         adminTradingPlatforms: '<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 511.999 511.999"><path fill="currentColor" d="M481.091 27.937H30.909C13.866 27.937 0 41.803 0 58.846v310.819c0 17.043 13.866 30.909 30.909 30.909h154.26v22.49c0 20.617-16.774 37.391-37.391 37.391h-33.997c-6.518 0-11.803 5.284-11.803 11.803 0 6.519 5.285 11.803 11.803 11.803h284.436c6.518 0 11.803-5.284 11.803-11.803 0-6.519-5.285-11.803-11.803-11.803h-33.998c-20.617 0-37.391-16.774-37.391-37.391v-22.489h154.26c17.043 0 30.91-13.866 30.91-30.909V58.846c.002-17.043-13.864-30.909-30.907-30.909zM195.92 460.457c8.046-10.336 12.857-23.308 12.857-37.391v-22.49h94.447v22.49c0 14.083 4.811 27.056 12.857 37.391H195.92zm292.474-90.791c0 4.027-3.276 7.304-7.304 7.304H30.909c-4.027 0-7.304-3.276-7.304-7.304v-62.033h464.789v62.033zm0-85.64H23.606V58.846c0-4.027 3.276-7.304 7.304-7.304h450.18c4.027 0 7.305 3.276 7.305 7.304v225.18z"></path><circle fill="currentColor" cx="256.003" cy="342.305" r="12.738"></circle><path fill="currentColor" d="M276.238 109.254c-4.61-4.609-12.081-4.609-16.693 0l-83.414 83.414c-4.609 4.609-4.609 12.083 0 16.693a11.767 11.767 0 0 0 8.347 3.457c3.022 0 6.041-1.152 8.346-3.457l83.414-83.414c4.609-4.609 4.609-12.083 0-16.693zM325.678 157.593c-4.608-4.609-12.079-4.609-16.692-.001l-33.23 33.228c-4.609 4.61-4.609 12.084 0 16.693a11.765 11.765 0 0 0 8.346 3.457c3.02 0 6.041-1.152 8.346-3.457l33.23-33.228c4.609-4.609 4.609-12.083 0-16.692z"></path></svg>',
         adminCommon: '<svg width="24" height="24" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18.0541 3.65479C18.0541 3.06688 17.9322 2.81225 17.8099 2.68994C17.6876 2.56767 17.4328 2.4458 16.8451 2.4458H13.5463C12.9584 2.4458 12.7037 2.56763 12.5814 2.68994C12.4591 2.81225 12.3373 3.06688 12.3373 3.65479V6.95361C12.3373 7.54131 12.4592 7.7961 12.5814 7.91846C12.7037 8.04077 12.9584 8.1626 13.5463 8.1626H16.8451C17.433 8.1626 17.6876 8.04077 17.8099 7.91846C17.9322 7.79615 18.0541 7.54152 18.0541 6.95361V3.65479ZM19.2787 6.95361C19.2787 7.66421 19.1398 8.32102 18.6761 8.78467C18.2125 9.24831 17.5557 9.38721 16.8451 9.38721H13.5463C12.8357 9.38721 12.1789 9.24831 11.7152 8.78467C11.2517 8.32103 11.1127 7.66414 11.1127 6.95361V3.65479C11.1127 2.94419 11.2516 2.28738 11.7152 1.82373C12.1789 1.36008 12.8357 1.22119 13.5463 1.22119H16.8451C17.5556 1.22119 18.2125 1.36019 18.6761 1.82373C19.1398 2.28738 19.2787 2.94419 19.2787 3.65479V6.95361Z" fill="currentColor"></path><path d="M8.66248 3.45068C8.66248 2.95419 8.54893 2.76122 8.4447 2.66846C8.32193 2.55938 8.05493 2.4458 7.45349 2.4458H4.15466C3.55323 2.4458 3.28622 2.55938 3.16345 2.66846C3.05927 2.76127 2.94568 2.95442 2.94568 3.45068V7.1499C2.94568 7.65203 3.05968 7.84403 3.16248 7.93506C3.28455 8.0431 3.55105 8.15479 4.15466 8.15479H7.4574C8.05849 8.15857 8.32424 8.04644 8.44568 7.93896C8.54888 7.84762 8.66248 7.65504 8.66248 7.15771V3.45068ZM9.88708 7.15771C9.88708 7.81183 9.73994 8.42871 9.2572 8.85596C8.79345 9.26639 8.14957 9.3824 7.45349 9.37842V9.37939H4.15466C3.45978 9.37939 2.81483 9.26259 2.35095 8.85205C1.86787 8.42446 1.72107 7.80726 1.72107 7.1499V3.45068C1.72107 2.79619 1.86847 2.18039 2.34998 1.75244C2.81316 1.3409 3.4576 1.22119 4.15466 1.22119H7.45349C8.15056 1.22119 8.79499 1.3409 9.25818 1.75244C9.7398 2.18039 9.88708 2.79612 9.88708 3.45068V7.15771Z" fill="currentColor"></path><path d="M8.66248 13.0464C8.66248 12.4585 8.54065 12.2039 8.41833 12.0815C8.29597 11.9593 8.04119 11.8374 7.45349 11.8374H4.15466C3.56676 11.8374 3.31213 11.9592 3.18982 12.0815C3.06751 12.2039 2.94568 12.4585 2.94568 13.0464V16.3452C2.94568 16.9329 3.06755 17.1877 3.18982 17.3101C3.31213 17.4324 3.56676 17.5542 4.15466 17.5542H7.45349C8.0414 17.5542 8.29602 17.4324 8.41833 17.3101C8.54065 17.1877 8.66248 16.9331 8.66248 16.3452V13.0464ZM9.88708 16.3452C9.88708 17.0558 9.74819 17.7126 9.28455 18.1763C8.8209 18.6399 8.16409 18.7788 7.45349 18.7788H4.15466C3.44407 18.7788 2.78726 18.6399 2.32361 18.1763C1.86007 17.7126 1.72107 17.0557 1.72107 16.3452V13.0464C1.72107 12.3358 1.85996 11.679 2.32361 11.2153C2.78726 10.7517 3.44407 10.6128 4.15466 10.6128H7.45349C8.16402 10.6128 8.82091 10.7518 9.28455 11.2153C9.74819 11.679 9.88708 12.3358 9.88708 13.0464V16.3452Z" fill="currentColor"></path><path d="M17.8504 12.2461C18.1885 12.2463 18.4627 12.5203 18.4627 12.8584C18.4627 13.1965 18.1885 13.4705 17.8504 13.4707H12.95C12.6117 13.4707 12.3377 13.1967 12.3377 12.8584C12.3377 12.5201 12.6117 12.2461 12.95 12.2461H17.8504Z" fill="currentColor"></path><path d="M17.8504 15.5127C18.1885 15.5129 18.4627 15.7869 18.4627 16.125C18.4627 16.4631 18.1885 16.7371 17.8504 16.7373H12.95C12.6117 16.7373 12.3377 16.4633 12.3377 16.125C12.3377 15.7867 12.6117 15.5127 12.95 15.5127H17.8504Z" fill="currentColor"></path></svg>',
         adminRegistration: '<svg width="24" height="24" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><g><g><path fill="currentColor" d="M497,0H15C6.716,0,0,6.716,0,15v482c0,8.284,6.716,15,15,15h482c8.284,0,15-6.716,15-15V15C512,6.716,505.284,0,497,0z M482,482H30V30h452V482z"></path></g></g><g><g><path fill="currentColor" d="M250.54,100.79c-2.79-2.79-6.66-4.391-10.61-4.391s-7.81,1.601-10.6,4.391c-2.8,2.8-4.4,6.66-4.4,10.609 c0,3.95,1.601,7.811,4.4,10.61c2.79,2.791,6.66,4.39,10.6,4.39c3.95,0,7.811-1.6,10.61-4.39c2.79-2.8,4.39-6.66,4.39-10.61 C254.93,107.45,253.33,103.589,250.54,100.79z"></path></g></g><g><g><path fill="currentColor" d="M330.871,100.79c-2.79-2.79-6.66-4.391-10.601-4.391c-3.95,0-7.819,1.601-10.609,4.391c-2.79,2.8-4.391,6.66-4.391,10.609 c0,3.95,1.601,7.811,4.391,10.61c2.789,2.791,6.658,4.39,10.609,4.39c3.94,0,7.811-1.6,10.601-4.39 c2.79-2.8,4.399-6.66,4.399-10.61C335.27,107.45,333.661,103.589,330.871,100.79z"></path></g></g><g><g><path fill="currentColor" d="M411.21,100.79c-2.8-2.79-6.66-4.391-10.61-4.391c-3.95,0-7.81,1.601-10.61,4.391c-2.79,2.8-4.391,6.66-4.391,10.609 c0,3.95,1.601,7.811,4.391,10.61c2.8,2.791,6.659,4.39,10.61,4.39c3.95,0,7.811-1.6,10.61-4.39c2.79-2.8,4.39-6.66,4.39-10.61 C415.6,107.45,414,103.589,411.21,100.79z"></path></g></g><g><g><path fill="currentColor" d="M400.6,385.6H111.4c-8.284,0-15,6.716-15,15s6.716,15,15,15h289.2c8.284,0,15-6.716,15-15S408.884,385.6,400.6,385.6z"></path></g></g><g><g><path fill="currentColor" d="M400.6,289.199H111.4c-8.284,0-15,6.716-15,15s6.716,15,15,15h289.2c8.284,0,15-6.716,15-15 S408.884,289.199,400.6,289.199z"></path></g></g><g><g><path fill="currentColor" d="M352.4,192.8H159.6c-8.284,0-15,6.716-15,15s6.715,15,15,15h192.8c8.284,0,15-6.716,15-15S360.684,192.8,352.4,192.8z"></path></g></g></svg>',
@@ -1664,6 +3302,13 @@
         calendar: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M20.5258 22.5608H3.58777C2.30377 22.5608 1.25977 21.5168 1.25977 20.2388V5.62878C1.25977 4.34478 2.30377 3.30078 3.58777 3.30078H20.5258C21.8038 3.30078 22.8478 4.34478 22.8478 5.62278V20.2328C22.8478 21.5168 21.8038 22.5608 20.5258 22.5608ZM3.58777 4.74078C3.10177 4.74078 2.69977 5.13678 2.69977 5.62878V20.2388C2.69977 20.7248 3.09577 21.1208 3.58177 21.1208H20.5198C21.0058 21.1208 21.4018 20.7248 21.4018 20.2388V5.62878C21.4018 5.14278 21.0058 4.74678 20.5198 4.74678H3.58777V4.74078Z" fill="currentColor"></path><path d="M22.1114 10.6686H2.16141C1.76541 10.6686 1.44141 10.3446 1.44141 9.94862C1.44141 9.55262 1.76541 9.22863 2.16141 9.22863H22.1114C22.5074 9.22863 22.8314 9.55262 22.8314 9.94862C22.8314 10.3446 22.5074 10.6686 22.1114 10.6686ZM7.19541 6.79862C6.79941 6.79862 6.47541 6.48063 6.47541 6.08463L6.44541 1.86662C6.44541 1.47062 6.76341 1.14663 7.15941 1.14062C7.55541 1.14062 7.87941 1.45862 7.88541 1.85462L7.91541 6.07262C7.91541 6.46862 7.59741 6.79262 7.19541 6.79862ZM16.8014 6.79862C16.4054 6.79862 16.0814 6.48063 16.0814 6.08463L16.0514 1.86662C16.0514 1.47062 16.3694 1.14663 16.7654 1.14062H16.7714C17.1674 1.14062 17.4914 1.45862 17.4914 1.85462L17.5214 6.07262C17.5274 6.46862 17.2094 6.79262 16.8014 6.79862C16.8074 6.79862 16.8074 6.79862 16.8014 6.79862ZM7.98741 14.4606H5.52741C5.13141 14.4606 4.80741 14.1366 4.80741 13.7406C4.80741 13.3446 5.13141 13.0206 5.52741 13.0206H7.98741C8.38341 13.0206 8.70741 13.3446 8.70741 13.7406C8.70741 14.1366 8.38341 14.4606 7.98741 14.4606ZM7.98741 18.1806H5.52741C5.13141 18.1806 4.80741 17.8566 4.80741 17.4606C4.80741 17.0646 5.13141 16.7406 5.52741 16.7406H7.98741C8.38341 16.7406 8.70741 17.0646 8.70741 17.4606C8.70741 17.8566 8.38341 18.1806 7.98741 18.1806ZM13.0814 14.4666H10.6214C10.2254 14.4666 9.90141 14.1426 9.90141 13.7466C9.90141 13.3506 10.2254 13.0266 10.6214 13.0266H13.0814C13.4774 13.0266 13.8014 13.3506 13.8014 13.7466C13.8014 14.1426 13.4774 14.4666 13.0814 14.4666ZM13.0814 18.1806H10.6214C10.2254 18.1806 9.90141 17.8566 9.90141 17.4606C9.90141 17.0646 10.2254 16.7406 10.6214 16.7406H13.0814C13.4774 16.7406 13.8014 17.0646 13.8014 17.4606C13.8014 17.8566 13.4774 18.1806 13.0814 18.1806ZM18.4454 14.4666H15.9854C15.5894 14.4666 15.2654 14.1426 15.2654 13.7466C15.2654 13.3506 15.5894 13.0266 15.9854 13.0266H18.4454C18.8414 13.0266 19.1654 13.3506 19.1654 13.7466C19.1654 14.1426 18.8414 14.4666 18.4454 14.4666ZM18.4454 18.1806H15.9854C15.5894 18.1806 15.2654 17.8566 15.2654 17.4606C15.2654 17.0646 15.5894 16.7406 15.9854 16.7406H18.4454C18.8414 16.7406 19.1654 17.0646 19.1654 17.4606C19.1654 17.8566 18.8414 18.1806 18.4454 18.1806Z" fill="currentColor"></path></svg>'
       };
 
+      const sidebarQuickActions = [
+        { action: "Support", label: "Support", icon: clientTopbarIcon.messages, badge: 7 },
+        { action: "News", label: "News", icon: clientTopbarIcon.news },
+        { action: "Calendar", label: "Calendar", icon: clientTopbarIcon.calendar },
+        { action: "Notifications", label: "Notifications", icon: icon.adminNotifications }
+      ];
+
       const data = {
         backoffice: {
           label: "Backoffice interface",
@@ -1679,9 +3324,11 @@
               label: "Dashboard",
               icon: "backofficeDashboard",
               children: [
-                { id: "bo-dashboard-overview", label: "Overview" },
-                { id: "bo-dashboard-analysis", label: "Analysis" },
-                { id: "bo-dashboard-report", label: "Reports" }
+                { id: "bo-dashboard-visual", label: "Visual Dashboard" },
+                { id: "bo-dashboard-history", label: "History" },
+                { id: "bo-dashboard-clients", label: "Clients Dashboards" },
+                { id: "bo-dashboard-kpi", label: "KPI Report" },
+                { id: "bo-dashboard-partner", label: "Partner Report" }
               ]
             },
             {
@@ -1693,7 +3340,9 @@
                 { id: "bo-users", label: "Users", badge: 2 },
                 { id: "bo-support", label: "Support" },
                 { id: "bo-pamm", label: "PAMM", badge: 8 },
-                { id: "bo-refer", label: "Refer a Friend", badge: 10 }
+                { id: "bo-refer", label: "Refer a Friend", badge: 10 },
+                { id: "bo-referral-history", label: "Referral History" },
+                { id: "bo-referral-requests", label: "Referral Requests" }
               ]
             },
             {
@@ -1701,11 +3350,13 @@
               label: "Finance",
               icon: "backofficeFinance",
               children: [
-                { id: "bo-finance-deposit", label: "Deposit" },
-                { id: "bo-finance-withdrawal", label: "Withdrawal", badge: 6 },
-                { id: "bo-finance-transfer", label: "Internal Transfer" },
-                { id: "bo-finance-adjustment", label: "Balance Adjustment" },
-                { id: "bo-finance-transaction", label: "Transaction History" }
+                { id: "bo-finance-deposits", label: "Deposits" },
+                { id: "bo-finance-withdrawals", label: "Withdrawals", badge: 6 },
+                { id: "bo-finance-withdrawal-list", label: "Withdrawal List" },
+                { id: "bo-finance-withdrawal-approval", label: "Withdrawal Approval" },
+                { id: "bo-finance-internal-transfers", label: "Internal Transfers" },
+                { id: "bo-finance-transfer-records", label: "Transfer Records" },
+                { id: "bo-finance-whitelist", label: "Whitelist" }
               ]
             },
             {
@@ -1713,11 +3364,11 @@
               label: "Partners",
               icon: "backofficePartners",
               children: [
-                { id: "bo-partners-list", label: "Partner List" },
-                { id: "bo-partners-ib", label: "IB Management" },
-                { id: "bo-partners-commission", label: "Commission" },
-                { id: "bo-partners-rebate", label: "Rebate Rules" },
-                { id: "bo-partners-report", label: "Partner Reports" }
+                { id: "bo-partners-list", label: "Partners" },
+                { id: "bo-partners-reports", label: "Reports" },
+                { id: "bo-partners-commissions", label: "Commissions" },
+                { id: "bo-partners-cpa-commissions", label: "CPA Commissions" },
+                { id: "bo-partners-requests", label: "Requests" }
               ]
             },
             {
@@ -1725,11 +3376,8 @@
               label: "Operation",
               icon: "backofficeOperation",
               children: [
-                { id: "bo-operation-accounts", label: "Trading Accounts" },
-                { id: "bo-operation-orders", label: "Orders" },
-                { id: "bo-operation-symbols", label: "Symbols" },
-                { id: "bo-operation-server", label: "Server Settings" },
-                { id: "bo-operation-logs", label: "Operation Logs" }
+                { id: "bo-operation-tags", label: "Tags" },
+                { id: "bo-operation-comment-templates", label: "Comment Templates" }
               ]
             },
             {
@@ -1737,11 +3385,19 @@
               label: "Marketing",
               icon: "backofficeMarketing",
               children: [
-                { id: "bo-marketing-campaigns", label: "Campaigns" },
-                { id: "bo-marketing-banners", label: "Banners" },
-                { id: "bo-marketing-announcements", label: "Announcements" },
-                { id: "bo-marketing-bonus", label: "Bonus Center" },
-                { id: "bo-marketing-coupons", label: "Coupons" }
+                { id: "bo-marketing-news", label: "News" },
+                { id: "bo-marketing-bonus-management", label: "Bonus Management" },
+                { id: "bo-marketing-campaign", label: "Campaign" },
+                { id: "bo-marketing-language-management", label: "Language Management" },
+                { id: "bo-marketing-audience-groups", label: "Audience Groups" },
+                { id: "bo-marketing-pop-up-cards", label: "Pop-up Cards" },
+                { id: "bo-marketing-sticky-banner", label: "Sticky Banner" },
+                { id: "bo-marketing-notification-template", label: "Notification Template" },
+                { id: "bo-marketing-automations", label: "Automations" },
+                { id: "bo-marketing-events", label: "Events" },
+                { id: "bo-marketing-email-sequence", label: "Email Sequence" },
+                { id: "bo-marketing-triggers", label: "Triggers" },
+                { id: "bo-marketing-executions", label: "Executions" }
               ]
             },
             {
@@ -1749,10 +3405,21 @@
               label: "File Center",
               icon: "backofficeFileCenter",
               children: [
-                { id: "bo-files-documents", label: "Documents" },
-                { id: "bo-files-kyc", label: "KYC Files", badge: 4 },
-                { id: "bo-files-templates", label: "Templates" },
-                { id: "bo-files-downloads", label: "Downloads" }
+                { id: "bo-files-user-exports", label: "User Exports" },
+                { id: "bo-files-deposit-exports", label: "Deposit Exports" },
+                { id: "bo-files-withdrawal-exports", label: "Withdrawal Exports" },
+                { id: "bo-files-internal-transfer-exports", label: "Internal Transfer Exports" },
+                { id: "bo-files-whitelist-exports", label: "Whitelist Exports" },
+                { id: "bo-files-payment-exports", label: "Payment Exports" },
+                { id: "bo-files-wallet-balance", label: "Wallet Balance" },
+                { id: "bo-files-transaction", label: "Transaction" },
+                { id: "bo-files-kpi-reporter-exports", label: "KPI Reporter Exports" },
+                { id: "bo-files-visual-dashboard-exports", label: "Visual Dashboard Exports" },
+                { id: "bo-files-partner-reporter-exports", label: "Partner Reporter Exports" },
+                { id: "bo-files-partner-accounts-exports", label: "Partner Accounts Exports" },
+                { id: "bo-files-partner-commissions-exports", label: "Partner Commissions Exports" },
+                { id: "bo-files-partner-cpa-commissions-exports", label: "Partner CPA Commissions Exports" },
+                { id: "bo-files-imports", label: "Imports" }
               ]
             },
             {
@@ -1760,11 +3427,8 @@
               label: "Compliance",
               icon: "backofficeCompliance",
               children: [
-                { id: "bo-compliance-kyc", label: "KYC Review", badge: 12 },
-                { id: "bo-compliance-risk", label: "Risk Review" },
-                { id: "bo-compliance-aml", label: "AML Monitoring" },
-                { id: "bo-compliance-audit", label: "Audit Trail" },
-                { id: "bo-compliance-settings", label: "Compliance Settings" }
+                { id: "bo-compliance-aml-search", label: "AML Search" },
+                { id: "bo-compliance-aml-history", label: "AML History" }
               ]
             }
           ],
@@ -1805,7 +3469,9 @@
               id: "admin-interface-customization",
               label: "Interface customization",
               icon: "adminCustomization",
-              children: []
+              children: [
+                { id: "admin-customization-settings", label: "Interface customization" }
+              ]
             },
             {
               id: "admin-file-management",
@@ -1857,7 +3523,9 @@
                 { id: "admin-lots-ratio", label: "Lots ratio" },
                 { id: "admin-servers", label: "Servers" },
                 { id: "admin-account-groups", label: "Account groups" },
-                { id: "admin-account-types", label: "Account types" }
+                { id: "admin-account-types", label: "Account types" },
+                { id: "admin-pamm", label: "PAMM" },
+                { id: "admin-social-trading", label: "Social trading" }
               ]
             },
             {
@@ -2063,10 +3731,9 @@
             { id: "cl-transfer", label: "Internal Transfer", icon: "clientTransfer", children: [] },
             { id: "cl-history", label: "Transaction History", icon: "clientHistory", children: [] },
             { title: "Partnership" },
-            { id: "cl-partnership", label: "Partnership", icon: "clientPartnership", children: [] },
+            { id: "cl-partnership", label: "Introducing Broker", icon: "clientPartnership", children: [] },
             { id: "cl-social", label: "Social Trading", icon: "clientSocial", children: [] },
             { id: "cl-pamm", label: "PAMM", icon: "clientPamm", children: [] },
-            { id: "cl-refer", label: "Refer a Friend", icon: "clientRefer", children: [] },
             { title: "Rewards" },
             { id: "cl-rewards", label: "Rewards Centre", icon: "clientRewards", children: [] },
             { id: "cl-rewards-history", label: "History", icon: "clientRewardsHistory", children: [] },
@@ -2115,6 +3782,7 @@
           "Admin interface": "管理员界面",
           "Client interface": "客户端界面",
           "Secondary selections keep their parent in the regular state. Hover, click, collapse, and switching are fully interactive.": "二级选中时，一级保持常态；所有悬浮、点击、折叠、切换均可交互。",
+          "Configure localized pop-up card content, display timing, page targeting, and cover image settings.": "配置弹窗卡片的本地化内容、展示时间、页面投放范围和封面图片设置。",
           "The Admin sidebar follows the current UIUX rules with expandable groups, selected subitems, collapsed flyouts, and responsive layouts.": "Admin 侧边栏按当前 UIUX 规则支持一级展开、二级选中、收起悬浮菜单与多端自适应。",
           "The client sidebar shows a transparent scroll handle on scroll or hover, and menu states can be switched by click.": "客户端侧栏在滚动或悬浮触控区时显示透明拨杆，菜单状态可点击切换。",
           "Headline": "标题",
@@ -2178,6 +3846,58 @@
           "AML Monitoring": "AML 监控",
           "Audit Trail": "审计轨迹",
           "Compliance Settings": "合规设置",
+          "Visual Dashboard": "可视化看板",
+          "Clients Dashboards": "客户仪表盘",
+          "KPI Report": "KPI 报表",
+          "Partner Report": "合作伙伴报表",
+          "Referral History": "邀请记录",
+          "Referral Requests": "邀请申请",
+          "Finance": "资金管理",
+          "Deposits": "入金",
+          "Withdrawals": "出金",
+          "Withdrawal List": "出金列表",
+          "Withdrawal Approval": "出金审核",
+          "Internal Transfers": "内部转账",
+          "Transfer Records": "转账记录",
+          "Whitelist": "白名单",
+          "Partners": "合作伙伴",
+          "Reports": "报表",
+          "Commissions": "返佣",
+          "CPA Commissions": "CPA 返佣",
+          "Requests": "申请",
+          "Operation": "运营",
+          "Tags": "标签",
+          "Comment Templates": "评论模板",
+          "Marketing": "市场营销",
+          "Bonus Management": "奖金管理",
+          "Campaign": "营销活动",
+          "Language Management": "语言管理",
+          "Audience Groups": "用户分组",
+          "Pop-up Cards": "弹窗卡片",
+          "Sticky Banner": "粘性横幅",
+          "Notification Template": "通知模板",
+          "Automations": "自动化",
+          "Events": "事件",
+          "Email Sequence": "邮件序列",
+          "Triggers": "触发器",
+          "Executions": "执行",
+          "User Exports": "用户导出",
+          "Deposit Exports": "入金导出",
+          "Withdrawal Exports": "出金导出",
+          "Internal Transfer Exports": "转账导出",
+          "Whitelist Exports": "白名单导出",
+          "Payment Exports": "支付导出",
+          "Wallet Balance": "钱包余额",
+          "Transaction": "交易记录",
+          "KPI Reporter Exports": "KPI 报表导出",
+          "Visual Dashboard Exports": "可视化看板导出",
+          "Partner Reporter Exports": "伙伴报表导出",
+          "Partner Accounts Exports": "伙伴账户导出",
+          "Partner Commissions Exports": "伙伴返佣导出",
+          "Partner CPA Commissions Exports": "CPA 返佣导出",
+          "Imports": "导入",
+          "AML Search": "AML 查询",
+          "AML History": "AML 历史",
           "Interface customization": "界面定制",
           "File management": "文件管理",
           "Staff management": "员工管理",
@@ -2280,6 +4000,7 @@
           "Period": "周期",
           "Owner": "负责人",
           "Client": "客户",
+          "Introducing Broker": "介绍经纪人",
           "Social Trading": "社交交易",
           "Rewards": "奖励",
           "Rewards Centre": "奖励中心",
@@ -2335,9 +4056,106 @@
           "Collapse menu": "折叠菜单",
           "Filter conditions": "筛选条件",
           "Actions": "操作",
+          "Edit": "编辑",
+          "Copy": "复制",
+          "Delete": "删除",
+          "Common settings": "通用设置",
+          "Audience": "受众",
+          "Define the target audience regions where the pop-up is displayed.": "选择弹窗展示的目标受众区域，决定哪些地区的用户能看到此弹窗。",
+          "Channels": "渠道",
+          "Define the channels where the pop-up is displayed, such as CRM, Web Global, or Web Japan.": "选择弹窗出现的渠道，例如 CRM 后台、Web Global 或 Web Japan。",
+          "Web Global": "全球 Web",
+          "Web Japan": "日本 Web",
+          "Draft": "草稿",
+          "Archived": "已归档",
+          "Time zone": "时区",
+          "(GMT+08:00) China Standard Time - Shanghai": "(GMT+08:00) 中国标准时间 - 上海",
+          "Start time": "开始时间",
+          "End time": "结束时间",
+          "End time cannot be earlier than start time": "结束时间不能早于开始时间",
+          "Page path": "页面路径",
+          "Define the page path where the pop-up takes effect.": "定义弹窗生效的页面路径。",
+          "/* represents the home page. Multi-level paths are supported.": "/* 代表首页，支持多级路径。",
+          "For example, /* displays the pop-up on the home page; /account displays the pop-up only on the account page.": "例如/*代表首页展示 pop-up，/account 代表仅account 页展示 pop-up。",
+          "Path must start with /. Please check the format.": "路径必须以 / 开头，请检查格式。",
+          "Allow redirect": "允许跳转",
+          "Redirect URL": "跳转链接",
+          "Users will be redirected to this full URL after clicking the pop-up card. It must start with https://.": "用户点击弹窗卡片后将跳转到此完整链接，必须以 https:// 开头。",
+          "Full URL, must start with https://": "完整 URL，必须以 https:// 开头",
+          "Enter a valid URL that starts with https://": "请输入有效的 URL，需以 https:// 开头",
+          "Localized content": "本地化内容",
+          "Locale": "语言项",
+          "Add": "新增",
+          "Add locale": "添加语言项",
+          "Select a language to add a new localized content entry.": "选择一种语言，用于新增本地化内容项。",
+          "Locale added": "已添加语言项",
+          "Locale removed": "已移除语言项",
+          "At least one locale is required": "至少需要保留一个语言项",
+          "All locale options have been added": "所有语言项均已添加",
+          "Please select a language": "请选择语言",
+          "Delete locale": "删除语言项",
+          "Are you sure you want to delete this localized content entry?": "确认删除这个本地化内容项吗？",
+          "Delete pop-up card": "删除弹窗卡片",
+          "Are you sure you want to delete this pop-up card?": "确认删除这个弹窗卡片吗？",
+          "Delete cover image": "删除封面图片",
+          "Are you sure you want to delete this cover image?": "确认删除这张封面图片吗？",
+          "Are you sure you want to delete this item?": "确认删除这条数据吗？",
+          "Language": "语言",
+          "Title": "标题",
+          "Body": "正文",
+          "CTA text": "CTA 文案",
+          "Button text": "按钮文案",
+          "5-50 characters": "5-50 个字符",
+          "5-200 characters": "5-200 个字符",
+          "Shown only when Allow redirect is enabled.": "仅在允许跳转开启时显示。",
+          "Pop-up settings": "弹窗设置",
+          "Cover image": "封面图片",
+          "Pop-up cover": "弹窗封面",
+          "Existing uploaded image": "已上传图片",
+          "Recommended crop: 440x240, PNG/JPG. Final compressed image within 300KB.": "建议裁切：440x240，PNG/JPG。压缩后最终图片限制在 300KB 内。",
+          "Preview": "预览",
+          "View": "查看",
+          "Re-upload": "重新上传",
+          "Display frequency": "展示频率",
+          "Every visit (up to 3 times)": "每次访问（最多 3 次）",
+          "Once per day": "每天一次",
+          "First visit only": "仅首次访问",
+          "Priority": "优先级",
+          "Cancel": "取消",
+          "Save": "保存",
+          "Pop-up card saved": "弹窗卡片已保存",
+          "No cover image": "暂无封面图片",
+          "Upload required": "需要上传",
+          "PNG/JPG, final image within 300KB": "PNG/JPG，最终图片不超过 300KB",
+          "Upload and crop the cover image": "上传后裁切封面图片",
+          "Cover image removed": "封面图片已移除",
+          "Cover image uploaded": "封面图片已上传",
+          "Cover image cropped and uploaded": "封面图片已裁切并上传",
+          "Only JPG, JPEG, and PNG files are supported": "仅支持 JPG、JPEG 和 PNG 文件",
+          "Image size must not exceed 300KB": "图片大小不能超过 300KB",
+          "Image selected. Crop and compression will keep the final image within 300KB": "已选择图片，裁切和压缩后最终图片将限制在 300KB 内",
+          "Crop cover image": "裁切封面图片",
+          "Drag to crop the final 440x240 cover image. The preview and View use this cropped result.": "拖拽裁切最终 440x240 封面图。预览和查看都会使用这张裁切结果。",
+          "Apply crop": "应用裁切",
+          "Cropper library is still loading. Please try again.": "裁切工具仍在加载，请稍后重试。",
+          "Image crop failed. Please try another file.": "图片裁切失败，请更换图片重试。",
+          "Preview opened": "已打开预览",
+          "Cover image viewed": "已查看封面图片",
+          "Image preview": "图片预览",
+          "Close image preview": "关闭图片预览",
+          "Re-upload picker opened": "已打开重新上传选择器",
+          "Cover action clicked": "已点击封面操作",
+          "Select": "请选择",
+          "Enter title": "请输入标题",
+          "Enter body": "请输入正文",
+          "Enter page path": "请输入页面路径",
+          "Enter priority": "请输入优先级",
+          "Select start time": "请选择开始时间",
+          "Select end time": "请选择结束时间",
           "Page": "页码",
           "Rows per page": "每页条数",
-          "No permission": "无操作权限"
+          "No permission": "无操作权限",
+          "Quick shortcuts": "快捷入口"
         }
       };
 
@@ -2350,8 +4168,12 @@
       const modeControl = document.getElementById("modeControl");
       const modeMenu = document.getElementById("modeMenu");
       const modeLabel = document.getElementById("modeLabel");
+      const sidebarModeControl = document.getElementById("sidebarModeControl");
+      const sidebarModeMenu = document.getElementById("sidebarModeMenu");
+      const sidebarModeLabel = document.getElementById("sidebarModeLabel");
       const topbarRight = document.getElementById("topbarRight");
       const headline = document.getElementById("headline");
+      const breadcrumbNav = document.getElementById("breadcrumbNav");
       const pageSubtitle = document.getElementById("pageSubtitle");
       const tabs = document.getElementById("tabs");
       const filterCard = document.getElementById("filterCard");
@@ -2359,9 +4181,13 @@
       const tableBody = document.getElementById("tableBody");
       const mobileCards = document.getElementById("mobileCards");
       const pagination = document.getElementById("pagination");
+      const panelCard = document.querySelector(".panel-card");
+      const pageHeadActions = document.querySelector(".page-head .actions");
+      const popupEditPage = document.getElementById("popupEditPage");
       const menuTrigger = document.getElementById("menuTrigger");
       const overlay = document.getElementById("overlay");
       const collapseButton = document.getElementById("collapseButton");
+      const sidebarCloseButton = document.getElementById("sidebarCloseButton");
       const toast = document.getElementById("toast");
       const sidebarFlyout = document.getElementById("sidebarFlyout");
       document.body.appendChild(sidebarFlyout);
@@ -2385,14 +4211,44 @@
         toastTimer: 0,
         flyoutTimer: 0,
         activeActionRow: "",
+        view: "list",
+        editingRow: "",
+        popupFormMode: "edit",
         filterStatus: "All",
+        activePopupLocale: "en",
+        popupLocaleValues: {
+          en: { language: "", title: "", body: "", cta: "" }
+        },
+        pendingConfirmAction: null,
         dragStartY: 0,
         dragStartTop: 0
       };
+      let popupCoverCropper = null;
+      let popupCoverCropFile = null;
+
+      const popupLocaleOptions = [
+        { id: "en", label: "English" },
+        { id: "ja", label: "日本語" },
+        { id: "zh_hant", label: "繁體中文" },
+        { id: "vi", label: "Tiếng Việt" },
+        { id: "th", label: "ภาษาไทย" },
+        { id: "ko", label: "한국어" },
+        { id: "id", label: "Indonesia" },
+        { id: "ms", label: "Melayu" },
+        { id: "zh_hans", label: "简体中文" }
+      ];
 
       function t(value) {
         if (!value) return "";
         return state.lang === "zh" ? (i18n.zh[value] || value) : value;
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
       }
 
       function actionMessage(key) {
@@ -2420,9 +4276,9 @@
 
       function actionMenuTemplate(rowKey = "") {
         return `
-          <button class="action-menu-item" type="button" data-action-menu="Edit" role="menuitem">Edit</button>
-          <button class="action-menu-item" type="button" data-action-menu="Copy" role="menuitem">Copy</button>
-          <button class="action-menu-item" type="button" data-action-menu="Delete" role="menuitem">Delete</button>
+          <button class="action-menu-item" type="button" data-action-menu="Edit" role="menuitem">${t("Edit")}</button>
+          <button class="action-menu-item" type="button" data-action-menu="Copy" role="menuitem">${t("Copy")}</button>
+          <button class="action-menu-item" type="button" data-action-menu="Delete" role="menuitem">${t("Delete")}</button>
         `;
       }
 
@@ -2441,6 +4297,1034 @@
         actionMenu.classList.remove("open");
         actionMenu.setAttribute("aria-hidden", "true");
         state.activeActionRow = "";
+      }
+
+
+      function isPopupCardsPage() {
+        return state.mode === "backoffice" && state.activeNav === "bo-marketing-pop-up-cards";
+      }
+
+      function popupLocaleValuesForMode(mode) {
+        if (mode === "edit") {
+          return {
+            en: { language: "English", title: "12345", body: "测试page path 是否支持多级路径", cta: "" }
+          };
+        }
+        return {
+          en: { language: "English", title: "", body: "", cta: "" }
+        };
+      }
+
+      function resetPopupForm(mode) {
+        state.popupFormMode = mode;
+        state.activePopupLocale = "en";
+        state.popupLocaleValues = popupLocaleValuesForMode(mode);
+      }
+
+      function setListView() {
+        state.view = "list";
+        state.editingRow = "";
+        if (["#backoffice-marketing-pop-up-cards-edit", "#backoffice-marketing-pop-up-cards-add"].includes(location.hash)) {
+          history.replaceState(null, "", location.pathname + location.search);
+        }
+        renderContentView();
+      }
+
+      function openPopupEdit(rowKey = "") {
+        if (!isPopupCardsPage()) return false;
+        state.view = "popup-edit";
+        state.editingRow = rowKey;
+        resetPopupForm("edit");
+        if (location.hash !== "#backoffice-marketing-pop-up-cards-edit") {
+          history.replaceState(null, "", "#backoffice-marketing-pop-up-cards-edit");
+        }
+        renderContentView();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return true;
+      }
+
+      function openPopupCreate() {
+        if (!isPopupCardsPage()) return false;
+        state.view = "popup-edit";
+        state.editingRow = "";
+        resetPopupForm("create");
+        if (location.hash !== "#backoffice-marketing-pop-up-cards-add") {
+          history.replaceState(null, "", "#backoffice-marketing-pop-up-cards-add");
+        }
+        renderContentView();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return true;
+      }
+
+      function popupSelectTemplate({ options, selected, multiple = false, label = "", role = "", translateOptions = true }) {
+        const selectedValues = Array.isArray(selected) ? selected.filter(Boolean) : selected ? [selected] : [];
+        const selectedSet = new Set(selectedValues);
+        const placeholder = label ? `${t("Select")} ${label}` : t("Select");
+        const optionText = (value) => translateOptions ? t(value) : value;
+        const controlContent = multiple
+          ? `<span class="popup-selected-values" data-popup-selected-values>${selectedValues.length ? selectedValues.map((value) => `<span class="popup-selected-tag">${optionText(value)}</span>`).join("") : `<span class="popup-select-placeholder">${placeholder}</span>`}</span>`
+          : `<span data-popup-selected-text class="${selectedValues.length ? "" : "popup-select-placeholder"}">${selectedValues.length ? optionText(selectedValues[0]) : placeholder}</span>`;
+        return `
+          <div class="filter-select popup-select ${multiple ? "is-multiple" : ""}" data-popup-select data-popup-select-multiple="${multiple}" data-popup-select-role="${role}" data-popup-placeholder="${placeholder}" data-popup-translate-options="${translateOptions}">
+            <button class="filter-select-control ${multiple ? "popup-multi-select" : "popup-select-control"}" type="button" aria-haspopup="listbox" aria-expanded="false">
+              ${controlContent}
+            </button>
+            <div class="filter-select-menu" role="listbox">
+              ${options.map((value) => {
+                const active = selectedSet.has(value);
+                return `<button class="filter-select-option ${active ? "active" : ""}" type="button" data-popup-select-option="${value}" role="option" aria-selected="${active}"><span>${optionText(value)}</span><span class="popup-option-check">✓</span></button>`;
+              }).join("")}
+            </div>
+          </div>
+        `;
+      }
+
+      function updatePopupSelectControl(select) {
+        const isMultiple = select.dataset.popupSelectMultiple === "true";
+        const translateOptions = select.dataset.popupTranslateOptions !== "false";
+        const optionText = (value) => translateOptions ? t(value) : value;
+        const activeOptions = Array.from(select.querySelectorAll(".filter-select-option.active"));
+        if (isMultiple) {
+          const values = activeOptions.map((option) => option.dataset.popupSelectOption || option.textContent.trim());
+          const container = select.querySelector("[data-popup-selected-values]");
+          if (container) {
+            container.innerHTML = values.length
+              ? values.map((value) => `<span class="popup-selected-tag">${optionText(value)}</span>`).join("")
+              : `<span class="popup-select-placeholder">${select.dataset.popupPlaceholder || t("Select")}</span>`;
+          }
+          return;
+        }
+        const active = activeOptions[0];
+        const text = select.querySelector("[data-popup-selected-text]");
+        if (active && text) {
+          text.textContent = optionText(active.dataset.popupSelectOption || active.textContent.trim());
+          text.classList.remove("popup-select-placeholder");
+        } else if (text) {
+          text.textContent = select.dataset.popupPlaceholder || t("Select");
+          text.classList.add("popup-select-placeholder");
+        }
+      }
+
+      function handlePopupSelectClick(event) {
+        const control = event.target.closest(".filter-select-control");
+        if (control) {
+          const select = control.closest(".filter-select");
+          if (!select?.hasAttribute("data-popup-select")) return;
+          closeModeMenu();
+          closeLanguageMenu();
+          closePageSizeMenu();
+          toggleFilterSelect(select);
+          return;
+        }
+
+        const option = event.target.closest(".filter-select-option[data-popup-select-option]");
+        if (!option) return;
+        const select = option.closest(".filter-select[data-popup-select]");
+        if (!select) return;
+        const isMultiple = select.dataset.popupSelectMultiple === "true";
+        if (isMultiple) {
+          const activeCount = select.querySelectorAll(".filter-select-option.active").length;
+          option.classList.toggle("active");
+          option.setAttribute("aria-selected", String(option.classList.contains("active")));
+        } else {
+          select.querySelectorAll(".filter-select-option").forEach((item) => {
+            const active = item === option;
+            item.classList.toggle("active", active);
+            item.setAttribute("aria-selected", String(active));
+          });
+          toggleFilterSelect(select);
+        }
+        updatePopupSelectControl(select);
+        if (select.dataset.popupSelectRole === "locale-language") {
+          const card = select.closest("[data-locale-card]");
+          const key = card?.dataset.localeKey;
+          if (key) {
+            state.popupLocaleValues[key] ||= { language: "", title: "", body: "", cta: "" };
+            state.popupLocaleValues[key].language = normalizeLocaleLabel(option.dataset.popupSelectOption || "");
+            renderPopupLocalePanel();
+          }
+        }
+      }
+
+      function popupLocaleKeys() {
+        return Object.keys(state.popupLocaleValues);
+      }
+
+      function activePopupLocaleKey() {
+        const keys = popupLocaleKeys();
+        if (!keys.includes(state.activePopupLocale)) state.activePopupLocale = keys[0] || "en";
+        return state.activePopupLocale;
+      }
+
+      function normalizeLocaleLabel(label) {
+        const map = {
+          "English (en-us)": "English",
+          "Simplified Chinese": "简体中文",
+          "简体中文 (zh-cn)": "简体中文",
+          "Japanese": "日本語",
+          "日本語 (ja-jp)": "日本語"
+        };
+        return map[label] || label;
+      }
+
+      function popupLocaleLabel(localeKey, index) {
+        const language = normalizeLocaleLabel(state.popupLocaleValues[localeKey]?.language);
+        return language || `${t("Locale")} ${index + 1}`;
+      }
+
+      function popupAvailableLocaleOptionsForAdd() {
+        const usedLanguages = new Set(Object.values(state.popupLocaleValues)
+          .map((item) => normalizeLocaleLabel(item?.language || ""))
+          .filter(Boolean));
+        return popupLocaleOptions.filter((option) => !usedLanguages.has(option.label));
+      }
+
+      function popupLocaleKeyForOption(option) {
+        if (!state.popupLocaleValues[option.id]) return option.id;
+        return `${option.id}_${Date.now()}`;
+      }
+
+      function closeAddLocaleModal() {
+        const modal = document.getElementById("popupLocaleModal");
+        modal?.classList.remove("open");
+        modal?.setAttribute("aria-hidden", "true");
+        if (modal) modal.dataset.modalKind = "";
+        state.pendingConfirmAction = null;
+        closeFilterSelect();
+      }
+
+      function confirmAddLocaleFromModal() {
+        const modal = document.getElementById("popupLocaleModal");
+        const activeOption = modal?.querySelector(".filter-select-option.active");
+        const selectedLabel = normalizeLocaleLabel(activeOption?.dataset.popupSelectOption || "");
+        const localeOption = popupLocaleOptions.find((option) => option.label === selectedLabel);
+        if (!localeOption) {
+          showToast(t("Please select a language"));
+          return;
+        }
+        const nextKey = popupLocaleKeyForOption(localeOption);
+        state.popupLocaleValues[nextKey] = { language: localeOption.label, title: "", body: "", cta: "" };
+        state.activePopupLocale = nextKey;
+        closeAddLocaleModal();
+        renderPopupLocalePanel();
+        showToast(t("Locale added"));
+      }
+
+      function ensureAddLocaleModal() {
+        let modal = document.getElementById("popupLocaleModal");
+        if (modal) return modal;
+        modal = document.createElement("div");
+        modal.id = "popupLocaleModal";
+        modal.className = "popup-locale-modal";
+        modal.setAttribute("aria-hidden", "true");
+        document.body.appendChild(modal);
+        modal.addEventListener("click", (event) => {
+          if (event.target === modal || event.target.closest("[data-locale-modal-cancel]")) {
+            closeAddLocaleModal();
+            return;
+          }
+          if (event.target.closest("[data-locale-modal-confirm]")) {
+            if (modal.dataset.modalKind === "confirm" && typeof state.pendingConfirmAction === "function") {
+              const action = state.pendingConfirmAction;
+              closeAddLocaleModal();
+              action();
+              return;
+            }
+            confirmAddLocaleFromModal();
+            return;
+          }
+          if (modal.dataset.modalKind === "add-locale") handlePopupSelectClick(event);
+        });
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape" && modal.classList.contains("open")) closeAddLocaleModal();
+        });
+        return modal;
+      }
+
+      function openAddLocaleModal() {
+        const options = popupAvailableLocaleOptionsForAdd();
+        if (!options.length) {
+          showToast(t("All locale options have been added"));
+          return;
+        }
+        const selected = options[0].label;
+        const modal = ensureAddLocaleModal();
+        modal.dataset.modalKind = "add-locale";
+        state.pendingConfirmAction = null;
+        modal.innerHTML = `
+          <div class="popup-locale-dialog" role="dialog" aria-modal="true" aria-label="${t("Add locale")}">
+            <button class="popup-locale-dialog-close" type="button" data-locale-modal-cancel aria-label="${t("Cancel")}">×</button>
+            <h2 class="popup-locale-dialog-title">${t("Add locale")}</h2>
+            <p class="popup-locale-dialog-desc">${t("Select a language to add a new localized content entry.")}</p>
+            ${popupSelectTemplate({ options: options.map((item) => item.label), selected, label: t("Language"), role: "add-locale-language", translateOptions: false })}
+            <div class="popup-locale-dialog-actions">
+              <button class="btn secondary" type="button" data-locale-modal-cancel>${t("Cancel")}</button>
+              <button class="btn secondary" type="button" data-locale-modal-confirm>${t("Add locale")}</button>
+            </div>
+          </div>
+        `;
+        modal.classList.add("open");
+        modal.setAttribute("aria-hidden", "false");
+        modal.querySelector(".filter-select-control")?.focus();
+      }
+
+      function openPopupConfirmModal({ title, description, confirmText = "Delete", onConfirm }) {
+        const modal = ensureAddLocaleModal();
+        modal.dataset.modalKind = "confirm";
+        state.pendingConfirmAction = onConfirm;
+        modal.innerHTML = `
+          <div class="popup-locale-dialog" role="dialog" aria-modal="true" aria-label="${t(title)}">
+            <button class="popup-locale-dialog-close" type="button" data-locale-modal-cancel aria-label="${t("Cancel")}">×</button>
+            <h2 class="popup-locale-dialog-title">${t(title)}</h2>
+            <p class="popup-locale-dialog-desc">${t(description)}</p>
+            <div class="popup-locale-dialog-actions">
+              <button class="btn secondary" type="button" data-locale-modal-cancel>${t("Cancel")}</button>
+              <button class="btn danger-outline" type="button" data-locale-modal-confirm>${t(confirmText)}</button>
+            </div>
+          </div>
+        `;
+        modal.classList.add("open");
+        modal.setAttribute("aria-hidden", "false");
+        modal.querySelector("[data-locale-modal-confirm]")?.focus();
+      }
+
+      function removePopupLocale(removedKey) {
+        const keysBeforeRemove = popupLocaleKeys();
+        const removedIndex = keysBeforeRemove.indexOf(removedKey);
+        delete state.popupLocaleValues[removedKey];
+        if (state.activePopupLocale === removedKey) {
+          const remainingKeys = popupLocaleKeys();
+          state.activePopupLocale = remainingKeys[Math.max(0, removedIndex - 1)] || remainingKeys[0] || "";
+        }
+        renderPopupLocalePanel();
+        showToast(t("Locale removed"));
+      }
+
+      function openDeleteLocaleModal(removedKey) {
+        openPopupConfirmModal({
+          title: "Delete locale",
+          description: "Are you sure you want to delete this localized content entry?",
+          confirmText: "Delete",
+          onConfirm: () => removePopupLocale(removedKey)
+        });
+      }
+
+      function openDeleteActionModal(actionKey = "Delete") {
+        openPopupConfirmModal({
+          title: isPopupCardsPage() ? "Delete pop-up card" : "Delete",
+          description: isPopupCardsPage() ? "Are you sure you want to delete this pop-up card?" : "Are you sure you want to delete this item?",
+          confirmText: "Delete",
+          onConfirm: () => showToast(actionMessage(actionKey))
+        });
+      }
+
+      function openDeleteCoverModal() {
+        openPopupConfirmModal({
+          title: "Delete cover image",
+          description: "Are you sure you want to delete this cover image?",
+          confirmText: "Delete",
+          onConfirm: () => {
+            setPopupCoverEmpty();
+            showToast(t("Cover image removed"));
+          }
+        });
+      }
+
+      function popupLocaleTabsTemplate() {
+        const keys = popupLocaleKeys();
+        const activeKey = activePopupLocaleKey();
+        return `
+          <div class="popup-locale-switch-row">
+            <div class="popup-locale-tabs tabs" role="tablist" aria-label="${t("Localized content")}">
+              ${keys.map((key, index) => `
+                <button class="tab ${key === activeKey ? "active" : ""}" type="button" role="tab" aria-selected="${key === activeKey}" data-popup-locale="${key}">${popupLocaleLabel(key, index)}</button>
+              `).join("")}
+            </div>
+            <div class="popup-locale-actions">
+              <button class="popup-add-locale" id="popupAddLocale" type="button">${t("Add locale")}</button>
+              <button class="popup-icon-btn danger-outline-btn" type="button" data-remove-locale="${activeKey}">${t("Delete")}</button>
+            </div>
+          </div>
+        `;
+      }
+
+      function popupLocaleTemplate(localeKey, index) {
+        const values = state.popupLocaleValues[localeKey] || { language: "", title: "", body: "", cta: "" };
+        const title = values.title || "";
+        const body = values.body || "";
+        const cta = values.cta || "";
+        const selectedLanguage = normalizeLocaleLabel(values.language || "");
+        return `
+          <div class="popup-locale-card" data-locale-card data-locale-key="${localeKey}">
+            <div class="popup-form-grid">
+              <div class="popup-field">
+                <div class="popup-field-label">${t("Language")} <span class="popup-required">*</span></div>
+                ${popupSelectTemplate({ options: popupLocaleOptions.map((item) => item.label), selected: selectedLanguage, label: t("Language"), role: "locale-language", translateOptions: false })}
+              </div>
+
+              <div class="popup-field">
+                <div class="popup-field-label">${t("Title")} <span class="popup-required">*</span></div>
+                <div class="popup-input-wrap">
+                  <input class="popup-control" type="text" value="${escapeHtml(title)}" minlength="5" maxlength="50" data-locale-field="title" data-locale-key="${localeKey}" placeholder="${t("Enter title")}" />
+                  <span class="popup-char-count">${title.length}/50</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="popup-field">
+              <div class="popup-field-label">${t("Body")} <span class="popup-required">*</span></div>
+              <div class="popup-input-wrap popup-textarea-wrap">
+                <textarea class="popup-control" minlength="5" maxlength="200" data-locale-field="body" data-locale-key="${localeKey}" placeholder="${t("Enter body")}">${escapeHtml(body)}</textarea>
+                <span class="popup-char-count">${body.length}/200</span>
+              </div>
+            </div>
+
+            <div class="popup-field popup-locale-cta-field is-hidden">
+              <div class="popup-field-label">${t("CTA text")}</div>
+              <div class="popup-input-wrap">
+                <input class="popup-control" type="text" value="${escapeHtml(cta)}" maxlength="20" data-locale-field="cta" data-locale-key="${localeKey}" placeholder="${t("Button text")}" />
+                <span class="popup-char-count">${cta.length}/20</span>
+              </div>
+              <div class="popup-input-hint">${t("Shown only when Allow redirect is enabled.")}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderPopupLocalePanel() {
+        const locales = document.getElementById("popupLocales");
+        if (!locales) return;
+        const keys = popupLocaleKeys();
+        const activeKey = activePopupLocaleKey();
+        const activeIndex = Math.max(0, keys.indexOf(activeKey));
+        locales.innerHTML = `
+          ${popupLocaleTabsTemplate()}
+          ${popupLocaleTemplate(activeKey, activeIndex)}
+        `;
+        syncPopupCtaVisibility(Boolean(document.getElementById("popupRedirectToggle")?.checked));
+      }
+
+      function updatePopupCharCount(el) {
+        const count = el.parentElement?.querySelector(".popup-char-count");
+        if (!count) return;
+        const max = el.getAttribute("maxlength") || "";
+        count.textContent = `${el.value.length}/${max}`;
+      }
+
+      function syncPopupCtaVisibility(show) {
+        document.querySelectorAll(".popup-locale-cta-field").forEach((field) => {
+          field.classList.toggle("is-hidden", !show);
+        });
+      }
+
+      function initPopupLocalizedContent() {
+        const locales = document.getElementById("popupLocales");
+        renderPopupLocalePanel();
+
+        locales?.addEventListener("click", (event) => {
+          const tab = event.target.closest("[data-popup-locale]");
+          if (tab) {
+            state.activePopupLocale = tab.dataset.popupLocale || activePopupLocaleKey();
+            renderPopupLocalePanel();
+            return;
+          }
+
+          const addButton = event.target.closest("#popupAddLocale");
+          if (addButton) {
+            openAddLocaleModal();
+            return;
+          }
+
+          const removeButton = event.target.closest("[data-remove-locale]");
+          if (removeButton) {
+            if (popupLocaleKeys().length <= 1) {
+              showToast(t("At least one locale is required"));
+              return;
+            }
+            openDeleteLocaleModal(removeButton.dataset.removeLocale);
+          }
+        });
+
+        locales?.addEventListener("input", (event) => {
+          const input = event.target.closest("[data-locale-field]");
+          if (!input) return;
+          const key = input.dataset.localeKey;
+          state.popupLocaleValues[key] ||= { language: "", title: "", body: "", cta: "" };
+          state.popupLocaleValues[key][input.dataset.localeField] = input.value;
+          updatePopupCharCount(input);
+        });
+      }
+
+      function popupEmptyUploadTemplate() {
+        return `
+          <div class="popup-empty-upload">
+            <svg class="popup-upload-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 15V4m0 0 4 4m-4-4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M5 15v4h14v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <div class="popup-empty-upload-text">${t("Upload and crop the cover image")}</div>
+          </div>
+        `;
+      }
+
+      function setPopupCoverEmpty() {
+        const upload = document.getElementById("popupCoverUpload");
+        const preview = document.getElementById("popupCoverPreview");
+        const fileInput = document.getElementById("popupCoverInput");
+        if (!upload || !preview) return;
+        upload.classList.add("is-empty");
+        preview.classList.remove("has-image");
+        preview.innerHTML = popupEmptyUploadTemplate();
+        upload.querySelector(".popup-upload-name")?.replaceChildren(document.createTextNode(t("No cover image")));
+        if (fileInput) fileInput.value = "";
+      }
+
+      function closePopupCoverViewer() {
+        document.getElementById("popupImageModal")?.classList.remove("open");
+      }
+
+      function destroyPopupCoverCropper() {
+        if (!popupCoverCropper) return;
+        popupCoverCropper.destroy();
+        popupCoverCropper = null;
+      }
+
+      function closePopupCoverCropper(resetInput = true) {
+        document.getElementById("popupCropModal")?.classList.remove("open");
+        destroyPopupCoverCropper();
+        popupCoverCropFile = null;
+        if (resetInput) {
+          const fileInput = document.getElementById("popupCoverInput");
+          if (fileInput) fileInput.value = "";
+        }
+      }
+
+      function imageBlobToDataUrl(blob) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result || ""));
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(blob);
+        });
+      }
+
+      function canvasToBlob(canvas, type, quality) {
+        return new Promise((resolve) => canvas.toBlob(resolve, type, quality));
+      }
+
+      async function cropCanvasToCoverDataUrl(canvas) {
+        const maxBytes = 300 * 1024;
+        let blob = null;
+        for (let quality = 0.92; quality >= 0.56; quality -= 0.08) {
+          blob = await canvasToBlob(canvas, "image/jpeg", quality);
+          if (blob && blob.size <= maxBytes) break;
+        }
+        if (!blob) throw new Error("cover crop failed");
+        return imageBlobToDataUrl(blob);
+      }
+
+      function ensurePopupCropModal() {
+        let modal = document.getElementById("popupCropModal");
+        if (!modal) {
+          modal = document.createElement("div");
+          modal.id = "popupCropModal";
+          modal.className = "popup-crop-modal";
+          document.body.appendChild(modal);
+          modal.addEventListener("click", (event) => {
+            if (event.target === modal || event.target.closest("[data-crop-action='cancel']")) {
+              closePopupCoverCropper(true);
+            }
+          });
+          document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && modal.classList.contains("open")) closePopupCoverCropper(true);
+          });
+        }
+        modal.innerHTML = `
+          <div class="popup-crop-dialog" role="dialog" aria-modal="true" aria-label="${t("Crop cover image")}">
+            <div class="popup-image-header">
+              <div>
+                <div class="popup-image-title">${t("Crop cover image")}</div>
+                <div class="popup-cover-requirement">${t("Drag to crop the final 440x240 cover image. The preview and View use this cropped result.")}</div>
+              </div>
+              <button class="popup-image-close" type="button" data-crop-action="cancel" aria-label="${t("Cancel")}">×</button>
+            </div>
+            <div class="popup-crop-body">
+              <div class="popup-crop-canvas">
+                <img class="popup-crop-image" id="popupCropImage" alt="${t("Cover image")}" />
+              </div>
+            </div>
+            <div class="popup-crop-actions">
+              <button class="btn secondary" type="button" data-crop-action="cancel">${t("Cancel")}</button>
+              <button class="btn" type="button" data-crop-action="apply">${t("Apply crop")}</button>
+            </div>
+          </div>
+        `;
+        modal.querySelector("[data-crop-action='apply']")?.addEventListener("click", async () => {
+          try {
+            const canvas = popupCoverCropper?.getCroppedCanvas({
+              width: 440,
+              height: 240,
+              fillColor: "#ffffff",
+              imageSmoothingEnabled: true,
+              imageSmoothingQuality: "high"
+            });
+            if (!canvas || !popupCoverCropFile) throw new Error("cover crop failed");
+            const src = await cropCanvasToCoverDataUrl(canvas);
+            setPopupCoverImage(popupCoverCropFile, src);
+            closePopupCoverCropper(false);
+            const fileInput = document.getElementById("popupCoverInput");
+            if (fileInput) fileInput.value = "";
+            showToast(t("Cover image cropped and uploaded"));
+          } catch (error) {
+            showToast(t("Image crop failed. Please try another file."));
+          }
+        });
+        return modal;
+      }
+
+      function openPopupCoverCropper(file, src) {
+        if (!window.Cropper) {
+          showToast(t("Cropper library is still loading. Please try again."));
+          const fileInput = document.getElementById("popupCoverInput");
+          if (fileInput) fileInput.value = "";
+          return;
+        }
+        const modal = ensurePopupCropModal();
+        const image = modal.querySelector("#popupCropImage");
+        if (!image) return;
+        popupCoverCropFile = file;
+        destroyPopupCoverCropper();
+        image.onload = () => {
+          popupCoverCropper = new Cropper(image, {
+            aspectRatio: 440 / 240,
+            viewMode: 1,
+            autoCropArea: 1,
+            background: false,
+            responsive: true,
+            dragMode: "move"
+          });
+        };
+        image.src = src;
+        modal.classList.add("open");
+      }
+
+      function openPopupCoverViewer() {
+        const image = document.querySelector("#popupCoverPreview .popup-cover-image");
+        if (!image?.getAttribute("src")) {
+          showToast(t("No cover image"));
+          return;
+        }
+        let modal = document.getElementById("popupImageModal");
+        if (!modal) {
+          modal = document.createElement("div");
+          modal.id = "popupImageModal";
+          modal.className = "popup-image-modal";
+          modal.innerHTML = `
+            <div class="popup-image-dialog" role="dialog" aria-modal="true" aria-label="${t("Image preview")}">
+              <div class="popup-image-header">
+                <div class="popup-image-title">${t("Image preview")}</div>
+                <button class="popup-image-close" type="button" aria-label="${t("Close image preview")}">×</button>
+              </div>
+              <div class="popup-image-body">
+                <img class="popup-image-large" alt="${escapeHtml(image.alt || t("Cover image"))}" />
+              </div>
+            </div>
+          `;
+          document.body.appendChild(modal);
+          modal.addEventListener("click", (event) => {
+            if (event.target === modal || event.target.closest(".popup-image-close")) closePopupCoverViewer();
+          });
+          document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") closePopupCoverViewer();
+          });
+        }
+        const largeImage = modal.querySelector(".popup-image-large");
+        if (largeImage) {
+          largeImage.src = image.getAttribute("src") || "";
+          largeImage.alt = image.alt || t("Cover image");
+        }
+        modal.classList.add("open");
+      }
+
+      function setPopupCoverImage(file, src) {
+        const upload = document.getElementById("popupCoverUpload");
+        const preview = document.getElementById("popupCoverPreview");
+        if (!upload || !preview) return;
+        upload.classList.remove("is-empty");
+        preview.classList.add("has-image");
+        preview.innerHTML = `
+          <img class="popup-cover-image" src="${src}" alt="${escapeHtml(file.name)}" />
+        `;
+        upload.querySelector(".popup-upload-name")?.replaceChildren(document.createTextNode(file.name));
+      }
+
+      function openPopupCoverPicker() {
+        document.getElementById("popupCoverInput")?.click();
+      }
+
+      function initPopupUploadActions() {
+        const fileInput = document.getElementById("popupCoverInput");
+        fileInput?.addEventListener("change", () => {
+          const file = fileInput.files?.[0];
+          if (!file) return;
+          const validType = ["image/jpeg", "image/png"].includes(file.type);
+          if (!validType) {
+            showToast(t("Only JPG, JPEG, and PNG files are supported"));
+            fileInput.value = "";
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = () => {
+            openPopupCoverCropper(file, String(reader.result || ""));
+          };
+          reader.readAsDataURL(file);
+        });
+
+        document.getElementById("popupCoverUpload")?.addEventListener("click", (event) => {
+          const action = event.target.closest("[data-cover-action]")?.dataset.coverAction;
+          const clickedEmptyPreview = event.target.closest("#popupCoverPreview") && event.currentTarget.classList.contains("is-empty");
+          if (!action && clickedEmptyPreview) {
+            openPopupCoverPicker();
+            return;
+          }
+          if (!action) return;
+          if (action === "delete") {
+            openDeleteCoverModal();
+            return;
+          }
+          if (action === "reupload") {
+            openPopupCoverPicker();
+            return;
+          }
+          if (action === "view") {
+            openPopupCoverViewer();
+            return;
+          }
+          showToast(t("Cover action clicked"));
+        });
+
+        document.getElementById("popupCoverPreview")?.addEventListener("keydown", (event) => {
+          if (!["Enter", " "].includes(event.key)) return;
+          if (!document.getElementById("popupCoverUpload")?.classList.contains("is-empty")) return;
+          event.preventDefault();
+          openPopupCoverPicker();
+        });
+
+        document.getElementById("popupSaveButton")?.addEventListener("click", () => showToast(t("Pop-up card saved")));
+      }
+
+      function popupEditTemplate() {
+        return `
+          <div class="popup-edit-card">
+            <div class="popup-edit-header">
+              <div class="popup-edit-title">${t("Common settings")}</div>
+            </div>
+
+            <div class="popup-form-grid">
+              <div class="popup-field">
+                <div class="popup-field-label">
+                  ${t("Audience")} <span class="popup-required">*</span>
+                  <div class="popup-tooltip-wrap">
+                    <div class="popup-tooltip-icon">?</div>
+                    <div class="popup-tooltip-box">${t("Define the target audience regions where the pop-up is displayed.")}</div>
+                  </div>
+                </div>
+                ${popupSelectTemplate({ options: ["中国", "日本", "新加坡", "全球"], selected: [], multiple: true, label: t("Audience") })}
+              </div>
+
+              <div class="popup-field">
+                <div class="popup-field-label">
+                  ${t("Channels")} <span class="popup-required">*</span>
+                  <div class="popup-tooltip-wrap">
+                    <div class="popup-tooltip-icon">?</div>
+                    <div class="popup-tooltip-box">${t("Define the channels where the pop-up is displayed, such as CRM, Web Global, or Web Japan.")}</div>
+                  </div>
+                </div>
+                ${popupSelectTemplate({ options: ["CRM", "Web Global", "Web Japan"], selected: "", label: t("Channels") })}
+              </div>
+
+              <div class="popup-field">
+                <div class="popup-field-label">${t("Status")} <span class="popup-required">*</span></div>
+                ${popupSelectTemplate({ options: ["Draft", "Published", "Archived"], selected: "", label: t("Status") })}
+              </div>
+
+              <div class="popup-field">
+                <div class="popup-field-label">${t("Time zone")} <span class="popup-required">*</span></div>
+                ${popupSelectTemplate({ options: ["(GMT+08:00) China Standard Time - Shanghai", "(GMT+00:00) UTC", "(GMT+08:00) Singapore"], selected: "", label: t("Time zone") })}
+              </div>
+
+              <div class="popup-field">
+                <div class="popup-field-label">${t("Start time")}</div>
+                <div class="popup-ant-datepicker" id="popupStartTimePicker" data-value=""></div>
+                <input type="hidden" value="" id="popupStartTime" />
+              </div>
+
+              <div class="popup-field">
+                <div class="popup-field-label">${t("End time")}</div>
+                <div class="popup-ant-datepicker" id="popupEndTimePicker" data-value=""></div>
+                <input type="hidden" value="" id="popupEndTime" />
+                <div class="popup-input-error" id="popupTimeError">${t("End time cannot be earlier than start time")}</div>
+              </div>
+            </div>
+
+            <div class="popup-field">
+              <div class="popup-field-label">
+                ${t("Page path")} <span class="popup-required">*</span>
+                <div class="popup-tooltip-wrap">
+                  <div class="popup-tooltip-icon">?</div>
+                  <div class="popup-tooltip-box">${t("Define the page path where the pop-up takes effect.")}</div>
+                </div>
+              </div>
+              <div class="popup-input-wrap" id="popupPagePathWrap">
+                <input class="popup-control" type="text" id="popupPagePath" value="" maxlength="32" oninput="validatePopupPath(this)" placeholder="${t("Enter page path")}" />
+                <span class="popup-char-count" id="popupPagePathCount">0/32</span>
+              </div>
+              <div class="popup-input-hint">${t("For example, /* displays the pop-up on the home page; /account displays the pop-up only on the account page.")}</div>
+              <div class="popup-input-error" id="popupPathError">${t("Path must start with /. Please check the format.")}</div>
+            </div>
+
+            <div class="popup-toggle-row">
+              <label class="popup-toggle">
+                <input type="checkbox" id="popupRedirectToggle" onchange="togglePopupRedirect(this)" />
+                <span class="popup-toggle-slider"></span>
+              </label>
+              <div class="popup-toggle-label-group">
+                <div class="popup-toggle-label-title">${t("Allow redirect")}</div>
+              </div>
+            </div>
+
+            <div class="popup-redirect-section hidden" id="popupRedirectSection">
+              <div class="popup-field">
+                <div class="popup-field-label">
+                  ${t("Redirect URL")} <span class="popup-required">*</span>
+                  <div class="popup-tooltip-wrap">
+                    <div class="popup-tooltip-icon">?</div>
+                    <div class="popup-tooltip-box">${t("Users will be redirected to this full URL after clicking the pop-up card. It must start with https://.")}</div>
+                  </div>
+                </div>
+                <div class="popup-input-wrap">
+                  <input class="popup-control" type="text" id="popupRedirectUrl" value="" maxlength="128" oninput="validatePopupUrl(this)" placeholder="https://" />
+                  <span class="popup-char-count" id="popupRedirectCount">0/128</span>
+                </div>
+                <div class="popup-input-hint">${t("Full URL, must start with https://")}</div>
+                <div class="popup-input-error" id="popupUrlError">${t("Enter a valid URL that starts with https://")}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="popup-edit-card">
+            <div class="popup-edit-header">
+              <div class="popup-edit-title">${t("Localized content")}</div>
+            </div>
+            <div class="popup-locales" id="popupLocales"></div>
+          </div>
+
+          <div class="popup-edit-card">
+            <div class="popup-edit-header">
+              <div>
+                <div class="popup-edit-title">${t("Pop-up settings")}</div>
+              </div>
+            </div>
+
+            <div class="popup-field">
+              <div class="popup-field-label">${t("Cover image")} <span class="popup-required">*</span></div>
+              <div class="popup-cover-requirement">${t("Recommended crop: 440x240, PNG/JPG. Final compressed image within 300KB.")}</div>
+              <input class="popup-upload-input" id="popupCoverInput" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" />
+              <div class="popup-upload is-empty" id="popupCoverUpload">
+                <div class="popup-cover-preview" id="popupCoverPreview" aria-label="${t("Cover image")}" tabindex="0">
+                  ${popupEmptyUploadTemplate()}
+                </div>
+                <div class="popup-upload-meta">
+                  <div class="popup-upload-name">${t("No cover image")}</div>
+                  <div class="popup-upload-actions">
+                    <button class="popup-icon-btn" type="button" data-cover-action="view" aria-label="${t("View")}">${t("View")}</button>
+                    <button class="popup-icon-btn danger-outline-btn" type="button" data-cover-action="delete" aria-label="${t("Delete")}">${t("Delete")}</button>
+                    <button class="popup-ghost-btn primary" type="button" data-cover-action="reupload">${t("Re-upload")}</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="popup-settings-grid">
+              <div class="popup-field">
+                <div class="popup-field-label">${t("Display frequency")} <span class="popup-required">*</span></div>
+                ${popupSelectTemplate({ options: ["Every visit (up to 3 times)", "Once per day", "First visit only"], selected: "", label: t("Display frequency") })}
+              </div>
+
+              <div class="popup-field">
+                <div class="popup-field-label">${t("Priority")} <span class="popup-required">*</span></div>
+                <div class="popup-input-wrap">
+                  <input class="popup-control" type="number" min="1" step="1" value="" placeholder="${t("Enter priority")}" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="popup-edit-actions">
+            <button class="btn secondary" type="button" data-popup-back>${t("Cancel")}</button>
+            <button class="btn" type="button" id="popupSaveButton">${t("Save")}</button>
+          </div>
+        `;
+      }
+
+      function renderContentView() {
+        document.getElementById("primaryAction").textContent = t("Create");
+        const editing = state.view === "popup-edit" && isPopupCardsPage();
+        filterCard.hidden = editing;
+        tabs.hidden = editing;
+        panelCard.hidden = editing;
+        pageHeadActions.hidden = editing;
+        popupEditPage.hidden = !editing;
+        renderBreadcrumb();
+        if (editing) {
+          popupEditPage.innerHTML = popupEditTemplate();
+          initPopupEditPage();
+        } else {
+          popupEditPage.innerHTML = "";
+        }
+      }
+
+      function initPopupEditPage() {
+        document.querySelector("[data-popup-back]")?.addEventListener("click", setListView);
+        initPopupLocalizedContent();
+        initPopupUploadActions();
+        initAntdDatePickers();
+      }
+
+      function validatePopupTimeRange() {
+        const start = document.getElementById("popupStartTime")?.value || "";
+        const end = document.getElementById("popupEndTime")?.value || "";
+        const err = document.getElementById("popupTimeError");
+        const endPicker = document.getElementById("popupEndTimePicker");
+        const invalid = Boolean(start && end && end <= start);
+        endPicker?.classList.toggle("has-error", invalid);
+        err?.classList.toggle("show", invalid);
+      }
+
+      function renderNativeDateInput(mount, inputId, placeholder = "") {
+        const hidden = document.getElementById(inputId);
+        if (!hidden) return;
+        hidden.type = "text";
+        hidden.className = "popup-control";
+        hidden.placeholder = placeholder;
+        hidden.addEventListener("blur", validatePopupTimeRange);
+        mount.replaceWith(hidden);
+      }
+
+      function initAntdDatePickers() {
+        const canUseAntd = window.React && window.ReactDOM && window.antd && window.dayjs;
+        const fields = [
+          { mountId: "popupStartTimePicker", inputId: "popupStartTime", placeholder: t("Select start time") },
+          { mountId: "popupEndTimePicker", inputId: "popupEndTime", placeholder: t("Select end time") },
+        ];
+        if (!canUseAntd) {
+          fields.forEach(({ mountId, inputId, placeholder }) => {
+            const mount = document.getElementById(mountId);
+            if (mount) renderNativeDateInput(mount, inputId, placeholder);
+          });
+          return;
+        }
+
+        const { ConfigProvider, DatePicker } = window.antd;
+        const pickerLocale = state.lang === "zh" ? window.antd.locales?.zh_CN : window.antd.locales?.en_US;
+        window.dayjs.locale(state.lang === "zh" ? "zh-cn" : "en");
+        fields.forEach(({ mountId, inputId, placeholder }) => {
+          const mount = document.getElementById(mountId);
+          const hidden = document.getElementById(inputId);
+          if (!mount || !hidden) return;
+          const value = hidden.value || mount.dataset.value || "";
+          const root = window.ReactDOM.createRoot(mount);
+          root.render(window.React.createElement(
+            ConfigProvider,
+            {
+              locale: pickerLocale,
+              theme: {
+                token: {
+                  colorPrimary: "#1f3472",
+                  borderRadius: 4,
+                  controlHeight: 38,
+                  fontFamily: "\"ubuntu-font\", \"Ubuntu\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+                },
+                components: {
+                  DatePicker: {
+                    activeBorderColor: "#1f3472",
+                    hoverBorderColor: "#1f3472",
+                    activeShadow: "0 0 0 3px rgba(31, 52, 114, 0.08)",
+                  },
+                },
+              },
+            },
+            window.React.createElement(DatePicker, {
+              allowClear: false,
+              className: "popup-ant-picker",
+              format: "YYYY-MM-DD HH:mm:ss",
+              getPopupContainer: () => document.body,
+              inputReadOnly: false,
+              placement: "bottomLeft",
+              onBlur: validatePopupTimeRange,
+              onChange: (_date, dateString) => {
+                hidden.value = dateString;
+                validatePopupTimeRange();
+              },
+              popupClassName: "popup-ant-picker-dropdown",
+              placeholder,
+              showTime: { format: "HH:mm:ss" },
+              value: value ? window.dayjs(value) : null,
+            })
+          ));
+        });
+        validatePopupTimeRange();
+      }
+
+      function validatePopupPath(el) {
+        const val = el.value;
+        const count = document.getElementById("popupPagePathCount");
+        const wrap = document.getElementById("popupPagePathWrap");
+        count.textContent = val.length + "/32";
+        const err = document.getElementById("popupPathError");
+        if (val && !val.startsWith("/")) {
+          el.classList.add("has-error");
+          wrap.classList.add("popup-has-error");
+          err.classList.add("show");
+        } else {
+          el.classList.remove("has-error");
+          wrap.classList.remove("popup-has-error");
+          err.classList.remove("show");
+          if (val) el.classList.add("has-success");
+          else el.classList.remove("has-success");
+        }
+      }
+
+      function validatePopupUrl(el) {
+        const val = el.value;
+        const count = document.getElementById("popupRedirectCount");
+        count.textContent = val.length + "/128";
+        const err = document.getElementById("popupUrlError");
+        if (val && !val.startsWith("https://")) {
+          el.classList.add("has-error");
+          err.classList.add("show");
+        } else {
+          el.classList.remove("has-error");
+          err.classList.remove("show");
+        }
+      }
+
+      function togglePopupRedirect(cb) {
+        const sec = document.getElementById("popupRedirectSection");
+        if (cb.checked) {
+          sec.classList.remove("hidden");
+          sec.classList.add("visible");
+        } else {
+          sec.classList.remove("visible");
+          sec.classList.add("hidden");
+        }
+        syncPopupCtaVisibility(cb.checked);
+      }
+
+      function fillPopupPath(path) {
+        const el = document.getElementById("popupPagePath");
+        el.value = path;
+        validatePopupPath(el);
       }
 
       function openActionMenu(button) {
@@ -2513,15 +5397,31 @@
         `;
       }
 
+      function sidebarQuickGridTemplate() {
+        return `
+          <div class="sidebar-quick-grid" aria-label="${t("Quick shortcuts")}">
+            <div class="sidebar-quick-grid-inner">
+            ${sidebarQuickActions.map((item) => `
+              <button class="sidebar-quick-action" type="button" data-action="${item.action}" aria-label="${t(item.label)}">
+                <span class="sidebar-quick-icon" aria-hidden="true">${item.icon}${item.badge ? `<span class="sidebar-quick-badge">${item.badge}</span>` : ""}</span>
+                <span class="sidebar-quick-label">${t(item.label)}</span>
+              </button>
+            `).join("")}
+            </div>
+          </div>
+        `;
+      }
+
       function renderNav() {
         const current = data[state.mode];
-        navScroll.innerHTML = current.nav.map((item) => {
+        const navItems = current.nav.map((item) => {
           if (item.title) return `<div class="nav-section-title">${t(item.title)}</div>`;
           const hasChildren = Boolean(item.children?.length);
           const groupCollapsed = state.collapsedGroups.has(item.id);
           const children = hasChildren ? `<div class="sub-nav">${item.children.map((child) => navButton(child, true)).join("")}</div>` : "";
           return `<div class="nav-group ${groupCollapsed ? "collapsed" : ""}" data-group="${item.id}">${navButton(item, false, hasChildren)}${children}</div>`;
         }).join("");
+        navScroll.innerHTML = `${navItems}${state.mode === "client" ? sidebarQuickGridTemplate() : ""}`;
         syncScrollThumb();
       }
 
@@ -2562,9 +5462,10 @@
         const childBadgeTotal = item.children?.reduce((total, child) => total + (Number(child.badge) || 0), 0) || 0;
         const badgeValue = item.badge || childBadgeTotal;
         const badge = badgeValue ? `<span class="nav-badge">${badgeValue}</span>` : "";
+        const shouldReserveCaretSlot = isChild || Boolean(badgeValue);
         const caret = hasChildren
           ? '<span class="nav-caret">⌃</span>'
-          : isChild ? '<span class="nav-caret nav-caret-placeholder">⌃</span>' : "";
+          : shouldReserveCaretSlot ? '<span class="nav-caret nav-caret-placeholder">⌃</span>' : "";
         const itemIcon = isChild ? "" : (icon[item.icon] || icon.dashboard);
         return `<button class="nav-item ${active ? "active" : ""} ${parentActive ? "parent-active" : ""}" type="button" data-nav="${item.id}" data-child="${isChild}" data-has-children="${hasChildren}">${itemIcon}<span class="nav-text">${t(item.label)}</span>${badge}${caret}</button>`;
       }
@@ -2706,7 +5607,7 @@
         document.querySelectorAll(".mode-option").forEach((button) => {
           const active = button.dataset.mode === state.mode;
           button.classList.toggle("active", active);
-          button.innerHTML = `${t(data[button.dataset.mode].label)} <span></span>`;
+          button.textContent = t(data[button.dataset.mode].label);
         });
       }
 
@@ -2715,12 +5616,15 @@
         state.activeNav = data[mode].active;
         state.activeTab = data[mode].tabs[0].id;
         state.activePage = 1;
+        state.view = "list";
+        state.editingRow = "";
         state.headlineKey = "Headline";
         state.collapsedGroups = getDefaultCollapsedGroups(mode, state.activeNav);
         app.classList.toggle("mode-client", mode === "client");
         app.classList.toggle("mode-backoffice", mode === "backoffice");
         app.classList.toggle("mode-admin", mode === "admin");
         modeLabel.textContent = t(data[mode].label);
+        sidebarModeLabel.textContent = t(data[mode].label);
         topbarRight.innerHTML = topbarTemplate();
         updateStaticText();
         renderModeOptions();
@@ -2728,9 +5632,66 @@
         renderTabs();
         renderFilters();
         renderTable();
+        renderContentView();
         closeModeMenu();
         closeDrawer();
         showToast(mode === "admin" ? t("Switched to Admin") : mode === "backoffice" ? t("Switched to Backoffice") : t("Switched to Client"));
+      }
+
+
+
+      function openPopupCardsEditDemo() {
+        state.mode = "backoffice";
+        state.activeNav = "bo-marketing-pop-up-cards";
+        state.activeTab = data.backoffice.tabs[0].id;
+        state.activePage = 1;
+        state.headlineKey = "Pop-up Cards";
+        state.collapsedGroups = getDefaultCollapsedGroups("backoffice", state.activeNav);
+        app.classList.toggle("mode-client", false);
+        app.classList.toggle("mode-backoffice", true);
+        app.classList.toggle("mode-admin", false);
+        modeLabel.textContent = t(data.backoffice.label);
+        sidebarModeLabel.textContent = t(data.backoffice.label);
+        topbarRight.innerHTML = topbarTemplate();
+        updateStaticText();
+        renderModeOptions();
+        renderNav();
+        renderTabs();
+        renderFilters();
+        renderTable();
+        openPopupEdit(data.backoffice.rows[0][0]);
+        closeModeMenu();
+        closeDrawer();
+      }
+
+
+
+      function breadcrumbLabel(item) {
+        return item?.title || item?.label || "";
+      }
+
+      function renderBreadcrumb() {
+        const currentItem = findNavItem(state.activeNav);
+        const parentItem = findParentNavItem(state.activeNav);
+        const trail = [];
+        if (parentItem) trail.push({ label: breadcrumbLabel(parentItem), nav: parentItem.id, level: "parent" });
+        if (currentItem) trail.push({ label: breadcrumbLabel(currentItem), nav: currentItem.id, level: "current" });
+        if (state.view === "popup-edit" && isPopupCardsPage()) {
+          trail.push({ label: state.popupFormMode === "create" ? "Add" : "Edit", nav: "popup-edit", level: "edit" });
+        }
+
+        breadcrumbNav.innerHTML = trail.map((item, index) => {
+          const isLast = index === trail.length - 1;
+          const content = isLast
+            ? `<span class="breadcrumb-current">${t(item.label)}</span>`
+            : `<button class="breadcrumb-link" type="button" data-breadcrumb-nav="${item.nav}">${t(item.label)}</button>`;
+          return `${index ? '<span class="breadcrumb-separator">＞</span>' : ''}${content}`;
+        }).join("");
+      }
+
+      function currentPageSubtitle() {
+        if (isPopupCardsPage()) return "Configure localized pop-up card content, display timing, page targeting, and cover image settings.";
+        return data[state.mode].subtitle;
       }
 
       function updateStaticText() {
@@ -2739,9 +5700,10 @@
           ? `SPEC ${t(data[state.mode].label)} UI 演示`
           : state.mode === "admin" ? "SPEC Admin UI Demo" : state.mode === "backoffice" ? "SPEC Backoffice UI Demo" : "SPEC Client UI Demo";
         modeLabel.textContent = t(data[state.mode].label);
+        sidebarModeLabel.textContent = t(data[state.mode].label);
         headline.textContent = t(state.headlineKey);
-        pageSubtitle.textContent = t(data[state.mode].subtitle);
-        document.getElementById("resetButton").textContent = t("Reset");
+        renderBreadcrumb();
+        pageSubtitle.textContent = t(currentPageSubtitle());
         document.getElementById("primaryAction").textContent = t("Create");
         menuTrigger.setAttribute("aria-label", t("Open menu"));
         sidebar.setAttribute("aria-label", t("Main navigation"));
@@ -2757,6 +5719,7 @@
         renderTabs();
         renderFilters();
         renderTable();
+        renderContentView();
         closeModeMenu();
         closeLanguageMenu();
       }
@@ -2768,12 +5731,12 @@
         }
         state.lang = lang;
         renderAll();
-        showToast(lang === "zh" ? t("Language switched to Chinese") : "Language switched to English");
+        showToast(t(lang === "zh" ? "Language switched to Chinese" : "Language switched to English"));
       }
 
       function closeModeMenu() {
-        modeMenu.classList.remove("open");
-        modeControl.setAttribute("aria-expanded", "false");
+        [modeMenu, sidebarModeMenu].forEach((menu) => menu.classList.remove("open"));
+        [modeControl, sidebarModeControl].forEach((control) => control.setAttribute("aria-expanded", "false"));
       }
 
       function closeLanguageMenu() {
@@ -2812,10 +5775,11 @@
         wrap.querySelector(".page-size-control")?.setAttribute("aria-expanded", String(open));
       }
 
-      function toggleModeMenu() {
-        const open = !modeMenu.classList.contains("open");
-        modeMenu.classList.toggle("open", open);
-        modeControl.setAttribute("aria-expanded", String(open));
+      function toggleModeMenu(menu = modeMenu, control = modeControl) {
+        const open = !menu.classList.contains("open");
+        closeModeMenu();
+        menu.classList.toggle("open", open);
+        control.setAttribute("aria-expanded", String(open));
       }
 
       function toggleLanguageMenu() {
@@ -2829,6 +5793,12 @@
 
       function closeDrawer() {
         app.classList.remove("drawer-open");
+      }
+
+      function syncResponsiveSidebarMode() {
+        if (!window.matchMedia("(max-width: 900px)").matches) {
+          closeDrawer();
+        }
       }
 
       function closeSidebarFlyout() {
@@ -2853,16 +5823,24 @@
           <button class="sidebar-flyout-item ${child.id === state.activeNav ? "active" : ""}" type="button" data-nav="${child.id}" role="menuitem">
             <span class="sidebar-flyout-label">${t(child.label)}</span>
             ${child.badge ? `<span class="nav-badge">${child.badge}</span>` : ""}
-            <span class="nav-caret nav-caret-placeholder">⌃</span>
           </button>
         `).join("");
 
         const rect = trigger.getBoundingClientRect();
-        const flyoutHeight = Math.min(group.children.length * 38 + 16, window.innerHeight - 24);
-        const top = Math.min(Math.max(12, rect.top - 6), window.innerHeight - flyoutHeight - 12);
+        const viewportPadding = 12;
+        const maxFlyoutHeight = window.innerHeight - viewportPadding * 2;
         sidebarFlyout.style.left = `${rect.right + 8}px`;
-        sidebarFlyout.style.top = `${top}px`;
+        sidebarFlyout.style.maxHeight = `${maxFlyoutHeight}px`;
+        sidebarFlyout.style.top = `${viewportPadding}px`;
         sidebarFlyout.classList.add("open");
+
+        const flyoutHeight = Math.min(sidebarFlyout.scrollHeight, maxFlyoutHeight);
+        const top = Math.min(
+          Math.max(viewportPadding, rect.top - 6),
+          window.innerHeight - flyoutHeight - viewportPadding
+        );
+        sidebarFlyout.style.top = `${top}px`;
+        sidebarFlyout.style.maxHeight = `${window.innerHeight - top - viewportPadding}px`;
         sidebarFlyout.setAttribute("aria-hidden", "false");
       }
 
@@ -2896,14 +5874,21 @@
         closeLanguageMenu();
         closeFilterSelect();
         closePageSizeMenu();
-        toggleModeMenu();
+        toggleModeMenu(modeMenu, modeControl);
       });
 
-      modeMenu.addEventListener("click", (event) => {
+      sidebarModeControl.addEventListener("click", () => {
+        closeLanguageMenu();
+        closeFilterSelect();
+        closePageSizeMenu();
+        toggleModeMenu(sidebarModeMenu, sidebarModeControl);
+      });
+
+      [modeMenu, sidebarModeMenu].forEach((menu) => menu.addEventListener("click", (event) => {
         const button = event.target.closest(".mode-option");
         if (!button) return;
         setMode(button.dataset.mode);
-      });
+      }));
 
       document.addEventListener("click", (event) => {
         if (!event.target.closest(".mode-wrap")) closeModeMenu();
@@ -2913,7 +5898,41 @@
         if (!event.target.closest(".table-action-button") && !event.target.closest(".action-menu")) closeActionMenu();
       });
 
+
+
+      breadcrumbNav.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-breadcrumb-nav]");
+        if (!button) return;
+        const target = button.dataset.breadcrumbNav;
+        if (target === "popup-edit") return;
+        state.view = "list";
+        state.editingRow = "";
+        if (["#backoffice-marketing-pop-up-cards-edit", "#backoffice-marketing-pop-up-cards-add"].includes(location.hash)) {
+          history.replaceState(null, "", location.pathname + location.search);
+        }
+        state.activeNav = target;
+        state.activePage = 1;
+        state.headlineKey = findNavItem(target)?.label || "Headline";
+        const parent = findParentNavItem(target);
+        if (parent) state.collapsedGroups.delete(parent.id);
+        renderNav();
+        renderTabs();
+        renderFilters();
+        renderTable();
+        renderContentView();
+        headline.textContent = t(state.headlineKey);
+        closeDrawer();
+        closeActionMenu();
+      });
+
       navScroll.addEventListener("click", (event) => {
+        const quickButton = event.target.closest(".sidebar-quick-action");
+        if (quickButton) {
+          showToast(actionMessage(quickButton.dataset.action));
+          closeDrawer();
+          return;
+        }
+
         const button = event.target.closest(".nav-item");
         if (!button) return;
         const id = button.dataset.nav;
@@ -2931,9 +5950,14 @@
         }
         state.activeNav = id;
         state.activePage = 1;
+        state.view = "list";
+        state.editingRow = "";
         state.headlineKey = findNavItem(id)?.label || "Headline";
         renderNav();
         renderTabs();
+        renderFilters();
+        renderTable();
+        renderContentView();
         headline.textContent = t(state.headlineKey);
         closeDrawer();
       });
@@ -2952,9 +5976,14 @@
         const button = event.target.closest(".sidebar-flyout-item");
         if (!button) return;
         state.activeNav = button.dataset.nav;
+        state.view = "list";
+        state.editingRow = "";
         state.headlineKey = findNavItem(state.activeNav)?.label || "Headline";
         renderNav();
         renderTabs();
+        renderFilters();
+        renderTable();
+        renderContentView();
         headline.textContent = t(state.headlineKey);
         closeSidebarFlyout();
       });
@@ -2990,6 +6019,8 @@
           showToast(t("Filters applied"));
         }
       });
+
+      popupEditPage.addEventListener("click", handlePopupSelectClick);
 
       document.querySelector(".panel-card").addEventListener("pointerover", (event) => {
         const button = event.target.closest(".table-action-button");
@@ -3028,6 +6059,15 @@
 
         const menuItem = event.target.closest("[data-action-menu]");
         if (menuItem) {
+          if (menuItem.dataset.actionMenu === "Edit" && openPopupEdit(state.activeActionRow)) {
+            closeActionMenu();
+            return;
+          }
+          if (menuItem.dataset.actionMenu === "Delete") {
+            closeActionMenu();
+            openDeleteActionModal(menuItem.dataset.actionMenu);
+            return;
+          }
           showToast(actionMessage(menuItem.dataset.actionMenu));
           closeActionMenu();
           return;
@@ -3042,6 +6082,15 @@
       actionMenu.addEventListener("click", (event) => {
         const menuItem = event.target.closest("[data-action-menu]");
         if (!menuItem) return;
+        if (menuItem.dataset.actionMenu === "Edit" && openPopupEdit(state.activeActionRow)) {
+          closeActionMenu();
+          return;
+        }
+        if (menuItem.dataset.actionMenu === "Delete") {
+          closeActionMenu();
+          openDeleteActionModal(menuItem.dataset.actionMenu);
+          return;
+        }
         showToast(actionMessage(menuItem.dataset.actionMenu));
         closeActionMenu();
       });
@@ -3065,10 +6114,22 @@
         if (button) showToast(actionMessage(button.dataset.action));
       });
 
-      document.getElementById("resetButton").addEventListener("click", () => setMode(state.mode));
-      document.getElementById("primaryAction").addEventListener("click", () => showToast(t("Create action clicked")));
+      document.getElementById("primaryAction").addEventListener("click", () => {
+        if (openPopupCreate()) return;
+        showToast(t("Create action clicked"));
+      });
       menuTrigger.addEventListener("click", () => app.classList.add("drawer-open"));
+      sidebarCloseButton.addEventListener("click", () => {
+        if (window.matchMedia("(max-width: 900px)").matches) {
+          closeDrawer();
+          return;
+        }
+        app.classList.toggle("sidebar-collapsed");
+        closeSidebarFlyout();
+        syncScrollThumb();
+      });
       overlay.addEventListener("click", closeDrawer);
+      window.addEventListener("resize", syncResponsiveSidebarMode);
       collapseButton.addEventListener("click", () => {
         app.classList.toggle("sidebar-collapsed");
         closeSidebarFlyout();
@@ -3113,6 +6174,18 @@
         syncScrollThumb();
       });
       setMode("backoffice");
+      if (location.hash === "#backoffice-marketing-pop-up-cards-edit") openPopupCardsEditDemo();
+      if (location.hash === "#backoffice-marketing-pop-up-cards-add") {
+        openPopupCardsEditDemo();
+        openPopupCreate();
+      }
+      window.addEventListener("hashchange", () => {
+        if (location.hash === "#backoffice-marketing-pop-up-cards-edit") openPopupCardsEditDemo();
+        if (location.hash === "#backoffice-marketing-pop-up-cards-add") {
+          openPopupCardsEditDemo();
+          openPopupCreate();
+        }
+      });
     </script>
   </body>
 </html>
