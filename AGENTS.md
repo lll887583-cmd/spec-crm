@@ -7,23 +7,17 @@ This repository is a static SPEC CRM UI demo served by GitHub Pages.
 - Main entry: `index.html`
 - Static assets: `assets/`
 - Production preview: `https://lll887583-cmd.github.io/spec-crm/`
-- Test preview: `https://lll887583-cmd.github.io/spec-crm/test/`
 
 The project is intentionally lightweight: avoid adding build tooling unless explicitly requested.
 
 ## Branch Model
 
-Use only the source branches for normal work:
+Use this branch model:
 
-- `main` is the stable preview branch for colleagues.
-- `test` is the working preview branch for requirement changes and self-review.
+- `main` is the source branch for editing and reviewing the static demo.
+- `gh-pages` is the published GitHub Pages branch, kept in sync with `main`.
 
-GitHub Pages is deployed by `.github/workflows/pages.yml` using GitHub Actions:
-
-- `main` is published to the Pages root path `/`.
-- `test` is published to `/test/` under the same Pages site.
-
-Do not manually maintain `gh-pages`, `gh-test-pages`, or other Pages-copy branches. If such branches exist, treat them as stale deployment artifacts unless the user explicitly says otherwise.
+GitHub Pages serves the content from the `gh-pages` branch at the site root.
 
 ## Design Direction
 
@@ -96,9 +90,9 @@ For screenshot checks in headless Chrome, use the local checkout path and the ta
 
 ## Git / Deployment
 
-- Pushes to `main` and `test` both trigger the Pages workflow.
+- Pushes to `main` trigger the sync workflow that updates `gh-pages`.
 - Push only when the user explicitly asks to publish or push.
-- Keep `main` and `test` as the only active source branches.
+- Keep `main` as the editable source branch and `gh-pages` as the published branch.
 - Recommended flow:
 
 ```bash

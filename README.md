@@ -9,12 +9,11 @@ Static SPEC CRM UI demo for GitHub Pages.
 
 ## Previews
 
-- Production preview: https://lll887583-cmd.github.io/spec-crm/
-- Test preview: https://lll887583-cmd.github.io/spec-crm/test/
+- GitHub Pages preview: https://lll887583-cmd.github.io/spec-crm/
 
 ## Branches
 
-- `main`: stable version for colleagues.
-- `test`: working version for requirement changes and self-review.
+- `main`: source branch for editing and reviewing the static demo.
+- `gh-pages`: published GitHub Pages branch, kept in sync with `main`.
 
-GitHub Pages is deployed by `.github/workflows/pages.yml`. The workflow publishes `main` to the site root and `test` to `/test/`, so separate long-lived Pages-copy branches are not needed.
+GitHub Pages serves the content from the `gh-pages` branch at the site root.
