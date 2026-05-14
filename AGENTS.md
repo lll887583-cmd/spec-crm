@@ -6,10 +6,24 @@ This repository is a static SPEC CRM UI demo served by GitHub Pages.
 
 - Main entry: `index.html`
 - Static assets: `assets/`
-- Public preview: `https://lll887583-cmd.github.io/spec-ui-demo/`
-- Deployment branch: `main`
+- Production preview: `https://lll887583-cmd.github.io/spec-crm/`
+- Test preview: `https://lll887583-cmd.github.io/spec-crm/test/`
 
 The project is intentionally lightweight: avoid adding build tooling unless explicitly requested.
+
+## Branch Model
+
+Use only the source branches for normal work:
+
+- `main` is the stable preview branch for colleagues.
+- `test` is the working preview branch for requirement changes and self-review.
+
+GitHub Pages is deployed by `.github/workflows/pages.yml` using GitHub Actions:
+
+- `main` is published to the Pages root path `/`.
+- `test` is published to `/test/` under the same Pages site.
+
+Do not manually maintain `gh-pages`, `gh-test-pages`, or other Pages-copy branches. If such branches exist, treat them as stale deployment artifacts unless the user explicitly says otherwise.
 
 ## Design Direction
 
@@ -60,9 +74,9 @@ from pathlib import Path
 import re
 s = Path('index.html').read_text()
 script = re.findall(r'<script>([\s\S]*?)</script>', s)[-1]
-Path('/tmp/spec-ui-demo-script.js').write_text(script)
+Path('/tmp/spec-crm-script.js').write_text(script)
 PY
-node --check /tmp/spec-ui-demo-script.js
+node --check /tmp/spec-crm-script.js
 ```
 
 For visual checks, a local file URL is sufficient:
@@ -71,26 +85,27 @@ For visual checks, a local file URL is sufficient:
 open index.html
 ```
 
-For screenshot checks in headless Chrome:
+For screenshot checks in headless Chrome, use the local checkout path and the target route, for example:
 
 ```bash
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --disable-gpu --hide-scrollbars \
-  --screenshot=/tmp/spec-ui-demo.png \
+  --screenshot=/tmp/spec-crm.png \
   --window-size=1440,1100 \
-  'file:///Users/macbookpro/Documents/Codex/2026-05-07/file-users-macbookpro-documents-codex-2026/spec-ui-demo/index.html#backoffice-marketing-pop-up-cards-edit'
+  'file:///absolute/path/to/spec-crm/index.html#backoffice-marketing-pop-up-cards-edit'
 ```
 
 ## Git / Deployment
 
-- GitHub Pages deploys from `main`.
+- Pushes to `main` and `test` both trigger the Pages workflow.
 - Push only when the user explicitly asks to publish or push.
+- Keep `main` and `test` as the only active source branches.
 - Recommended flow:
 
 ```bash
 git status --short
-node --check /tmp/spec-ui-demo-script.js
-git add index.html AGENTS.md
-git commit -m "Update spec UI demo"
+node --check /tmp/spec-crm-script.js
+git add index.html AGENTS.md .github/workflows/pages.yml
+git commit -m "Update spec CRM demo"
 git push origin main
 ```
 

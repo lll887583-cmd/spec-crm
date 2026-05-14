@@ -1,4 +1,4 @@
-name: Deploy static site to GitHub Pages
+name: Deploy main and test previews to GitHub Pages
 
 on:
   push:
@@ -21,13 +21,13 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout main for production site
+      - name: Checkout production source
         uses: actions/checkout@v4
         with:
           ref: main
           path: main-site
 
-      - name: Checkout test for preview site
+      - name: Checkout test source
         uses: actions/checkout@v4
         with:
           ref: test
@@ -37,11 +37,19 @@ jobs:
         run: |
           set -euo pipefail
           mkdir public
-          rsync -a --exclude='.git' main-site/ public/
+
+          # Production preview: repository root.
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.github' \
+            main-site/ public/
+
+          # Test preview: /test/ under the same Pages site.
           mkdir -p public/test
-          rsync -a --delete --exclude='.git' test-site/ public/test/
-          # Avoid publishing the preview branch's workflow files as browsable assets.
-          rm -rf public/test/.github public/test/.git
+          rsync -a --delete \
+            --exclude='.git' \
+            --exclude='.github' \
+            test-site/ public/test/
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
