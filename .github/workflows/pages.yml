@@ -2,7 +2,7 @@ name: Deploy static site to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, test]
   workflow_dispatch:
 
 permissions:
@@ -21,14 +21,36 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout main for production site
         uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main-site
+
+      - name: Checkout test for preview site
+        uses: actions/checkout@v4
+        with:
+          ref: test
+          path: test-site
+
+      - name: Compose Pages artifact
+        run: |
+          set -euo pipefail
+          mkdir public
+          rsync -a --exclude='.git' main-site/ public/
+          mkdir -p public/test
+          rsync -a --delete --exclude='.git' test-site/ public/test/
+          # Avoid publishing the preview branch's workflow files as browsable assets.
+          rm -rf public/test/.github public/test/.git
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: public
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
