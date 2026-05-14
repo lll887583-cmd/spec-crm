@@ -2,6 +2,11 @@
 
 Static SPEC CRM UI demo for GitHub Pages.
 
+## 现在的访问地址
+
+- 正式版：https://lll887583-cmd.github.io/spec-crm/
+- 测试版：https://lll887583-cmd.github.io/spec-crm/test/
+
 ## Previews
 
 - Production preview: https://lll887583-cmd.github.io/spec-crm/
